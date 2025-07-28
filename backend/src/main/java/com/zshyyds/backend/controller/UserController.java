@@ -34,4 +34,29 @@ public class UserController {
         
         return result;
     }
+    
+    @PostMapping("/register")
+    public Map<String, Object> register(@RequestBody User user) {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            String registerResult = userService.register(user);
+            
+            if ("success".equals(registerResult)) {
+                result.put("code", 200);
+                result.put("message", "注册成功");
+                result.put("data", user.getUsername());
+            } else {
+                result.put("code", 400);
+                result.put("message", registerResult);
+                result.put("data", null);
+            }
+        } catch (Exception e) {
+            result.put("code", 500);
+            result.put("message", "服务器内部错误");
+            result.put("data", null);
+        }
+        
+        return result;
+    }
 } 
