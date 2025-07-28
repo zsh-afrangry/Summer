@@ -1,17 +1,12 @@
 <template>
   <div id="app">
-    <Login />
+    <router-view />
   </div>
 </template>
 
 <script>
-import LoginPage from './components/LoginPage.vue'
-
 export default {
-  name: 'App',
-  components: {
-    Login: LoginPage
-  }
+  name: 'App'
 }
 </script>
 
@@ -26,5 +21,9 @@ export default {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: #f8f9fa;
 }
 </style>
