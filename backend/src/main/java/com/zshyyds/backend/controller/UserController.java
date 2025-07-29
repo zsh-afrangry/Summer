@@ -2,7 +2,6 @@ package com.zshyyds.backend.controller;
 
 import com.zshyyds.backend.entity.User;
 import com.zshyyds.backend.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -13,8 +12,12 @@ import java.util.Map;
 @CrossOrigin(origins = "*") // 允许跨域
 public class UserController {
     
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
+    
+    // 构造函数注入
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
     
     @PostMapping("/login")
     public Map<String, Object> login(@RequestBody User user) {
@@ -59,4 +62,4 @@ public class UserController {
         
         return result;
     }
-} 
+}
