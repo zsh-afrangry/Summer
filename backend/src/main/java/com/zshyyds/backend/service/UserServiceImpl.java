@@ -2,16 +2,19 @@ package com.zshyyds.backend.service;
 
 import com.zshyyds.backend.entity.User;
 import com.zshyyds.backend.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements UserService {
-    
+
+    //如果在字段上加上@Autowired，就表示这里的依赖注入方式 是 注释注入，而不是Setter注入或者构造函数注入
     private final UserRepository userRepository;
     
     // 构造函数注入
+    @Autowired // 加上注释就表示，我希望Spring用这个构造函数来实现依赖注入，而不是别的构造函数
     public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
