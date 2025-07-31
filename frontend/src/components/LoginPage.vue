@@ -83,6 +83,14 @@
           </div>
         </div>
         <div class="form-group">
+          <label>邮箱 (可选):</label>
+          <input 
+            type="email" 
+            v-model="registerForm.email" 
+            placeholder="请输入邮箱地址"
+          />
+        </div>
+        <div class="form-group">
           <label>确认密码:</label>
           <div class="password-input">
             <input 
@@ -104,15 +112,14 @@
         </button>
       </form>
       
-      <div v-if="message" :class="messageType">
-        {{ message }}
-      </div>
+
     </div>
   </div>
 </template>
 
 <script>
-import axios from 'axios'
+import { userApi } from '@/api'
+import message from '@/utils/message'
 
 export default {
   name: 'LoginPage',
@@ -126,11 +133,10 @@ export default {
       registerForm: {
         username: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        email: '' // 添加邮箱字段
       },
       loading: false,
-      message: '',
-      messageType: '',
       // 密码显示状态
       showLoginPassword: false,
       showRegisterPassword: false,
@@ -141,7 +147,6 @@ export default {
     // 切换模式
     switchMode(mode) {
       this.currentMode = mode
-      this.clearMessage()
       this.clearForms()
       this.resetPasswordVisibility()
     },
@@ -171,34 +176,33 @@ export default {
     // 处理登录
     async handleLogin() {
       if (!this.loginForm.username || !this.loginForm.password) {
-        this.showMessage('请填写用户名和密码', 'error')
+        message.error('请填写用户名和密码')
         return
       }
       
       this.loading = true
-      this.message = ''
       
       try {
-        const response = await axios.post('/api/login', this.loginForm)
-        const result = response.data
+        const result = await userApi.login(this.loginForm)
         
-        if (result.code === 200) {
-          this.showMessage(`欢迎 ${result.data}！登录成功`, 'success')
+        if (result.success) {
+          message.success(`欢迎 ${result.data.username}！登录成功`)
           
           // 保存用户登录状态
-          sessionStorage.setItem('currentUser', result.data)
-          localStorage.setItem('userToken', 'login-token-' + Date.now())
+          sessionStorage.setItem('currentUser', result.data.username)
+          localStorage.setItem('userToken', result.data.token || 'login-token-' + Date.now())
+          localStorage.setItem('userId', result.data.id)
           
           // 跳转到主界面
           setTimeout(() => {
             this.$router.push('/main/home')
           }, 1000)
         } else {
-          this.showMessage(result.message || '登录失败', 'error')
+          message.error(result.error || '登录失败')
         }
       } catch (error) {
         console.error('登录错误:', error)
-        this.showMessage('网络错误，请检查后端服务是否启动', 'error')
+        message.error('网络错误，请检查后端服务是否启动')
       } finally {
         this.loading = false
       }
@@ -212,27 +216,28 @@ export default {
       }
       
       this.loading = true
-      this.message = ''
       
       try {
-        const response = await axios.post('/api/register', {
+        const registerData = {
           username: this.registerForm.username,
-          password: this.registerForm.password
-        })
-        const result = response.data
+          password: this.registerForm.password,
+          email: this.registerForm.email
+        }
         
-        if (result.code === 200) {
-          this.showMessage(`用户 ${result.data} 注册成功！请切换到登录页面`, 'success')
+        const result = await userApi.register(registerData)
+        
+        if (result.success) {
+          message.success(`用户 ${result.data.username} 注册成功！请切换到登录页面`)
           // 3秒后自动切换到登录模式
           setTimeout(() => {
             this.switchMode('login')
           }, 3000)
         } else {
-          this.showMessage(result.message || '注册失败', 'error')
+          message.error(result.error || '注册失败')
         }
       } catch (error) {
         console.error('注册错误:', error)
-        this.showMessage('网络错误，请检查后端服务是否启动', 'error')
+        message.error('网络错误，请检查后端服务是否启动')
       } finally {
         this.loading = false
       }
@@ -240,44 +245,35 @@ export default {
 
     // 验证注册表单
     validateRegisterForm() {
-      const { username, password, confirmPassword } = this.registerForm
+      const { username, password, confirmPassword, email } = this.registerForm
 
       if (!username || !password || !confirmPassword) {
-        this.showMessage('请填写所有字段', 'error')
+        message.error('请填写所有必填字段')
         return false
       }
 
       if (username.trim().length < 3) {
-        this.showMessage('用户名长度不能少于3个字符', 'error')
+        message.error('用户名长度不能少于3个字符')
         return false
       }
 
       if (password.length < 6) {
-        this.showMessage('密码长度不能少于6个字符', 'error')
+        message.error('密码长度不能少于6个字符')
         return false
       }
 
       if (password !== confirmPassword) {
-        this.showMessage('两次输入的密码不一致', 'error')
+        message.error('两次输入的密码不一致')
+        return false
+      }
+
+      // 简单的邮箱格式验证
+      if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        message.error('邮箱格式不正确')
         return false
       }
 
       return true
-    },
-
-    // 显示消息
-    showMessage(text, type) {
-      this.message = text
-      this.messageType = type
-      // 3秒后清除消息
-      setTimeout(() => {
-        this.message = ''
-      }, 3000)
-    },
-
-    // 清除消息
-    clearMessage() {
-      this.message = ''
     },
 
     // 清空表单
@@ -289,7 +285,8 @@ export default {
       this.registerForm = {
         username: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+        email: ''
       }
     }
   }

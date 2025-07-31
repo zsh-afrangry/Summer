@@ -7,10 +7,10 @@
         <p>用心记录技术成长之路，分享编程经验与心得</p>
         <div class="hero-stats">
           <span class="hero-stat">
-            <strong>12</strong> 篇文章
+            <strong>{{ stats.articleCount || 0 }}</strong> 篇文章
           </span>
           <span class="hero-stat">
-            <strong>256</strong> 次访问
+            <strong>{{ stats.viewCount || 0 }}</strong> 次访问
           </span>
           <span class="hero-stat">
             <strong>{{ formatDate(new Date()) }}</strong> 最后更新
@@ -30,23 +30,26 @@
         >
           <div class="article-header">
             <h3 class="article-title">{{ article.title }}</h3>
-            <span class="article-date">{{ article.date }}</span>
+            <span class="article-date">{{ formatDate(article.createdAt) }}</span>
           </div>
-          <p class="article-excerpt">{{ article.excerpt }}</p>
+          <p class="article-excerpt">{{ article.summary || article.content?.substring(0, 150) + '...' }}</p>
           <div class="article-tags">
             <span 
-              v-for="tag in article.tags" 
-              :key="tag"
+              v-for="tag in article.tags || []" 
+              :key="tag.id || tag"
               class="article-tag"
             >
-              {{ tag }}
+              {{ tag.name || tag }}
             </span>
           </div>
           <div class="article-footer">
-            <span class="article-meta">📖 {{ article.readTime }} 分钟阅读</span>
-            <button class="read-more-btn">阅读更多</button>
+            <span class="article-meta">👁️ {{ article.viewCount || 0 }} 次浏览</span>
+            <button class="read-more-btn" @click="viewArticle(article.id)">阅读更多</button>
           </div>
         </article>
+      </div>
+      <div v-if="loading" class="loading">
+        🔄 加载文章中...
       </div>
     </section>
 
@@ -57,31 +60,37 @@
         <div class="tech-category">
           <h3>前端技术</h3>
           <div class="tech-items">
-            <span class="tech-item">Vue.js</span>
-            <span class="tech-item">JavaScript</span>
-            <span class="tech-item">HTML5</span>
-            <span class="tech-item">CSS3</span>
-            <span class="tech-item">Element Plus</span>
+            <span 
+              v-for="tech in techStack.frontend" 
+              :key="tech"
+              class="tech-item"
+            >
+              {{ tech }}
+            </span>
           </div>
         </div>
         <div class="tech-category">
           <h3>后端技术</h3>
           <div class="tech-items">
-            <span class="tech-item">Spring Boot</span>
-            <span class="tech-item">Java</span>
-            <span class="tech-item">MySQL</span>
-            <span class="tech-item">MyBatis</span>
-            <span class="tech-item">Redis</span>
+            <span 
+              v-for="tech in techStack.backend" 
+              :key="tech"
+              class="tech-item"
+            >
+              {{ tech }}
+            </span>
           </div>
         </div>
         <div class="tech-category">
           <h3>开发工具</h3>
           <div class="tech-items">
-            <span class="tech-item">IntelliJ IDEA</span>
-            <span class="tech-item">VS Code</span>
-            <span class="tech-item">Git</span>
-            <span class="tech-item">Maven</span>
-            <span class="tech-item">Docker</span>
+            <span 
+              v-for="tech in techStack.tools" 
+              :key="tech"
+              class="tech-item"
+            >
+              {{ tech }}
+            </span>
           </div>
         </div>
       </div>
@@ -112,42 +121,133 @@
 </template>
 
 <script>
+import { articleApi, statisticsApi, skillApi } from '@/api'
+import message from '@/utils/message'
+
 export default {
   name: 'BlogHome',
   data() {
     return {
-      latestArticles: [
-        {
-          id: 1,
-          title: 'Vue3 + Spring Boot 全栈项目搭建指南',
-          excerpt: '详细介绍如何从零开始搭建一个完整的前后端分离项目，包括环境配置、项目结构设计、接口开发等关键步骤...',
-          date: '2024-01-15',
-          tags: ['Vue.js', 'Spring Boot', '全栈开发'],
-          readTime: 8
-        },
-        {
-          id: 2,
-          title: 'JavaScript 异步编程深度解析',
-          excerpt: '深入探讨JavaScript中的异步编程模式，包括Promise、async/await的使用技巧和最佳实践...',
-          date: '2024-01-10',
-          tags: ['JavaScript', '异步编程', 'Promise'],
-          readTime: 6
-        },
-        {
-          id: 3,
-          title: 'MySQL 数据库性能优化实战',
-          excerpt: '分享MySQL数据库优化的实用技巧，包括索引优化、查询优化、配置调优等方面的经验总结...',
-          date: '2024-01-05',
-          tags: ['MySQL', '性能优化', '数据库'],
-          readTime: 10
-        }
-      ]
+      latestArticles: [],
+      stats: {
+        articleCount: 0,
+        viewCount: 0
+      },
+      techStack: {
+        frontend: [],
+        backend: [],
+        tools: []
+      },
+      loading: false
     }
   },
+  async mounted() {
+    await this.loadHomeData()
+  },
   methods: {
-    formatDate(date) {
-      return date.toLocaleDateString('zh-CN')
+    // 加载首页数据
+    async loadHomeData() {
+      this.loading = true
+      try {
+        await Promise.all([
+          this.loadLatestArticles(),
+          this.loadStatistics(),
+          this.loadTechStack()
+        ])
+      } catch (error) {
+        console.error('加载首页数据失败:', error)
+        message.error('加载数据失败')
+      } finally {
+        this.loading = false
+      }
     },
+
+    // 加载最新文章
+    async loadLatestArticles() {
+      try {
+        const result = await articleApi.getLatestArticles(3)
+        if (result.success) {
+          this.latestArticles = result.data
+        }
+      } catch (error) {
+        console.error('加载最新文章失败:', error)
+      }
+    },
+
+    // 加载统计信息
+    async loadStatistics() {
+      try {
+        const result = await statisticsApi.getOverviewStatistics()
+        if (result.success) {
+          this.stats = result.data
+        }
+      } catch (error) {
+        console.error('加载统计信息失败:', error)
+      }
+    },
+
+    // 加载技术栈（从技能数据获取）
+    async loadTechStack() {
+      try {
+        // 假设管理员用户ID为1，或者从localStorage获取
+        const userId = localStorage.getItem('userId') || 1
+        const result = await skillApi.getSkillsByUserId(userId)
+        if (result.success) {
+          this.organizeTechStack(result.data)
+        }
+      } catch (error) {
+        console.error('加载技术栈失败:', error)
+        // 如果加载失败，使用默认技术栈
+        this.useDefaultTechStack()
+      }
+    },
+
+    // 组织技术栈数据
+    organizeTechStack(skills) {
+      this.techStack = {
+        frontend: skills.filter(skill => skill.category === '前端技术').map(skill => skill.name),
+        backend: skills.filter(skill => skill.category === '后端技术').map(skill => skill.name),
+        tools: skills.filter(skill => skill.category === '开发工具').map(skill => skill.name)
+      }
+      
+      // 如果某个分类为空，使用默认值
+      if (this.techStack.frontend.length === 0) {
+        this.techStack.frontend = ['Vue.js', 'JavaScript', 'HTML5', 'CSS3', 'Element Plus']
+      }
+      if (this.techStack.backend.length === 0) {
+        this.techStack.backend = ['Spring Boot', 'Java', 'MySQL', 'MyBatis', 'Redis']
+      }
+      if (this.techStack.tools.length === 0) {
+        this.techStack.tools = ['IntelliJ IDEA', 'VS Code', 'Git', 'Maven', 'Docker']
+      }
+    },
+
+    // 使用默认技术栈
+    useDefaultTechStack() {
+      this.techStack = {
+        frontend: ['Vue.js', 'JavaScript', 'HTML5', 'CSS3', 'Element Plus'],
+        backend: ['Spring Boot', 'Java', 'MySQL', 'MyBatis', 'Redis'],
+        tools: ['IntelliJ IDEA', 'VS Code', 'Git', 'Maven', 'Docker']
+      }
+    },
+
+    // 查看文章详情
+    viewArticle(articleId) {
+      this.$router.push(`/main/article/${articleId}`)
+    },
+
+    // 格式化日期
+    formatDate(dateString) {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    },
+
+    // 滚动到顶部
     scrollToTop() {
       window.scrollTo({
         top: 0,

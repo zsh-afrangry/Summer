@@ -3,34 +3,32 @@ package com.zshyyds.backend.entity;
 import lombok.Data;
 import jakarta.persistence.*;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "user")
+@Table(name = "tag")
 @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
-public class User {
+public class Tag {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
     @Column(unique = true, nullable = false, length = 50)
-    private String username;
+    private String name;
     
-    @Column(nullable = false)
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY) // 只在写入时接收，输出时忽略
-    private String password;
-    
-    @Column(unique = true, length = 100)
-    private String email;
+    @Column(length = 20, columnDefinition = "VARCHAR(20) DEFAULT '#667eea'")
+    private String color = "#667eea";
     
     @Column(length = 255)
-    private String avatar;
+    private String description;
     
-    @Column(columnDefinition = "TINYINT DEFAULT 1")
-    private Integer status = 1; // 1-正常，0-禁用
+    @Column(name = "article_count", columnDefinition = "INT DEFAULT 0")
+    private Integer articleCount = 0;
+    
+    @Column(name = "sort_order", columnDefinition = "INT DEFAULT 0")
+    private Integer sortOrder = 0;
     
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -50,16 +48,11 @@ public class User {
         updatedAt = LocalDateTime.now();
     }
     
-    public User() {}
+    public Tag() {}
     
-    public User(String username, String password) {
-        this.username = username;
-        this.password = password;
-    }
-    
-    public User(String username, String password, String email) {
-        this.username = username;
-        this.password = password;
-        this.email = email;
+    public Tag(String name, String color, String description) {
+        this.name = name;
+        this.color = color;
+        this.description = description;
     }
 } 

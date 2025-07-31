@@ -26,12 +26,16 @@
           <h3>📊 统计信息</h3>
           <div class="stats">
             <div class="stat-item">
-              <span class="stat-number">12</span>
+              <span class="stat-number">{{ stats.articleCount || 0 }}</span>
               <span class="stat-label">文章总数</span>
             </div>
             <div class="stat-item">
-              <span class="stat-number">256</span>
+              <span class="stat-number">{{ stats.viewCount || 0 }}</span>
               <span class="stat-label">访问量</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">{{ stats.tagCount || 0 }}</span>
+              <span class="stat-label">标签数量</span>
             </div>
           </div>
         </div>
@@ -39,30 +43,35 @@
         <div class="sidebar-section">
           <h3>🏷️ 标签云</h3>
           <div class="tags">
-            <span class="tag">Vue.js</span>
-            <span class="tag">JavaScript</span>
-            <span class="tag">Spring Boot</span>
-            <span class="tag">MySQL</span>
-            <span class="tag">前端开发</span>
-            <span class="tag">后端开发</span>
+            <span 
+              v-for="tag in tagCloud" 
+              :key="tag.id"
+              class="tag"
+              :style="{ fontSize: getTagSize(tag.articleCount) + 'px' }"
+              @click="filterByTag(tag.name)"
+            >
+              {{ tag.name }}
+            </span>
+          </div>
+          <div v-if="loading.tags" class="loading">
+            🔄 加载标签中...
           </div>
         </div>
 
         <div class="sidebar-section">
           <h3>📅 最近更新</h3>
           <div class="recent-posts">
-            <div class="recent-post">
-              <a href="#">Vue3 + Spring Boot 项目搭建</a>
-              <span class="post-date">2024-01-15</span>
+            <div 
+              v-for="article in recentArticles" 
+              :key="article.id"
+              class="recent-post"
+            >
+              <a @click="viewArticle(article.id)">{{ article.title }}</a>
+              <span class="post-date">{{ formatDate(article.createdAt) }}</span>
             </div>
-            <div class="recent-post">
-              <a href="#">JavaScript 异步编程详解</a>
-              <span class="post-date">2024-01-10</span>
-            </div>
-            <div class="recent-post">
-              <a href="#">MySQL 性能优化技巧</a>
-              <span class="post-date">2024-01-05</span>
-            </div>
+          </div>
+          <div v-if="loading.articles" class="loading">
+            🔄 加载文章中...
           </div>
         </div>
       </aside>
@@ -81,22 +90,138 @@
 </template>
 
 <script>
+import { statisticsApi, tagApi, articleApi } from '@/api'
+import message from '@/utils/message'
+
 export default {
   name: 'MainLayout',
   data() {
     return {
-      currentUser: ''
+      currentUser: '',
+      stats: {
+        articleCount: 0,
+        viewCount: 0,
+        tagCount: 0
+      },
+      tagCloud: [],
+      recentArticles: [],
+      loading: {
+        stats: false,
+        tags: false,
+        articles: false
+      }
     }
   },
-  mounted() {
+  async mounted() {
     // 获取当前用户信息
     this.currentUser = sessionStorage.getItem('currentUser') || '用户'
+    
+    // 加载数据
+    await this.loadDashboardData()
   },
   methods: {
+    // 加载仪表板数据
+    async loadDashboardData() {
+      await Promise.all([
+        this.loadStatistics(),
+        this.loadTagCloud(),
+        this.loadRecentArticles()
+      ])
+    },
+
+    // 加载统计信息
+    async loadStatistics() {
+      this.loading.stats = true
+      try {
+        const result = await statisticsApi.getOverviewStatistics()
+        if (result.success) {
+          this.stats = result.data
+        }
+      } catch (error) {
+        console.error('加载统计信息失败:', error)
+      } finally {
+        this.loading.stats = false
+      }
+    },
+
+    // 加载标签云
+    async loadTagCloud() {
+      this.loading.tags = true
+      try {
+        const result = await tagApi.getTagCloudData()
+        if (result.success) {
+          this.tagCloud = result.data.slice(0, 10) // 只显示前10个标签
+        }
+      } catch (error) {
+        console.error('加载标签云失败:', error)
+      } finally {
+        this.loading.tags = false
+      }
+    },
+
+    // 加载最近文章
+    async loadRecentArticles() {
+      this.loading.articles = true
+      try {
+        const result = await articleApi.getLatestArticles(5)
+        if (result.success) {
+          this.recentArticles = result.data
+        }
+      } catch (error) {
+        console.error('加载最近文章失败:', error)
+      } finally {
+        this.loading.articles = false
+      }
+    },
+
+    // 根据标签文章数量计算字体大小
+    getTagSize(articleCount) {
+      const minSize = 12
+      const maxSize = 18
+      const maxCount = Math.max(...this.tagCloud.map(tag => tag.articleCount))
+      
+      if (maxCount === 0) return minSize
+      
+      const ratio = articleCount / maxCount
+      return Math.round(minSize + (maxSize - minSize) * ratio)
+    },
+
+    // 根据标签筛选
+    filterByTag(tagName) {
+      // 如果当前在文章列表页，传递标签参数
+      if (this.$route.name === 'articles') {
+        this.$router.push({ name: 'articles', query: { tag: tagName } })
+      } else {
+        // 跳转到文章列表页并筛选
+        this.$router.push({ path: '/main/articles', query: { tag: tagName } })
+      }
+    },
+
+    // 查看文章详情
+    viewArticle(articleId) {
+      // 跳转到文章详情页（后续实现）
+      this.$router.push(`/main/article/${articleId}`)
+    },
+
+    // 格式化日期
+    formatDate(dateString) {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    },
+
+    // 退出登录
     logout() {
       // 清除登录状态
       sessionStorage.removeItem('currentUser')
       localStorage.removeItem('userToken')
+      localStorage.removeItem('userId')
+      
+      message.success('已退出登录')
       
       // 跳转到登录页
       this.$router.push('/login')
@@ -242,6 +367,7 @@ export default {
   opacity: 0.9;
 }
 
+/* 标签云样式 */
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -249,23 +375,41 @@ export default {
 }
 
 .tag {
-  background-color: #e9ecef;
-  color: #495057;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
   padding: 4px 12px;
   border-radius: 20px;
-  font-size: 12px;
+  font-size: 14px;
   cursor: pointer;
   transition: all 0.3s ease;
+  text-decoration: none;
 }
 
 .tag:hover {
-  background-color: #667eea;
-  color: white;
+  background: linear-gradient(135deg, #764ba2, #667eea);
   transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
 }
 
-.recent-posts {
-  space-y: 10px;
+/* 加载状态样式 */
+.loading {
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+  padding: 10px;
+}
+
+/* 最近文章样式更新 */
+.recent-post a {
+  cursor: pointer;
+  color: #667eea;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.recent-post a:hover {
+  color: #764ba2;
+  text-decoration: underline;
 }
 
 .recent-post {

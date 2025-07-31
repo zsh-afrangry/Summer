@@ -2,7 +2,7 @@
   <div class="blog-list">
     <div class="page-header">
       <h1>📚 文章列表</h1>
-      <p>共 {{ articles.length }} 篇文章</p>
+      <p>共 {{ totalArticles }} 篇文章</p>
     </div>
 
     <!-- 筛选和搜索 -->
@@ -13,85 +13,112 @@
           type="text" 
           placeholder="搜索文章标题或内容..."
           class="search-input"
+          @keyup.enter="performSearch"
         />
-        <button class="search-btn">🔍</button>
+        <button class="search-btn" @click="performSearch">🔍</button>
       </div>
       
       <div class="filter-tags">
         <button 
           :class="['tag-filter', { active: selectedTag === '' }]"
-          @click="selectedTag = ''"
+          @click="selectTag('')"
         >
           全部
         </button>
         <button 
           v-for="tag in allTags"
-          :key="tag"
-          :class="['tag-filter', { active: selectedTag === tag }]"
-          @click="selectedTag = tag"
+          :key="tag.id"
+          :class="['tag-filter', { active: selectedTag === tag.name }]"
+          @click="selectTag(tag.name)"
         >
-          {{ tag }}
+          {{ tag.name }} ({{ tag.articleCount }})
         </button>
       </div>
     </div>
 
+    <!-- 加载状态 -->
+    <div v-if="loading" class="loading">
+      🔄 加载文章中...
+    </div>
+
     <!-- 文章列表 -->
-    <div class="articles-container">
+    <div class="articles-container" v-else>
       <article 
-        v-for="article in filteredArticles" 
+        v-for="article in articles" 
         :key="article.id"
         class="article-item"
       >
         <div class="article-content">
           <div class="article-header">
-            <h2 class="article-title">{{ article.title }}</h2>
+            <h2 class="article-title" @click="viewArticle(article.id)">{{ article.title }}</h2>
             <div class="article-meta">
-              <span class="article-date">📅 {{ article.date }}</span>
-              <span class="article-reading">📖 {{ article.readTime }} 分钟阅读</span>
-              <span class="article-views">👁️ {{ article.views }} 次查看</span>
+              <span class="article-date">📅 {{ formatDate(article.createdAt) }}</span>
+              <span class="article-reading">👁️ {{ article.viewCount || 0 }} 次浏览</span>
+              <span class="article-author">✍️ {{ article.author?.username || '作者' }}</span>
             </div>
           </div>
           
-          <p class="article-summary">{{ article.summary }}</p>
+          <p class="article-summary">{{ article.summary || article.content?.substring(0, 200) + '...' }}</p>
           
           <div class="article-tags">
             <span 
-              v-for="tag in article.tags" 
-              :key="tag"
+              v-for="tag in article.tags || []"
+              :key="tag.id || tag"
               class="article-tag"
+              @click="selectTag(tag.name || tag)"
             >
-              {{ tag }}
+              {{ tag.name || tag }}
             </span>
           </div>
           
           <div class="article-actions">
-            <button class="read-btn">阅读全文</button>
+            <button class="read-btn" @click="viewArticle(article.id)">
+              阅读全文 →
+            </button>
             <div class="article-stats">
-              <span class="stat">❤️ {{ article.likes }}</span>
-              <span class="stat">💬 {{ article.comments }}</span>
+              <span>💬 {{ article.commentCount || 0 }}</span>
+              <span>👍 {{ article.likeCount || 0 }}</span>
             </div>
           </div>
         </div>
       </article>
-
+      
       <!-- 空状态 -->
-      <div v-if="filteredArticles.length === 0" class="empty-state">
-        <div class="empty-icon">📝</div>
-        <h3>暂无相关文章</h3>
-        <p>尝试调整搜索条件或查看其他内容</p>
+      <div v-if="articles.length === 0" class="empty-state">
+        <p>📝 暂无文章</p>
+        <p>{{ searchKeyword || selectedTag ? '没有找到符合条件的文章' : '还没有发布任何文章' }}</p>
       </div>
     </div>
 
-    <!-- 分页 -->
-    <div class="pagination" v-if="filteredArticles.length > 0">
-      <button class="page-btn" :disabled="currentPage === 1">上一页</button>
-      <span class="page-info">第 {{ currentPage }} 页，共 {{ totalPages }} 页</span>
-      <button class="page-btn" :disabled="currentPage === totalPages">下一页</button>
+    <!-- 分页组件 -->
+    <div class="pagination" v-if="totalPages > 1">
+      <button 
+        :disabled="currentPage <= 1" 
+        @click="goToPage(currentPage - 1)"
+        class="page-btn"
+      >
+        上一页
+      </button>
+      
+      <span class="page-info">
+        第 {{ currentPage }} 页，共 {{ totalPages }} 页
+      </span>
+      
+      <button 
+        :disabled="currentPage >= totalPages" 
+        @click="goToPage(currentPage + 1)"
+        class="page-btn"
+      >
+        下一页
+      </button>
     </div>
   </div>
 </template>
 
 <script>
+import { articleApi, tagApi } from '@/api'
+import message from '@/utils/message'
+
 export default {
   name: 'BlogList',
   data() {
@@ -99,108 +126,128 @@ export default {
       searchKeyword: '',
       selectedTag: '',
       currentPage: 1,
-      pageSize: 5,
-      articles: [
-        {
-          id: 1,
-          title: 'Vue3 + Spring Boot 全栈项目搭建指南',
-          summary: '详细介绍如何从零开始搭建一个完整的前后端分离项目，包括环境配置、项目结构设计、接口开发、数据库设计等关键步骤。通过实际案例演示，帮助开发者快速掌握全栈开发技能。',
-          date: '2024-01-15',
-          tags: ['Vue.js', 'Spring Boot', '全栈开发'],
-          readTime: 8,
-          views: 156,
-          likes: 23,
-          comments: 5
-        },
-        {
-          id: 2,
-          title: 'JavaScript 异步编程深度解析',
-          summary: '深入探讨JavaScript中的异步编程模式，包括Promise、async/await的使用技巧和最佳实践。通过多个实例展示如何优雅地处理异步操作，避免回调地狱问题。',
-          date: '2024-01-10',
-          tags: ['JavaScript', '异步编程', 'Promise'],
-          readTime: 6,
-          views: 203,
-          likes: 31,
-          comments: 8
-        },
-        {
-          id: 3,
-          title: 'MySQL 数据库性能优化实战',
-          summary: '分享MySQL数据库优化的实用技巧，包括索引优化、查询优化、配置调优等方面的经验总结。通过实际案例分析，展示如何诊断和解决数据库性能问题。',
-          date: '2024-01-05',
-          tags: ['MySQL', '性能优化', '数据库'],
-          readTime: 10,
-          views: 189,
-          likes: 28,
-          comments: 12
-        },
-        {
-          id: 4,
-          title: 'Vue Router 路由管理最佳实践',
-          summary: '介绍Vue Router在单页面应用中的高级使用技巧，包括路由守卫、动态路由、懒加载等功能的实现。帮助开发者构建更加健壮的前端应用。',
-          date: '2023-12-28',
-          tags: ['Vue.js', '路由管理', '前端开发'],
-          readTime: 7,
-          views: 142,
-          likes: 19,
-          comments: 6
-        },
-        {
-          id: 5,
-          title: 'Spring Security 安全框架详解',
-          summary: '全面介绍Spring Security框架的核心概念和使用方法，包括认证、授权、会话管理等功能的配置和实现。为企业级应用提供完整的安全解决方案。',
-          date: '2023-12-20',
-          tags: ['Spring Boot', '安全框架', '后端开发'],
-          readTime: 12,
-          views: 167,
-          likes: 25,
-          comments: 9
-        },
-        {
-          id: 6,
-          title: 'CSS Grid 布局完全指南',
-          summary: 'CSS Grid是现代网页布局的强大工具，本文详细介绍Grid布局的各种属性和使用场景，通过实例演示如何创建复杂的响应式布局。',
-          date: '2023-12-15',
-          tags: ['CSS3', '布局', '前端开发'],
-          readTime: 9,
-          views: 198,
-          likes: 33,
-          comments: 7
-        }
-      ]
+      pageSize: 10,
+      articles: [],
+      loading: false,
+      totalArticles: 0,
+      allTags: []
     }
   },
   computed: {
-    allTags() {
-      const tags = new Set()
-      this.articles.forEach(article => {
-        article.tags.forEach(tag => tags.add(tag))
-      })
-      return Array.from(tags)
-    },
-    filteredArticles() {
-      let filtered = this.articles
-
-      // 按标签筛选
-      if (this.selectedTag) {
-        filtered = filtered.filter(article => 
-          article.tags.includes(this.selectedTag)
-        )
-      }
-
-      // 按关键词搜索
-      if (this.searchKeyword) {
-        const keyword = this.searchKeyword.toLowerCase()
-        filtered = filtered.filter(article =>
-          article.title.toLowerCase().includes(keyword) ||
-          article.summary.toLowerCase().includes(keyword)
-        )
-      }
-
-      return filtered
-    },
     totalPages() {
-      return Math.ceil(this.filteredArticles.length / this.pageSize)
+      return Math.ceil(this.totalArticles / this.pageSize)
+    }
+  },
+  async mounted() {
+    // 检查路由参数
+    if (this.$route.query.tag) {
+      this.selectedTag = this.$route.query.tag
+    }
+    
+    await this.loadData()
+  },
+  methods: {
+    // 加载数据
+    async loadData() {
+      await Promise.all([
+        this.loadArticles(),
+        this.loadTags()
+      ])
+    },
+
+    // 加载文章列表
+    async loadArticles() {
+      this.loading = true
+      try {
+        let result
+        
+        if (this.searchKeyword) {
+          // 搜索文章
+          result = await articleApi.searchArticles(
+            this.searchKeyword, 
+            this.currentPage - 1, 
+            this.pageSize
+          )
+        } else if (this.selectedTag) {
+          // 按标签筛选
+          result = await articleApi.getArticlesByTagName(this.selectedTag)
+        } else {
+          // 获取已发布文章
+          result = await articleApi.getPublishedArticles(
+            this.currentPage - 1, 
+            this.pageSize
+          )
+        }
+        
+        if (result.success) {
+          this.articles = result.data.content || result.data
+          this.totalArticles = result.data.totalElements || result.data.length
+        }
+      } catch (error) {
+        console.error('加载文章失败:', error)
+        message.error('加载文章失败')
+      } finally {
+        this.loading = false
+      }
+    },
+
+    // 加载标签列表
+    async loadTags() {
+      try {
+        const result = await tagApi.getPopularTags(20)
+        if (result.success) {
+          this.allTags = result.data
+        }
+      } catch (error) {
+        console.error('加载标签失败:', error)
+      }
+    },
+
+    // 执行搜索
+    async performSearch() {
+      this.currentPage = 1
+      await this.loadArticles()
+    },
+
+    // 选择标签
+    async selectTag(tag) {
+      this.selectedTag = tag
+      this.currentPage = 1
+      
+      // 更新路由参数
+      if (tag) {
+        this.$router.push({ query: { tag } })
+      } else {
+        this.$router.push({ query: {} })
+      }
+      
+      await this.loadArticles()
+    },
+
+    // 查看文章
+    viewArticle(articleId) {
+      // 增加浏览量
+      articleApi.incrementViewCount(articleId)
+      
+      // 跳转到文章详情页
+      this.$router.push(`/main/article/${articleId}`)
+    },
+
+    // 格式化日期
+    formatDate(dateString) {
+      if (!dateString) return ''
+      const date = new Date(dateString)
+      return date.toLocaleDateString('zh-CN', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      })
+    },
+
+    // 跳转到指定页面
+    async goToPage(page) {
+      this.currentPage = page
+      await this.loadArticles()
     }
   }
 }
@@ -265,26 +312,41 @@ export default {
   font-size: 14px;
 }
 
+/* 标签筛选样式 */
 .filter-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 8px;
+  margin-top: 15px;
+  align-items: center; /* 垂直居中对齐 */
 }
 
 .tag-filter {
-  background-color: white;
-  color: #495057;
-  border: 1px solid #ddd;
-  padding: 8px 16px;
+  background: #f8f9fa;
+  color: #666;
+  border: 1px solid #dee2e6;
+  padding: 6px 12px;
   border-radius: 20px;
   cursor: pointer;
-  font-size: 13px;
   transition: all 0.3s ease;
+  font-size: 14px;
+  text-decoration: none;
+  display: inline-flex; /* 使用inline-flex确保对齐 */
+  align-items: center; /* 垂直居中 */
+  line-height: 1.2; /* 统一行高 */
+  min-height: 32px; /* 最小高度保证一致性 */
+  white-space: nowrap; /* 防止换行 */
 }
 
-.tag-filter:hover,
+.tag-filter:hover {
+  background: #667eea;
+  color: white;
+  border-color: #667eea;
+  transform: translateY(-1px);
+}
+
 .tag-filter.active {
-  background-color: #667eea;
+  background: #667eea;
   color: white;
   border-color: #667eea;
 }
@@ -390,24 +452,27 @@ export default {
   color: #6c757d;
 }
 
-/* 空状态 */
+/* 加载状态样式 */
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 16px;
+  color: #666;
+}
+
+/* 空状态样式 */
 .empty-state {
   text-align: center;
   padding: 60px 20px;
-  color: #6c757d;
+  color: #999;
 }
 
-.empty-icon {
-  font-size: 48px;
-  margin-bottom: 20px;
-}
-
-.empty-state h3 {
+.empty-state p:first-child {
+  font-size: 18px;
   margin-bottom: 10px;
-  color: #495057;
 }
 
-/* 分页 */
+/* 分页样式 */
 .pagination {
   display: flex;
   justify-content: center;
@@ -418,27 +483,51 @@ export default {
 }
 
 .page-btn {
-  background-color: #667eea;
+  padding: 8px 16px;
+  background: #667eea;
   color: white;
   border: none;
-  padding: 10px 20px;
   border-radius: 6px;
   cursor: pointer;
   transition: all 0.3s ease;
 }
 
 .page-btn:hover:not(:disabled) {
-  background-color: #5a6fd8;
+  background: #764ba2;
+  transform: translateY(-1px);
 }
 
 .page-btn:disabled {
-  background-color: #ccc;
+  background: #ccc;
   cursor: not-allowed;
+  transform: none;
 }
 
 .page-info {
-  color: #6c757d;
   font-size: 14px;
+  color: #666;
+}
+
+/* 文章标题点击样式 */
+.article-title {
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.article-title:hover {
+  color: #667eea;
+}
+
+/* 标签点击样式 */
+.article-tag {
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.article-tag:hover {
+  background: #667eea;
+  color: white;
+  transform: translateY(-1px);
 }
 
 /* 响应式设计 */
