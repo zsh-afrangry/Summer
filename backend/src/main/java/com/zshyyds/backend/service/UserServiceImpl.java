@@ -2,6 +2,7 @@ package com.zshyyds.backend.service;
 
 import com.zshyyds.backend.entity.User;
 import com.zshyyds.backend.repository.UserRepository;
+import com.zshyyds.backend.utils.MD5Util;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +22,17 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean login(User user) {
-        Optional<User> existingUser = userRepository.findByUsernameAndPassword(
-            user.getUsername(), 
-            user.getPassword()
-        );
-        return existingUser.isPresent();
+        // 1. 根据用户名查找用户
+        Optional<User> existingUserOpt = userRepository.findByUsername(user.getUsername());
+        
+        if (existingUserOpt.isEmpty()) {
+            return false; // 用户不存在
+        }
+        
+        User existingUser = existingUserOpt.get();
+        
+        // 2. 验证密码：将输入的明文密码进行MD5加密后与数据库中的哈希值比较
+        return MD5Util.verify(user.getPassword(), existingUser.getPassword());
     }
     
     @Override
@@ -56,8 +63,11 @@ public class UserServiceImpl implements UserService {
         }
         
         try {
-            // 创建新用户
-            User newUser = new User(user.getUsername().trim(), user.getPassword());
+            // 对密码进行MD5加密
+            String hashedPassword = MD5Util.encrypt(user.getPassword());
+            
+            // 创建新用户，存储加密后的密码
+            User newUser = new User(user.getUsername().trim(), hashedPassword);
             userRepository.save(newUser);
             return "success";
         } catch (Exception e) {
