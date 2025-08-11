@@ -1,0 +1,52 @@
+# Single top-level key (Correct)
+services:
+  # Each service is a direct child of the top-level 'services'
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "8081:8080"
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:5.7
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: my_blog
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./mysql/init:/docker-entrypoint-initdb.d
+
+  backend-dev:
+    image: openjdk:17-slim
+    container_name: backend-dev
+    ports:
+      - "8082:8080"
+    volumes:
+      - ./backend/target:/app
+    working_dir: /app
+    command: ["java", "-XX:TieredStopAtLevel=1", "-noverify", "-jar", "backend-0.0.1-SNAPSHOT.jar"]
+    depends_on:
+      - mysql
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend

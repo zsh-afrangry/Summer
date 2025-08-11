@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '../components/LoginPage.vue'
+import LoginPageDemo from '../components/LoginPageDemo.vue'
 import MainLayout from '../components/MainLayout.vue'
 import BlogHome from '../components/BlogHome.vue'
 import BlogList from '../components/BlogList.vue'
 import About from '../components/About.vue'
+import GridTradingAnalyzer from '../components/GridTradingAnalyzer.vue'
 
 const routes = [
   {
@@ -15,6 +17,18 @@ const routes = [
     path: '/login',
     name: 'LoginPage',
     component: LoginPage
+  },
+  {
+    path: '/demo',
+    name: 'LoginPageDemo',
+    component: LoginPageDemo,
+    meta: { title: 'Vue.js 核心概念演示' }
+  },
+  {
+    path: '/grid-trading',
+    name: 'GridTradingDirect',
+    component: GridTradingAnalyzer,
+    meta: { title: '网格交易分析' }
   },
   {
     path: '/main',
@@ -41,6 +55,12 @@ const routes = [
         name: 'About',
         component: About,
         meta: { title: '关于我' }
+      },
+      {
+        path: 'trading',
+        name: 'GridTrading',
+        component: GridTradingAnalyzer,
+        meta: { title: '网格交易分析' }
       }
     ]
   }

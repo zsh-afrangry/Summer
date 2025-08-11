@@ -1,0 +1,17 @@
+# 查看所有服务状态
+docker compose ps
+
+# 查看服务日志
+docker compose logs [service-name]
+
+# 停止所有服务
+docker compose down
+
+# 重启服务
+docker compose restart [service-name]
+
+# 查看特定服务日志
+docker compose logs backend
+docker compose logs frontend
+docker compose logs mysql
+docker compose logs nginx

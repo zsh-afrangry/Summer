@@ -1,0 +1,17 @@
+# 使用 OpenJDK 17 的精简镜像
+FROM openjdk:17-slim
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制编译好的 JAR 文件
+COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
+
+# 设置 JVM 内存参数和优化参数
+ENV JAVA_OPTS="-Xmx384m -Xms128m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:+UseContainerSupport"
+
+# 暴露端口
+EXPOSE 8080
+
+# 启动应用
+CMD ["sh", "-c", "java $JAVA_OPTS -jar app.jar"]

@@ -211,7 +211,7 @@ INSERT INTO `tag` (`name`, `color`, `description`, `sort_order`) VALUES
 
 -- 3.3 创建默认管理员用户
 INSERT INTO `user` (`username`, `password`, `email`, `status`) VALUES
-('admin', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9lBOsl7iKTVEFDi', 'admin@example.com', 1);
+('admin', '123456', 'admin@example.com', 1);
 
 -- 获取刚插入的用户ID
 SET @admin_user_id = LAST_INSERT_ID();
@@ -335,3 +335,5 @@ GROUP BY a.id;
 -- 3. 所有外键约束已正确设置
 -- 4. 索引已按照性能要求创建
 -- 5. 字符集使用utf8mb4支持emoji和中文 
+
+UPDATE profile SET bio = LEFT(bio, 65535) WHERE LENGTH(bio) > 65535;
