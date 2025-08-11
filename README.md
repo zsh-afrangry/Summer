@@ -54,23 +54,23 @@ deploy-all.bat
 #### 方法二：手动命令部署
 ```cmd
 # 1. 构建并启动所有服务
-docker-compose up --build
+docker compose up --build
 
 # 2. 后台运行
-docker-compose up -d --build
+docker compose up -d
 
 # 3. 查看服务状态
-docker-compose ps
+docker compose ps
 
 # 4. 查看日志
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ### 📤 推送镜像到Docker Hub
 
 ```cmd
 # 1. 构建镜像（会自动打标签）
-docker-compose build
+docker compose build
 
 # 2. 推送前端镜像
 docker push afrangry/summer-frontend:latest
@@ -121,7 +121,7 @@ git push origin main
    
    # 验证安装
    docker --version
-   docker-compose --version
+   docker compose version
    ```
 
 2. **克隆项目代码**
@@ -146,10 +146,10 @@ docker pull afrangry/summer-backend:latest
 mkdir -p mysql/init
 
 # 4. 启动服务（使用生产配置）
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 
 # 5. 查看服务状态
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 ```
 
 #### 日常更新流程
@@ -162,7 +162,7 @@ docker pull afrangry/summer-frontend:latest
 docker pull afrangry/summer-backend:latest
 
 # 3. 重启服务
-docker-compose -f docker-compose.prod.yml up -d --force-recreate
+docker compose -f docker-compose.prod.yml up -d --force-recreate
 
 # 4. 清理旧镜像（可选）
 docker image prune -f
@@ -172,23 +172,23 @@ docker image prune -f
 
 ```bash
 # 查看服务状态
-docker-compose -f docker-compose.prod.yml ps
+docker compose -f docker-compose.prod.yml ps
 
 # 查看服务日志
-docker-compose -f docker-compose.prod.yml logs -f
+docker compose -f docker-compose.prod.yml logs -f
 
 # 查看特定服务日志
-docker-compose -f docker-compose.prod.yml logs -f backend
-docker-compose -f docker-compose.prod.yml logs -f frontend
+docker compose -f docker-compose.prod.yml logs -f backend
+docker compose -f docker-compose.prod.yml logs -f frontend
 
 # 重启特定服务
-docker-compose -f docker-compose.prod.yml restart backend
+docker compose -f docker-compose.prod.yml restart backend
 
 # 停止所有服务
-docker-compose -f docker-compose.prod.yml down
+docker compose -f docker-compose.prod.yml down
 
 # 停止并删除数据卷（谨慎使用）
-docker-compose -f docker-compose.prod.yml down -v
+docker compose -f docker-compose.prod.yml down -v
 ```
 
 ---
@@ -255,10 +255,10 @@ docker images | grep afrangry
 sudo usermod -aG docker $USER
 newgrp docker
 
-# 问题：Docker Compose版本过低
-# 解决：安装最新版本
-sudo curl -L "https://github.com/docker/compose/releases/latest/download/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-sudo chmod +x /usr/local/bin/docker-compose
+   # 问题：Docker Compose版本过低
+   # 解决：Docker Compose现在集成在Docker中，确保Docker版本足够新
+   # 或者单独安装Compose插件
+   sudo apt install docker-compose-plugin
 ```
 
 #### 2. 网络连接问题
@@ -386,8 +386,8 @@ free -h
 
 遇到问题时的排查顺序：
 
-1. **检查服务状态**: `docker-compose ps`
-2. **查看日志**: `docker-compose logs -f`
+1. **检查服务状态**: `docker compose ps`
+2. **查看日志**: `docker compose logs -f`
 3. **检查网络**: `docker network ls`
 4. **验证镜像**: `docker images`
 5. **检查资源**: `docker stats`
@@ -402,10 +402,10 @@ free -h
 deploy-all.bat
 
 # 手动部署
-docker-compose up -d --build
+docker compose up -d --build
 
 # 推送镜像
-docker-compose build && docker push afrangry/summer-frontend:latest && docker push afrangry/summer-backend:latest
+docker compose build && docker push afrangry/summer-frontend:latest && docker push afrangry/summer-backend:latest
 ```
 
 ### Ubuntu生产
@@ -413,11 +413,11 @@ docker-compose build && docker push afrangry/summer-frontend:latest && docker pu
 # 首次部署
 git clone <repo> && cd summer
 docker pull afrangry/summer-frontend:latest && docker pull afrangry/summer-backend:latest
-docker-compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d
 
 # 更新部署
 git pull && docker pull afrangry/summer-frontend:latest && docker pull afrangry/summer-backend:latest
-docker-compose -f docker-compose.prod.yml up -d --force-recreate
+docker compose -f docker-compose.prod.yml up -d --force-recreate
 ```
 
 ---

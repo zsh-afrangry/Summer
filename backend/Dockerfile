@@ -1,5 +1,5 @@
 # 第一阶段：使用Maven构建应用
-FROM maven:3.9.4-openjdk-17-slim as build-stage
+FROM maven:3-eclipse-temurin-17 as build-stage
 
 # 设置工作目录
 WORKDIR /app

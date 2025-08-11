@@ -7,9 +7,10 @@ WORKDIR /app
 # 复制package.json和package-lock.json
 COPY package*.json ./
 
-# 设置 Node.js 内存限制并安装依赖（使用npm ci提高构建速度）
-ENV NODE_OPTIONS="--max-old-space-size=1024"
-RUN npm ci --only=production --silent
+# 设置 Node.js 内存限制并配置npm
+ENV NODE_OPTIONS="--max-old-space-size=2048"
+RUN npm config set registry https://registry.npmmirror.com/
+RUN npm install --silent
 
 # 复制源代码
 COPY . .
