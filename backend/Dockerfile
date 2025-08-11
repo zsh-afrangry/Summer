@@ -1,11 +1,24 @@
-# 使用 OpenJDK 17 的精简镜像
+# 第一阶段：使用Maven构建应用
+FROM maven:3.9.4-openjdk-17-slim as build-stage
+
+# 设置工作目录
+WORKDIR /app
+
+# 复制pom.xml和源代码
+COPY pom.xml ./
+COPY src ./src
+
+# 编译应用，跳过测试以加快构建速度
+RUN mvn clean package -DskipTests
+
+# 第二阶段：运行应用
 FROM openjdk:17-slim
 
 # 设置工作目录
 WORKDIR /app
 
-# 复制编译好的 JAR 文件
-COPY target/backend-0.0.1-SNAPSHOT.jar app.jar
+# 从构建阶段复制编译好的JAR文件
+COPY --from=build-stage /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 
 # 设置 JVM 内存参数和优化参数
 ENV JAVA_OPTS="-Xmx384m -Xms128m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:+UseContainerSupport"

@@ -1,0 +1,19 @@
+# 构建时排除这些文件和目录
+target/
+.mvn/
+.idea/
+*.iml
+.git/
+README.md
+*.md
+.gitignore
+.gitattributes
+mvnw
+mvnw.cmd
+compile-test.bat
+app.jar/
+# 日志文件
+*.log
+# 临时文件
+*.tmp
+*.swp

@@ -61,9 +61,8 @@ call :CHECK_PROJECT_STRUCTURE
 if %errorlevel% neq 0 goto ERROR_EXIT
 
 echo.
-echo 步骤3: 构建后端项目...
-call :BUILD_BACKEND
-if %errorlevel% neq 0 goto ERROR_EXIT
+echo 步骤3: 检查后端项目...
+call :CHECK_BACKEND
 
 echo.
 echo 步骤4: 检查前端依赖...
@@ -128,7 +127,7 @@ echo 重新构建所有服务
 echo ==========================================
 echo.
 
-call :BUILD_BACKEND
+call :CHECK_BACKEND
 if %errorlevel% neq 0 goto ERROR_EXIT
 
 echo 停止现有服务...
@@ -181,17 +180,16 @@ echo [2] 查看前端日志
 echo [3] 查看后端日志  
 echo [4] 查看MySQL日志
 echo [5] 查看Nginx日志
-echo [6] 查看开发后端日志
 echo [0] 返回主菜单
 echo.
-set /p log_choice="请选择 [0-6]: "
+set /p log_choice="请选择 [0-5]: "
 
 if "%log_choice%"=="1" docker compose logs --tail=50
 if "%log_choice%"=="2" docker compose logs frontend --tail=50
 if "%log_choice%"=="3" docker compose logs backend --tail=50
 if "%log_choice%"=="4" docker compose logs mysql --tail=50
 if "%log_choice%"=="5" docker compose logs nginx --tail=50
-if "%log_choice%"=="6" docker compose logs backend-dev --tail=50
+
 if "%log_choice%"=="0" goto MAIN_MENU
 
 pause
@@ -388,35 +386,20 @@ if not exist "docker-compose.yml" (
 echo ✅ 项目结构完整
 exit /b 0
 
-:BUILD_BACKEND
-echo 构建后端Spring Boot项目...
-cd backend
+:CHECK_BACKEND
+echo 检查后端项目...
 
-echo 检查Java版本...
-java -version
-
-echo 清理Maven配置...
-echo -Dmaven.test.skip=true > .mvn\maven.config
-echo -Dmaven.javadoc.skip=true >> .mvn\maven.config
-
-echo 编译项目...
-call mvnw.cmd clean package -DskipTests -q
-if %errorlevel% neq 0 (
-    echo ❌ 后端编译失败
-    cd ..
+if not exist "backend\pom.xml" (
+    echo ❌ 后端pom.xml不存在
     exit /b 1
 )
 
-if exist "target\backend-0.0.1-SNAPSHOT.jar" (
-    echo ✅ JAR文件生成成功
-    for %%I in (target\backend-0.0.1-SNAPSHOT.jar) do echo 文件大小: %%~zI bytes
-) else (
-    echo ❌ JAR文件生成失败
-    cd ..
+if not exist "backend\src\main\java" (
+    echo ❌ 后端源码目录不存在
     exit /b 1
 )
 
-cd ..
+echo ✅ 后端项目检查通过（将在Docker构建时自动编译）
 exit /b 0
 
 :CHECK_FRONTEND
@@ -477,7 +460,6 @@ echo   - Nginx入口: http://localhost:80
 echo.
 echo 🔧 后端服务:
 echo   - 生产API: http://localhost:8081
-echo   - 开发API: http://localhost:8082
 echo.
 echo 🗄️ 数据库:
 echo   - MySQL: localhost:3307

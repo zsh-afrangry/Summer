@@ -1,3 +1,15 @@
+# 在前台启动所有服务并显示日志 ，调试，查看启动过程
+docker compose up
+
+# （最常用）在后台启动所有服务，用于日常运行，部署
+docker compose up -d
+
+# 重新构建镜像并在后台启动，用于代码或Dockerfile更新后
+docker compose up --build -d
+
+# 只构建镜像，不启动，用于预先准备镜像
+docker compose build
+
 # 查看所有服务状态
 docker compose ps
 

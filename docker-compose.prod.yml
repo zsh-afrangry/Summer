@@ -1,11 +1,9 @@
 services:
   frontend:
-    build: ./frontend
     image: afrangry/summer-frontend:latest
     container_name: frontend
 
   backend:
-    build: ./backend
     image: afrangry/summer-backend:latest
     container_name: backend
     ports:
@@ -23,6 +21,7 @@ services:
       - "3307:3306"
     volumes:
       - ./mysql/init:/docker-entrypoint-initdb.d
+      - mysql-data:/var/lib/mysql
 
   nginx:
     image: nginx:latest
@@ -36,3 +35,6 @@ services:
     depends_on:
       - frontend
       - backend
+
+volumes:
+  mysql-data:

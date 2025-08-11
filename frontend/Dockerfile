@@ -1,5 +1,5 @@
 # 第一阶段：构建Vue.js应用
-FROM node:16-alpine as build-stage
+FROM node:18-alpine as build-stage
 
 # 设置工作目录
 WORKDIR /app
@@ -7,24 +7,29 @@ WORKDIR /app
 # 复制package.json和package-lock.json
 COPY package*.json ./
 
-# 设置 Node.js 内存限制并安装依赖
+# 设置 Node.js 内存限制并安装依赖（使用npm ci提高构建速度）
 ENV NODE_OPTIONS="--max-old-space-size=1024"
-RUN npm install
+RUN npm ci --only=production --silent
 
 # 复制源代码
 COPY . .
 
-# 构建生产版本 (限制内存使用)
-RUN npx --max-old-space-size=1024 vue-cli-service build
+# 构建生产版本
+RUN npm run build
 
-# 第二阶段：使用nginx提供静态文件服务
-FROM nginx:alpine
+# 第二阶段：创建一个包含构建文件的容器
+FROM alpine:latest
 
-# 复制构建好的文件到nginx目录
+# 安装基本工具
+RUN apk add --no-cache bash
+
+# 复制构建好的文件
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-# 暴露80端口
-EXPOSE 80
+# 创建一个保持容器运行的脚本
+RUN echo '#!/bin/bash' > /keep-alive.sh && \
+    echo 'while true; do sleep 3600; done' >> /keep-alive.sh && \
+    chmod +x /keep-alive.sh
 
-# 启动nginx
-CMD ["nginx", "-g", "daemon off;"]
+# 启动保持运行的脚本
+CMD ["/keep-alive.sh"]
