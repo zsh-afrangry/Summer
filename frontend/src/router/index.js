@@ -1,9 +1,11 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import LoginPage from '../components/LoginPage.vue'
+import LoginPageDemo from '../components/LoginPageDemo.vue'
 import MainLayout from '../components/MainLayout.vue'
 import BlogHome from '../components/BlogHome.vue'
 import BlogList from '../components/BlogList.vue'
 import About from '../components/About.vue'
+import GridTradingAnalyzer from '../components/GridTradingAnalyzer.vue'
 
 const routes = [
   {
@@ -15,6 +17,18 @@ const routes = [
     path: '/login',
     name: 'LoginPage',
     component: LoginPage
+  },
+  {
+    path: '/demo',
+    name: 'LoginPageDemo',
+    component: LoginPageDemo,
+    meta: { title: 'Vue.js 核心概念演示' }
+  },
+  {
+    path: '/trading',
+    name: 'GridTradingAnalyzer',
+    component: GridTradingAnalyzer,
+    meta: { title: '网格交易分析系统', requiresAuth: false }
   },
   {
     path: '/main',
@@ -54,6 +68,15 @@ const router = createRouter({
 // 路由守卫 - 检查登录状态
 router.beforeEach((to, from, next) => {
   const isLoggedIn = localStorage.getItem('userToken') || sessionStorage.getItem('currentUser')
+  
+  // 不需要登录的路径
+  const publicPaths = ['/login', '/', '/demo', '/trading']
+  
+  // 如果是公开路径或路由明确标记不需要认证，直接放行
+  if (publicPaths.includes(to.path) || to.meta?.requiresAuth === false) {
+    next()
+    return
+  }
   
   // 如果访问主界面但未登录，重定向到登录页
   if (to.path.startsWith('/main') && !isLoggedIn) {
