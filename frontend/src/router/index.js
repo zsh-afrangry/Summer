@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import PortalPage from '../components/PortalPage.vue'
 import LoginPage from '../components/LoginPage.vue'
 import LoginPageDemo from '../components/LoginPageDemo.vue'
 import MainLayout from '../components/MainLayout.vue'
@@ -10,8 +11,9 @@ import GridTradingAnalyzer from '../components/GridTradingAnalyzer.vue'
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: LoginPage
+    name: 'Portal',
+    component: PortalPage,
+    meta: { title: 'Summer Portal - 欢迎来到智能系统' }
   },
   {
     path: '/login',
@@ -76,6 +78,7 @@ router.beforeEach((to, from, next) => {
   const isLoggedIn = localStorage.getItem('userToken') || sessionStorage.getItem('currentUser')
   
   // 如果访问主界面但未登录，重定向到登录页
+  // 门户页面(/)、登录页面(/login)等公共页面无需验证
   if (to.path.startsWith('/main') && !isLoggedIn) {
     next('/login')
   } else {

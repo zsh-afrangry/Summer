@@ -4,8 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="本地构建确定没有问题">
+    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="new">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docker.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -151,7 +154,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754924023959</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="new">
+      <option name="closed" value="true" />
+      <created>1754973298177</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1754973298177</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -173,6 +184,7 @@
     <MESSAGE value="这是部署分支" />
     <MESSAGE value="更新部署，将容器镜像推送。服务器可直接拉取image，添加了README" />
     <MESSAGE value="本地构建确定没有问题" />
-    <option name="LAST_COMMIT_MESSAGE" value="本地构建确定没有问题" />
+    <MESSAGE value="new" />
+    <option name="LAST_COMMIT_MESSAGE" value="new" />
   </component>
 </project>
