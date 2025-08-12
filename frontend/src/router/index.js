@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import PortalPage from '../components/PortalPage.vue'
 import LoginPage from '../components/LoginPage.vue'
 import LoginPageDemo from '../components/LoginPageDemo.vue'
 import MainLayout from '../components/MainLayout.vue'
@@ -10,8 +11,8 @@ import GridTradingAnalyzer from '../components/GridTradingAnalyzer.vue'
 const routes = [
   {
     path: '/',
-    name: 'Login',
-    component: LoginPage
+    name: 'Portal',
+    component: PortalPage
   },
   {
     path: '/login',
