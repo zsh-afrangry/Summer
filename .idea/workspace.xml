@@ -48,7 +48,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
     "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "876512a2",
+    "git-widget-placeholder": "detached",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
     "node.js.detected.package.tslint": "true",
@@ -102,8 +102,10 @@
     <recent_temporary>
       <list>
         <item itemvalue="Batch.deploy-simple" />
-        <item itemvalue="Batch.compile-test" />
         <item itemvalue="Batch.deploy-all" />
+        <item itemvalue="Batch.compile-test" />
+        <item itemvalue="Batch.deploy-simple" />
+        <item itemvalue="Batch.compile-test" />
       </list>
     </recent_temporary>
   </component>
