@@ -40,34 +40,35 @@
     <div class="charts-grid">
       <!-- 累计收益曲线 - 大图 -->
       <div class="chart-container large">
-        <div class="chart-header">
-          <h2 class="chart-title">💰 累计收益曲线</h2>
-          <div class="chart-controls">
-            <button @click="toggleChartType('profit', 'line')" 
-                    :class="{active: chartTypes.profit === 'line'}" 
-                    class="control-btn">线性</button>
-            <button @click="toggleChartType('profit', 'bar')" 
-                    :class="{active: chartTypes.profit === 'bar'}" 
-                    class="control-btn">柱状</button>
-            <button @click="openFullscreenChart('profit')" class="control-btn">🔍</button>
+        <div class="chart-header profit-chart-header">
+          <div class="chart-title-section">
+            <h2 class="chart-title">💰 累计收益曲线</h2>
+            <div class="chart-controls">
+              <button @click="toggleChartType('profit', 'line')" 
+                      :class="{active: chartTypes.profit === 'line'}" 
+                      class="control-btn">线性</button>
+              <button @click="toggleChartType('profit', 'bar')" 
+                      :class="{active: chartTypes.profit === 'bar'}" 
+                      class="control-btn">柱状</button>
+            </div>
+          </div>
+          <div class="chart-insights-header">
+            <div class="insight-item">
+              <span class="insight-label">最大收益:</span>
+              <span class="insight-value positive">{{ maxProfit }}元</span>
+            </div>
+            <div class="insight-item">
+              <span class="insight-label">最大亏损:</span>
+              <span class="insight-value negative">{{ maxLoss }}元</span>
+            </div>
+            <div class="insight-item">
+              <span class="insight-label">收益波动:</span>
+              <span class="insight-value">{{ profitVolatility }}%</span>
+            </div>
           </div>
         </div>
         <div class="chart-wrapper large-chart">
           <canvas ref="profitChart" class="chart-canvas"></canvas>
-        </div>
-        <div class="chart-insights">
-          <div class="insight-item">
-            <span class="insight-label">最大收益:</span>
-            <span class="insight-value positive">{{ maxProfit }}元</span>
-          </div>
-          <div class="insight-item">
-            <span class="insight-label">最大亏损:</span>
-            <span class="insight-value negative">{{ maxLoss }}元</span>
-          </div>
-          <div class="insight-item">
-            <span class="insight-label">收益波动:</span>
-            <span class="insight-value">{{ profitVolatility }}%</span>
-          </div>
         </div>
       </div>
 
@@ -82,7 +83,6 @@
             <button @click="toggleTradePoints" 
                     :class="{active: showTradePoints}" 
                     class="control-btn">交易点</button>
-            <button @click="openFullscreenChart('grid')" class="control-btn">🔍</button>
           </div>
         </div>
         <div class="chart-wrapper large-chart">
@@ -109,7 +109,7 @@
         <div class="chart-header">
           <h2 class="chart-title">📉 回撤风险分析</h2>
           <div class="chart-controls">
-            <button @click="openFullscreenChart('drawdown')" class="control-btn">🔍</button>
+            <!-- 回撤分析图表控制 -->
           </div>
         </div>
         <div class="chart-wrapper medium-chart">
@@ -132,7 +132,7 @@
         <div class="chart-header">
           <h2 class="chart-title">💼 资金配置分析</h2>
           <div class="chart-controls">
-            <button @click="openFullscreenChart('allocation')" class="control-btn">🔍</button>
+            <!-- 资金配置分析图表控制 -->
           </div>
         </div>
         <div class="chart-wrapper medium-chart">
@@ -155,7 +155,7 @@
         <div class="chart-header">
           <h2 class="chart-title">⚡ 交易频率分析</h2>
           <div class="chart-controls">
-            <button @click="openFullscreenChart('frequency')" class="control-btn">🔍</button>
+            <!-- 交易频率分析图表控制 -->
           </div>
         </div>
         <div class="chart-wrapper medium-chart">
@@ -163,7 +163,7 @@
         </div>
         <div class="chart-insights">
           <div class="insight-item">
-            <span class="insight-label">日均交易:</span>
+            <span class="insight-label">月均交易:</span>
             <span class="insight-value">{{ avgDailyTrades }}笔</span>
           </div>
           <div class="insight-item">
@@ -178,7 +178,7 @@
         <div class="chart-header">
           <h2 class="chart-title">📊 收益分布分析</h2>
           <div class="chart-controls">
-            <button @click="openFullscreenChart('distribution')" class="control-btn">🔍</button>
+            <!-- 收益分布分析图表控制 -->
           </div>
         </div>
         <div class="chart-wrapper medium-chart">
@@ -197,18 +197,7 @@
       </div>
     </div>
 
-    <!-- 全屏模态框 -->
-    <div v-if="fullscreenChart" class="fullscreen-modal" @click="closeFullscreen">
-      <div class="fullscreen-content" @click.stop>
-        <div class="fullscreen-header">
-          <h3>{{ fullscreenTitle }}</h3>
-          <button @click="closeFullscreen" class="close-button">✕</button>
-        </div>
-        <div class="fullscreen-chart-wrapper">
-          <canvas ref="fullscreenChartCanvas" class="fullscreen-chart-canvas"></canvas>
-        </div>
-      </div>
-    </div>
+    <!-- 全屏模态框已删除 -->
   </div>
 </template>
 
@@ -234,17 +223,14 @@ export default {
         drawdown: null,
         allocation: null,
         frequency: null,
-        distribution: null,
-        fullscreen: null
+        distribution: null
       },
       chartTypes: {
         profit: 'line',
         grid: 'line'
       },
       showGridLines: true,
-      showTradePoints: true,
-      fullscreenChart: null,
-      fullscreenTitle: ''
+      showTradePoints: true
     }
   },
   computed: {
@@ -322,7 +308,8 @@ export default {
     avgDailyTrades() {
       const total = this.currentAnalysisResults?.tradeCount || 0
       const days = this.currentAnalysisResults?.dates?.length || 1
-      return (total / days).toFixed(2)
+      const months = Math.ceil(days / 30) // 大概估算月数
+      return (total / months).toFixed(1)
     },
     buyVsSellRatio() {
       if (!this.currentAnalysisResults?.tradeHistory?.length) return '1:1'
@@ -380,10 +367,27 @@ export default {
       
       if (this.charts.profit) this.charts.profit.destroy()
       
+      const profitData = this.currentAnalysisResults.profitHistory || []
+      
       this.charts.profit = new Chart(ctx, {
         type: this.chartTypes.profit,
         data: {
-          labels: this.currentAnalysisResults.profitHistory?.map(p => p.date.slice(5)) || [],
+          labels: profitData.map((p, index, arr) => {
+            // 优化的日期标签显示策略
+            const totalPoints = arr.length
+            
+            // 计算理想的标签间隔，目标是显示8-12个标签
+            const targetLabels = 10
+            const interval = Math.max(1, Math.floor(totalPoints / targetLabels))
+            
+            // 显示条件：按间隔显示，或者是第一个、最后一个
+            const showLabel = index === 0 || 
+                            index === totalPoints - 1 || 
+                            index % interval === 0
+            
+            return showLabel ? p.date.slice(0, 7) : ''
+          }),
+          originalDates: profitData.map(p => p.date), // 保存原始日期用于tooltip
           datasets: [{
             label: '累计收益 (元)',
             data: this.currentAnalysisResults.profitHistory?.map(p => p.profit) || [],
@@ -391,14 +395,19 @@ export default {
             backgroundColor: 'rgba(76, 175, 80, 0.1)',
             fill: true,
             tension: 0.4,
-            pointRadius: 2,
-            pointHoverRadius: 6,
-            borderWidth: 3
+            pointRadius: 0,          // 隐藏默认点
+            pointHoverRadius: 5,     // 悬停时显示更大的点
+            borderWidth: 2           // 减细线条
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'nearest',         // 最近点模式，更容易触发
+            intersect: false,        // 不需要精确交叉
+            axis: 'x'               // 主要根据X轴位置
+          },
           plugins: {
             legend: { 
               display: true,
@@ -406,9 +415,23 @@ export default {
               labels: { font: { size: 14 } }
             },
             tooltip: {
+              enabled: true,
               backgroundColor: 'rgba(0,0,0,0.8)',
               titleFont: { size: 14 },
-              bodyFont: { size: 12 }
+              bodyFont: { size: 12 },
+              cornerRadius: 6,
+              displayColors: true,
+              callbacks: {
+                title: function(context) {
+                  // 显示原始日期而不是年-月
+                  const index = context[0].dataIndex
+                  const originalDate = context[0].chart.data.originalDates?.[index] || context[0].label
+                  return originalDate
+                },
+                label: function(context) {
+                  return `${context.dataset.label}: ${Number(context.parsed.y).toLocaleString()}元`
+                }
+              }
             }
           },
           scales: {
@@ -419,7 +442,12 @@ export default {
             },
             x: {
               grid: { color: '#f0f0f0' },
-              ticks: { font: { size: 12 } }
+              ticks: { 
+                font: { size: 12 },
+                maxRotation: 45,     // 标签最大旋转角度
+                minRotation: 0,      // 标签最小旋转角度
+                maxTicksLimit: 8     // 最大显示标签数量
+              }
             }
           }
         }
@@ -439,8 +467,8 @@ export default {
         borderColor: '#2196F3',
         backgroundColor: 'transparent',
         borderWidth: 2,
-        pointRadius: 1,
-        pointHoverRadius: 4
+        pointRadius: 0,         // 隐藏默认点
+        pointHoverRadius: 3     // 悬停时显示小点
       }]
       
       // 添加网格线
@@ -464,12 +492,21 @@ export default {
       this.charts.grid = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: this.currentAnalysisResults.dates?.map(d => d.slice(5)) || [],
+          labels: this.currentAnalysisResults.dates?.map((d, index, arr) => {
+            const currentMonth = d.slice(0, 7)
+            const prevMonth = index > 0 ? arr[index - 1].slice(0, 7) : ''
+            return currentMonth !== prevMonth ? currentMonth : ''
+          }) || [],
           datasets: datasets
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'nearest',
+            intersect: false,
+            axis: 'x'
+          },
           plugins: {
             legend: { 
               display: true,
@@ -477,6 +514,19 @@ export default {
               labels: { 
                 font: { size: 12 },
                 filter: (item) => !item.text.includes('网格线') || item.datasetIndex <= 5
+              }
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 12 },
+              cornerRadius: 6,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${Number(context.parsed.y).toFixed(2)}元`
+                }
               }
             }
           },
@@ -504,7 +554,11 @@ export default {
       this.charts.drawdown = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: this.currentAnalysisResults.drawdownHistory?.map(d => d.date.slice(5)) || [],
+          labels: this.currentAnalysisResults.drawdownHistory?.map((d, index, arr) => {
+            const currentMonth = d.date.slice(0, 7)
+            const prevMonth = index > 0 ? arr[index - 1].date.slice(0, 7) : ''
+            return currentMonth !== prevMonth ? currentMonth : ''
+          }) || [],
           datasets: [{
             label: '回撤 (%)',
             data: this.currentAnalysisResults.drawdownHistory?.map(d => -d.drawdown) || [],
@@ -512,15 +566,34 @@ export default {
             backgroundColor: 'rgba(244, 67, 54, 0.1)',
             fill: true,
             tension: 0.4,
-            pointRadius: 1,
+            pointRadius: 0,          // 隐藏默认点
+            pointHoverRadius: 3,     // 悬停时显示小点
             borderWidth: 2
           }]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'nearest',
+            intersect: false,
+            axis: 'x'
+          },
           plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 12 },
+              cornerRadius: 6,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${Number(context.parsed.y).toFixed(2)}%`
+                }
+              }
+            }
           },
           scales: {
             y: {
@@ -547,31 +620,59 @@ export default {
       this.charts.allocation = new Chart(ctx, {
         type: 'line',
         data: {
-          labels: this.currentAnalysisResults.allocationHistory?.map(a => a.date.slice(5)) || [],
+          labels: this.currentAnalysisResults.allocationHistory?.map((a, index, arr) => {
+            const currentMonth = a.date.slice(0, 7)
+            const prevMonth = index > 0 ? arr[index - 1].date.slice(0, 7) : ''
+            return currentMonth !== prevMonth ? currentMonth : ''
+          }) || [],
           datasets: [
             {
               label: '现金',
               data: this.currentAnalysisResults.allocationHistory?.map(a => a.capital) || [],
               borderColor: '#4CAF50',
               backgroundColor: 'rgba(76, 175, 80, 0.3)',
-              fill: 'origin'
+              fill: 'origin',
+              pointRadius: 0,          // 隐藏默认点
+              pointHoverRadius: 3,     // 悬停时显示小点
+              borderWidth: 2
             },
             {
               label: '持仓市值',
               data: this.currentAnalysisResults.allocationHistory?.map(a => a.position) || [],
               borderColor: '#2196F3',
               backgroundColor: 'rgba(33, 150, 243, 0.3)',
-              fill: '-1'
+              fill: '-1',
+              pointRadius: 0,          // 隐藏默认点
+              pointHoverRadius: 3,     // 悬停时显示小点
+              borderWidth: 2
             }
           ]
         },
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'nearest',
+            intersect: false,
+            axis: 'x'
+          },
           plugins: {
             legend: { 
               display: true,
               position: 'top'
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 12 },
+              cornerRadius: 6,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${Number(context.parsed.y).toLocaleString()}元`
+                }
+              }
             }
           },
           scales: {
@@ -596,20 +697,20 @@ export default {
       
       if (this.charts.frequency) this.charts.frequency.destroy()
       
-      // 计算每日交易频率
-      const dailyTrades = {}
+      // 计算每月交易频率
+      const monthlyTrades = {}
       this.currentAnalysisResults.tradeHistory?.forEach(trade => {
-        const date = trade.date.slice(5)
-        dailyTrades[date] = (dailyTrades[date] || 0) + 1
+        const month = trade.date.slice(0, 7) // 改为年-月格式
+        monthlyTrades[month] = (monthlyTrades[month] || 0) + 1
       })
       
       this.charts.frequency = new Chart(ctx, {
         type: 'bar',
         data: {
-          labels: Object.keys(dailyTrades),
+          labels: Object.keys(monthlyTrades),
           datasets: [{
-            label: '日交易次数',
-            data: Object.values(dailyTrades),
+            label: '月交易次数',
+            data: Object.values(monthlyTrades),
             backgroundColor: 'rgba(156, 39, 176, 0.6)',
             borderColor: '#9C27B0',
             borderWidth: 1
@@ -618,8 +719,26 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'nearest',
+            intersect: false,
+            axis: 'x'
+          },
           plugins: {
-            legend: { display: false }
+            legend: { display: false },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 12 },
+              cornerRadius: 6,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  return `${context.dataset.label}: ${context.parsed.y}笔`
+                }
+              }
+            }
           },
           scales: {
             y: {
@@ -668,10 +787,28 @@ export default {
         options: {
           responsive: true,
           maintainAspectRatio: false,
+          interaction: {
+            mode: 'point'
+          },
           plugins: {
             legend: { 
               position: 'bottom',
               labels: { font: { size: 10 } }
+            },
+            tooltip: {
+              enabled: true,
+              backgroundColor: 'rgba(0,0,0,0.8)',
+              titleFont: { size: 14 },
+              bodyFont: { size: 12 },
+              cornerRadius: 6,
+              displayColors: true,
+              callbacks: {
+                label: function(context) {
+                  const total = context.dataset.data.reduce((a, b) => a + b, 0)
+                  const percentage = ((context.parsed / total) * 100).toFixed(1)
+                  return `${context.label}: ${context.parsed}次 (${percentage}%)`
+                }
+              }
             }
           }
         }
@@ -693,60 +830,7 @@ export default {
       this.renderGridChart()
     },
 
-    openFullscreenChart(chartType) {
-      this.fullscreenChart = chartType
-      this.fullscreenTitle = this.getChartTitle(chartType)
-      this.$nextTick(() => {
-        this.renderFullscreenChart(chartType)
-      })
-    },
-
-    closeFullscreen() {
-      if (this.charts.fullscreen) {
-        this.charts.fullscreen.destroy()
-        this.charts.fullscreen = null
-      }
-      this.fullscreenChart = null
-    },
-
-    getChartTitle(chartType) {
-      const titles = {
-        profit: '累计收益曲线',
-        grid: '价格与网格分析',
-        drawdown: '回撤风险分析',
-        allocation: '资金配置分析',
-        frequency: '交易频率分析',
-        distribution: '收益分布分析'
-      }
-      return titles[chartType] || '图表分析'
-    },
-
-    renderFullscreenChart(chartType) {
-      // 复制对应的图表配置到全屏画布
-      const canvas = this.$refs.fullscreenChartCanvas
-      if (!canvas) return
-      
-      const ctx = canvas.getContext('2d')
-      if (!ctx) return
-      
-      if (this.charts.fullscreen) {
-        this.charts.fullscreen.destroy()
-      }
-      
-      // 根据图表类型复制配置
-      const sourceChart = this.charts[chartType]
-      if (sourceChart) {
-        this.charts.fullscreen = new Chart(ctx, {
-          type: sourceChart.config.type,
-          data: JSON.parse(JSON.stringify(sourceChart.data)),
-          options: {
-            ...sourceChart.options,
-            responsive: true,
-            maintainAspectRatio: false
-          }
-        })
-      }
-    }
+    // 全屏相关方法已删除
   }
 }
 </script>
@@ -906,6 +990,35 @@ export default {
   padding-bottom: 10px;
 }
 
+/* 累计收益图表的特殊布局 */
+.profit-chart-header {
+  flex-direction: column;
+  gap: 15px;
+  align-items: stretch;
+}
+
+.chart-title-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.chart-insights-header {
+  display: flex;
+  justify-content: space-around;
+  padding: 10px 15px;
+  background: rgba(248, 245, 242, 0.5);
+  border-radius: 8px;
+  border: 1px solid rgba(212, 184, 160, 0.2);
+}
+
+.chart-insights-header .insight-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
 .chart-title {
   color: var(--primary);
   font-size: 1.3em;
@@ -995,71 +1108,7 @@ export default {
   color: var(--danger-color);
 }
 
-/* 全屏模态框 */
-.fullscreen-modal {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.9);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-  backdrop-filter: blur(5px);
-}
-
-.fullscreen-content {
-  background: white;
-  border-radius: var(--border-radius);
-  width: 95%;
-  height: 90%;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-}
-
-.fullscreen-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px;
-  border-bottom: 1px solid #eee;
-}
-
-.fullscreen-header h3 {
-  margin: 0;
-  color: var(--primary);
-  font-size: 1.5em;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5em;
-  cursor: pointer;
-  color: #999;
-  padding: 5px 10px;
-  border-radius: 50%;
-  transition: var(--transition);
-}
-
-.close-button:hover {
-  background: #f5f5f5;
-  color: #333;
-}
-
-.fullscreen-chart-wrapper {
-  flex: 1;
-  padding: 20px;
-  overflow: hidden;
-}
-
-.fullscreen-chart-canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
+/* 全屏相关样式已删除 */
 
 /* 响应式设计 */
 @media (max-width: 1200px) {
@@ -1097,9 +1146,6 @@ export default {
     gap: 10px;
   }
   
-  .fullscreen-content {
-    width: 98%;
-    height: 95%;
-  }
+
 }
 </style>

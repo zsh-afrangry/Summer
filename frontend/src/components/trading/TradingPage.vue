@@ -497,6 +497,10 @@
               <span class="price-label">底仓建仓价:</span>
               <span class="price-value">{{ analysisResults.basePositionPrice }}元</span>
             </div>
+            <div class="price-info-item highlight-item">
+              <span class="price-label">网格基准价:</span>
+              <span class="price-value grid-center">{{ analysisResults.gridCenterPrice }}元</span>
+            </div>
             <div class="price-info-item">
               <span class="price-label">期间最高价:</span>
               <span class="price-value high-price">{{ analysisResults.periodHighPrice }}元</span>
@@ -506,8 +510,12 @@
               <span class="price-value low-price">{{ analysisResults.periodLowPrice }}元</span>
             </div>
             <div class="price-info-item">
-              <span class="price-label">价格振幅:</span>
-              <span class="price-value">{{ ((analysisResults.periodHighPrice - analysisResults.periodLowPrice) / analysisResults.periodLowPrice * 100).toFixed(2) }}%</span>
+              <span class="price-label">网格间距:</span>
+              <span class="price-value grid-step">{{ analysisResults.gridStep }}元</span>
+            </div>
+            <div class="price-info-item">
+              <span class="price-label">网格覆盖范围:</span>
+              <span class="price-value grid-range">{{ analysisResults.gridRange }}</span>
             </div>
           </div>
         </div>
@@ -601,18 +609,7 @@
       </div>
     </div>
 
-    <!-- 详情弹窗 -->
-    <div v-if="showDetailModal" class="modal-overlay" @click="closeDetailModal">
-      <div class="modal-content" @click.stop>
-        <div class="modal-header">
-          <h3>{{ detailTitle }}</h3>
-          <button @click="closeDetailModal" class="close-button">×</button>
-        </div>
-        <div class="modal-body">
-          <canvas ref="detailChart" class="detail-chart-canvas"></canvas>
-        </div>
-      </div>
-    </div>
+    <!-- v3.0: 详情弹窗已移至ChartVisualization组件 -->
   </div>
 </template>
 
@@ -629,9 +626,6 @@ export default {
       csvData: null,
       isAnalyzing: false,
       analysisResults: null,
-      showDetailModal: false,
-      detailTitle: '',
-      currentDetailType: '',
       projectDataInfo: {
         '600585': '1345',
         '002032': '1361',
@@ -697,14 +691,8 @@ export default {
           dynamicPosition: false,
           riskBudget: 10
         }
-      },
-      charts: {
-        profit: null,
-        grid: null,
-        drawdown: null,
-        allocation: null,
-        detail: null
       }
+      // v3.0: charts对象已移除，不再在TradingPage中渲染图表
     }
   },
   computed: {
@@ -861,12 +849,8 @@ export default {
         const results = this.calculateGridTrading(data)
         this.analysisResults = results
         
-        // 渲染图表
-        this.$nextTick(() => {
-          setTimeout(() => {
-            this.renderCharts()
-          }, 100)
-        })
+        // v3.0: 不再在TradingPage中渲染图表，只显示预览卡片
+        // 图表渲染已移至ChartVisualization组件
         
       } catch (error) {
         console.error('分析错误:', error)
@@ -889,28 +873,50 @@ export default {
         throw new Error('价格数据为空')
       }
       
-      // 计算价格范围
-      const maxPrice = Math.max(...prices)
-      const minPrice = Math.min(...prices)
-      const priceRange = maxPrice - minPrice
+      // 获取建仓索引和建仓价格
+      const basePositionIndex = this.getBasePositionIndex(dates, params)
       
-      // 生成网格线 - 支持两种模式
+      // 获取建仓价格作为网格基准点
+      let gridCenterPrice
+      if (basePositionIndex >= 0 && basePositionIndex < prices.length) {
+        gridCenterPrice = prices[basePositionIndex]
+      } else {
+        // 如果没有有效的建仓索引，使用第一个价格作为基准
+        gridCenterPrice = prices[0]
+        console.warn('使用首日价格作为网格基准点')
+      }
+      
+      // 计算网格间距
       let gridStep
       if (params.gridWidthMode === 'percentage') {
-        // 百分比模式：根据价格范围和密度计算
-        gridStep = (priceRange * params.gridDensity / 100) / params.gridLevels
+        // 百分比模式：基于建仓价格计算固定比例间距
+        gridStep = gridCenterPrice * params.gridDensity / 100
       } else {
         // 数值模式：使用固定的价格间距
         gridStep = params.gridWidth
       }
       
+      // 以建仓价格为中心生成网格线
       const gridLines = []
-      for (let i = 0; i <= params.gridLevels; i++) {
-        gridLines.push(minPrice + i * gridStep)
+      const halfLevels = Math.floor(params.gridLevels / 2)
+      
+      // 生成下方网格线（买入区域）
+      for (let i = halfLevels; i >= 0; i--) {
+        gridLines.push(gridCenterPrice - i * gridStep)
       }
       
-      // 获取建仓索引
-      const basePositionIndex = this.getBasePositionIndex(dates, params)
+      // 生成上方网格线（卖出区域）
+      for (let i = 1; i <= halfLevels; i++) {
+        gridLines.push(gridCenterPrice + i * gridStep)
+      }
+      
+      // 排序网格线确保从低到高
+      gridLines.sort((a, b) => a - b)
+      
+      // 记录网格信息用于调试
+      console.log('网格基准价格:', gridCenterPrice.toFixed(2))
+      console.log('网格间距:', gridStep.toFixed(2))
+      console.log('网格线范围:', gridLines[0].toFixed(2), '-', gridLines[gridLines.length-1].toFixed(2))
       
       // 初始化变量
       let capital = initialCapital
@@ -1130,6 +1136,10 @@ export default {
       const winRate = tradeCount > 0 ? (winCount / tradeCount * 100).toFixed(2) : '0.00'
       const sharpeRatio = this.calculateSharpeRatio(profitHistory)
       
+      // 计算价格范围用于显示
+      const maxPrice = Math.max(...prices)
+      const minPrice = Math.min(...prices)
+      
       return {
         // 基础指标
         annualReturn: annualReturn.toFixed(2),
@@ -1141,8 +1151,13 @@ export default {
         
         // 价格指标
         basePositionPrice: basePositionIndex >= 0 ? prices[basePositionIndex].toFixed(2) : '未建仓',
+        gridCenterPrice: gridCenterPrice.toFixed(2), // 新增：网格基准价格
         periodHighPrice: maxPrice.toFixed(2),
         periodLowPrice: minPrice.toFixed(2),
+        
+        // 网格信息
+        gridStep: gridStep.toFixed(2), // 新增：网格间距
+        gridRange: `${gridLines[0].toFixed(2)} - ${gridLines[gridLines.length-1].toFixed(2)}`, // 新增：网格覆盖范围
         
         // 历史数据
         profitHistory: profitHistory,
@@ -1184,373 +1199,8 @@ export default {
       return sharpeRatio.toFixed(2)
     },
 
-    // 图表渲染方法
-    renderCharts() {
-      try {
-        this.renderProfitChart()
-        this.renderGridChart()
-        this.renderDrawdownChart()
-        this.renderAllocationChart()
-      } catch (error) {
-        console.error('图表渲染错误:', error)
-      }
-    },
-
-    renderProfitChart() {
-      if (!this.$refs.profitChart) return
-      
-      const ctx = this.$refs.profitChart.getContext('2d')
-      if (!ctx) return
-      
-      if (this.charts.profit) {
-        this.charts.profit.destroy()
-      }
-      
-      this.charts.profit = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: this.analysisResults.profitHistory.map(p => p.date.slice(5)),
-          datasets: [{
-            label: '累计收益 (元)',
-            data: this.analysisResults.profitHistory.map(p => p.profit),
-            borderColor: '#4CAF50',
-            backgroundColor: 'rgba(76, 175, 80, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              beginAtZero: true,
-              grid: { color: '#f0f0f0' }
-            },
-            x: {
-              grid: { color: '#f0f0f0' }
-            }
-          }
-        }
-      })
-    },
-
-    renderGridChart() {
-      if (!this.$refs.gridChart) return
-      
-      const ctx = this.$refs.gridChart.getContext('2d')
-      if (!ctx) return
-      
-      if (this.charts.grid) {
-        this.charts.grid.destroy()
-      }
-      
-      const datasets = [{
-        label: '股价',
-        data: this.analysisResults.prices,
-        borderColor: '#2196F3',
-        backgroundColor: 'transparent',
-        borderWidth: 2,
-        pointRadius: 0
-      }]
-      
-      // 添加网格线(只显示部分避免过于密集)
-      const step = Math.max(1, Math.floor(this.analysisResults.gridLines.length / 10))
-      this.analysisResults.gridLines.forEach((line, index) => {
-        if (index % step === 0) {
-          datasets.push({
-            label: `网格线 ${line.toFixed(2)}`,
-            data: new Array(this.analysisResults.prices.length).fill(line),
-            borderColor: '#FF9800',
-            backgroundColor: 'transparent',
-            borderWidth: 1,
-            borderDash: [5, 5],
-            pointRadius: 0
-          })
-        }
-      })
-      
-      this.charts.grid = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: this.analysisResults.dates.map(d => d.slice(5)),
-          datasets: datasets
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              grid: { color: '#f0f0f0' }
-            },
-            x: {
-              grid: { color: '#f0f0f0' }
-            }
-          }
-        }
-      })
-    },
-
-    renderDrawdownChart() {
-      if (!this.$refs.drawdownChart) return
-      
-      const ctx = this.$refs.drawdownChart.getContext('2d')
-      if (!ctx) return
-      
-      if (this.charts.drawdown) {
-        this.charts.drawdown.destroy()
-      }
-      
-      this.charts.drawdown = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: this.analysisResults.drawdownHistory.map(d => d.date.slice(5)),
-          datasets: [{
-            label: '回撤 (%)',
-            data: this.analysisResults.drawdownHistory.map(d => -d.drawdown),
-            borderColor: '#F44336',
-            backgroundColor: 'rgba(244, 67, 54, 0.1)',
-            fill: true,
-            tension: 0.4,
-            pointRadius: 0
-          }]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { display: false }
-          },
-          scales: {
-            y: {
-              max: 0,
-              grid: { color: '#f0f0f0' }
-            },
-            x: {
-              grid: { color: '#f0f0f0' }
-            }
-          }
-        }
-      })
-    },
-
-    renderAllocationChart() {
-      if (!this.$refs.allocationChart) return
-      
-      const ctx = this.$refs.allocationChart.getContext('2d')
-      if (!ctx) return
-      
-      if (this.charts.allocation) {
-        this.charts.allocation.destroy()
-      }
-      
-      this.charts.allocation = new Chart(ctx, {
-        type: 'line',
-        data: {
-          labels: this.analysisResults.allocationHistory.map(a => a.date.slice(5)),
-          datasets: [
-            {
-              label: '现金',
-              data: this.analysisResults.allocationHistory.map(a => a.capital),
-              borderColor: '#4CAF50',
-              backgroundColor: 'rgba(76, 175, 80, 0.3)',
-              fill: 'origin'
-            },
-            {
-              label: '持仓市值',
-              data: this.analysisResults.allocationHistory.map(a => a.position),
-              borderColor: '#2196F3',
-              backgroundColor: 'rgba(33, 150, 243, 0.3)',
-              fill: '-1'
-            }
-          ]
-        },
-        options: {
-          responsive: true,
-          maintainAspectRatio: false,
-          plugins: {
-            legend: { 
-              display: true,
-              position: 'top'
-            }
-          },
-          scales: {
-            y: {
-              stacked: true,
-              grid: { color: '#f0f0f0' }
-            },
-            x: {
-              grid: { color: '#f0f0f0' }
-            }
-          }
-        }
-      })
-    },
-
-    // 详情模态框方法
-    showChartDetail(type) {
-      this.currentDetailType = type
-      this.showDetailModal = true
-      
-      const titles = {
-        profit: '累计收益曲线详情',
-        grid: '价格与网格线详情',
-        drawdown: '回撤分析详情',
-        allocation: '资金分布详情'
-      }
-      this.detailTitle = titles[type]
-      
-      this.$nextTick(() => {
-        this.renderDetailChart(type)
-      })
-    },
-
-    renderDetailChart(type) {
-      if (!this.$refs.detailChart) return
-      
-      const ctx = this.$refs.detailChart.getContext('2d')
-      if (!ctx) return
-      
-      if (this.charts.detail) {
-        this.charts.detail.destroy()
-      }
-      
-      let chartConfig = {}
-      
-      switch (type) {
-        case 'profit':
-          chartConfig = {
-            type: 'line',
-            data: {
-              labels: this.analysisResults.profitHistory.map(p => p.date),
-              datasets: [{
-                label: '累计收益 (元)',
-                data: this.analysisResults.profitHistory.map(p => p.profit),
-                borderColor: '#4CAF50',
-                backgroundColor: 'rgba(76, 175, 80, 0.1)',
-                fill: true,
-                tension: 0.4
-              }, {
-                label: '总资产 (元)',
-                data: this.analysisResults.profitHistory.map(p => p.totalValue),
-                borderColor: '#2196F3',
-                backgroundColor: 'transparent',
-                borderWidth: 2
-              }]
-            }
-          }
-          break
-        case 'grid':
-          chartConfig = {
-            type: 'line',
-            data: {
-              labels: this.analysisResults.dates,
-              datasets: [{
-                label: '股价',
-                data: this.analysisResults.prices,
-                borderColor: '#2196F3',
-                backgroundColor: 'transparent',
-                borderWidth: 2,
-                pointRadius: 1
-              }]
-            }
-          }
-          // 添加所有网格线
-          this.analysisResults.gridLines.forEach((line, index) => {
-            chartConfig.data.datasets.push({
-              label: `网格线 ${line.toFixed(2)}`,
-              data: new Array(this.analysisResults.prices.length).fill(line),
-              borderColor: index % 2 === 0 ? '#FF9800' : '#E91E63',
-              backgroundColor: 'transparent',
-              borderWidth: 1,
-              borderDash: [3, 3],
-              pointRadius: 0
-            })
-          })
-          break
-        case 'drawdown':
-          chartConfig = {
-            type: 'line',
-            data: {
-              labels: this.analysisResults.drawdownHistory.map(d => d.date),
-              datasets: [{
-                label: '回撤 (%)',
-                data: this.analysisResults.drawdownHistory.map(d => -d.drawdown),
-                borderColor: '#F44336',
-                backgroundColor: 'rgba(244, 67, 54, 0.1)',
-                fill: true,
-                tension: 0.4
-              }]
-            }
-          }
-          break
-        case 'allocation':
-          chartConfig = {
-            type: 'line',
-            data: {
-              labels: this.analysisResults.allocationHistory.map(a => a.date),
-              datasets: [
-                {
-                  label: '现金 (元)',
-                  data: this.analysisResults.allocationHistory.map(a => a.capital),
-                  borderColor: '#4CAF50',
-                  backgroundColor: 'rgba(76, 175, 80, 0.3)',
-                  fill: 'origin'
-                },
-                {
-                  label: '持仓市值 (元)',
-                  data: this.analysisResults.allocationHistory.map(a => a.position),
-                  borderColor: '#2196F3',
-                  backgroundColor: 'rgba(33, 150, 243, 0.3)',
-                  fill: '-1'
-                }
-              ]
-            },
-            options: {
-              scales: {
-                y: { stacked: true }
-              }
-            }
-          }
-          break
-      }
-      
-      chartConfig.options = {
-        ...chartConfig.options,
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: 'top' }
-        },
-        scales: {
-          ...chartConfig.options?.scales,
-          y: {
-            ...chartConfig.options?.scales?.y,
-            grid: { color: '#f0f0f0' }
-          },
-          x: {
-            grid: { color: '#f0f0f0' }
-          }
-        }
-      }
-      
-      this.charts.detail = new Chart(ctx, chartConfig)
-    },
-
-    closeDetailModal() {
-      this.showDetailModal = false
-      if (this.charts.detail) {
-        this.charts.detail.destroy()
-        this.charts.detail = null
-      }
-    },
+    // v3.0: 图表渲染方法已移至ChartVisualization组件
+    // TradingPage现在只显示预览卡片，不直接渲染图表
 
     // 打开可视化分析中心
     openVisualizationCenter() {
@@ -1563,16 +1213,9 @@ export default {
         alert('请先完成分析后再查看可视化图表')
       }
     }
-  },
-  
-  beforeUnmount() {
-    // 清理图表实例
-    Object.values(this.charts).forEach(chart => {
-      if (chart) {
-        chart.destroy()
-      }
-    })
   }
+  
+  // v3.0: beforeUnmount中的图表清理已移除，因为不再在TradingPage中渲染图表
 }
 </script>
 
@@ -2097,7 +1740,26 @@ export default {
 }
 
 .price-value.low-price {
-  color: var(--primary-color);
+  color: var(--success-color);
+}
+
+.price-value.grid-center {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.price-value.grid-step {
+  color: var(--warning-color);
+}
+
+.price-value.grid-range {
+  color: #9C27B0;
+  font-size: 0.9em;
+}
+
+.price-info-item.highlight-item {
+  background: linear-gradient(135deg, rgba(212, 184, 160, 0.2), rgba(212, 184, 160, 0.1));
+  border: 2px solid rgba(212, 184, 160, 0.4);
 }
 
 /* 图表预览容器 */
