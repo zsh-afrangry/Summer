@@ -1,0 +1,1026 @@
+<template>
+  <div class="elegant-portal">
+    <!-- Canvas for ink effects - 只在绘图模式下激活 -->
+    <canvas 
+      ref="inkCanvas" 
+      @mousemove="isDrawingMode ? draw : null" 
+      @mousedown="isDrawingMode ? startDrawing : null"
+      @mouseup="isDrawingMode ? stopDrawing : null"
+      :style="{ pointerEvents: isDrawingMode ? 'auto' : 'none' }"
+    ></canvas>
+
+    <!-- Header -->
+    <header>
+      <div class="container flex space-between align-center">
+        <a href="#" class="logo">A07别催我们队<span>眼科医疗</span></a>
+        <nav>
+          <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="#">Vivo50</a></li>
+            <li><a href="#" @click="navigateToTradingPage">cpdd</a></li>
+            <li><a href="#" @click="toggleDrawingMode">{{ isDrawingMode ? '退出绘图' : '绘图模式' }}</a></li>
+            <li><a href="#">Contact us</a></li>
+          </ul>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+      <div class="hero-content">
+        <p class="hero-subtitle fade-in">演示界面</p>
+        <h2 class="hero-title fade-in delay-1">基于眼底医学医疗影像的<br>眼科疾病智能诊断系统</h2>
+        <p class="hero-description fade-in delay-2">这是我们的模型演示界面，意图通过简单的功能展示，让用户了解我们的产品</p>
+        <a href="#" @click="navigateToAnalysis" class="btn fade-in delay-3 interactive-element">试用我们的产品</a>
+      </div>
+    </section>
+
+    <!-- Featured Posts -->
+    <section class="section content">
+      <div class="container">
+        <div class="section-header">
+          <h2 class="section-title"> 《星光咖啡馆与死神之蝶》</h2>
+          <p class="section-description">《星光咖啡馆与死神之蝶》是日本美少女游戏品牌Yuzusoft（柚子社）<br>
+            制作的恋爱题材作品。<br>
+            本作仍由创作多款人气作品的柚子社主创团队担当制作，发售后<br>
+            在美少女游戏大赏中获得了图像、音乐、剧本、影片、角色等诸多奖项。<br>
+            游戏主题曲《Smiling-Swinging!!》由人气歌姬米仓千寻献唱。</p>
+        </div>
+
+        <div class="posts-grid">
+          <!-- Post 1 -->
+          <article class="post-card">
+            <img src="/images/pic1.png" alt="Minimalist interior design" class="post-image">
+            <p class="post-category">Art & Design</p>
+            <h3 class="post-title">四季夏目天下第一！</h3>
+            <p class="post-excerpt">四季夏目</p>
+            <div class="post-meta">
+              <div class="post-author">
+                <img src="/images/avatar.gif" alt="Author" class="author-image">
+                <span>张斯涵</span>
+              </div>
+              <span>March 5, 2025</span>
+            </div>
+          </article>
+
+          <!-- Post 2 -->
+          <article class="post-card">
+            <img src="/images/pic2.png" alt="Kyoto temple" class="post-image">
+            <p class="post-category">Travel</p>
+            <h3 class="post-title">明月栞那天下第一！</h3>
+            <p class="post-excerpt">明月栞那</p>
+            <div class="post-meta">
+              <div class="post-author">
+                <img src="/images/avatar.gif" alt="Author" class="author-image">
+                <span>张斯涵</span>
+              </div>
+              <span>February 18, 2025</span>
+            </div>
+          </article>
+
+          <!-- Post 3 -->
+          <article class="post-card">
+            <img src="/images/pic3.png" alt="Morning coffee and book" class="post-image">
+            <p class="post-category">Lifestyle</p>
+            <h3 class="post-title">墨染希天下第一！</h3>
+            <p class="post-excerpt">墨染希</p>
+            <div class="post-meta">
+              <div class="post-author">
+                <img src="/images/avatar.gif" alt="Author" class="author-image">
+                <span>张斯涵</span>
+              </div>
+              <span>January 30, 2025</span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="newsletter">
+      <div class="container">
+        <h2 class="newsletter-title">加入我们吧！</h2>
+        <p class="newsletter-description">留下您的联系方式，与我们一同在ai时代赋能智慧医疗<br>用大模型帮助更多需要帮助的人们！</p>
+        <form class="newsletter-form" @submit.prevent="handleNewsletter">
+          <input type="email" class="newsletter-input" placeholder="Your email address" v-model="email">
+          <button type="submit" class="newsletter-btn interactive-element">Subscribe</button>
+        </form>
+      </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="section">
+      <div class="container">
+        <div class="about">
+          <div class="about-image">
+            <img src="/images/avatar.gif" alt="Author">
+          </div>
+          <div class="about-content">
+            <p class="about-subtitle">About the Author</p>
+            <h2 class="about-title">张斯涵</h2>
+            <p class="about-description">Writer, photographer, and perpetual wanderer with a deep appreciation for quiet moments and meaningful conversations.</p>
+            <p class="about-description">After years in fast-paced creative industries, I've found solace in slower, more intentional living. This journal serves as both a creative outlet and a sanctuary where ideas and experiences can breathe and evolve.</p>
+            <a href="#" class="btn interactive-element">Read My Story</a>
+            <div class="social-links">
+              <a href="#" class="social-link">
+                <img src="/svgs/QQ-circle-fill.svg" alt="QQ" class="social-icon">
+              </a>
+              <a href="#" class="social-link">
+                <img src="/svgs/wechat-fill.svg" alt="WeChat" class="social-icon">
+              </a>
+              <a href="#" class="social-link">
+                <img src="/svgs/github-fill.svg" alt="GitHub" class="social-icon">
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-about">
+            <h3 class="footer-logo">Eloquence</h3>
+            <p class="footer-description">A personal journal exploring art, design, travel, and the beauty of everyday moments.</p>
+            <div class="social-links">
+              <a href="#" class="social-link">
+                <img src="/svgs/QQ-circle-fill.svg" alt="QQ" class="social-icon social-icon-footer">
+              </a>
+              <a href="#" class="social-link">
+                <img src="/svgs/wechat-fill.svg" alt="WeChat" class="social-icon social-icon-footer">
+              </a>
+              <a href="#" class="social-link">
+                <img src="/svgs/github-fill.svg" alt="GitHub" class="social-icon social-icon-footer">
+              </a>
+            </div>
+          </div>
+
+          <div class="footer-links-column">
+            <h4 class="footer-title">Navigation</h4>
+            <ul class="footer-links">
+              <li><a href="#">Home</a></li>
+              <li><a href="#">Articles</a></li>
+              <li><a href="#">About</a></li>
+              <li><a href="#">Contact</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-links-column">
+            <h4 class="footer-title">Categories</h4>
+            <ul class="footer-links">
+              <li><a href="#">Art & Design</a></li>
+              <li><a href="#">Travel</a></li>
+              <li><a href="#">Lifestyle</a></li>
+              <li><a href="#">Photography</a></li>
+            </ul>
+          </div>
+
+          <div class="footer-links-column">
+            <h4 class="footer-title">Information</h4>
+            <ul class="footer-links">
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Terms of Use</a></li>
+              <li><a href="#">Disclaimer</a></li>
+              <li><a href="#">Support</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <p>&copy; 2025 Eloquence. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'ElegantPortalPage',
+  data() {
+    return {
+      email: '',
+      isDrawing: false,
+      isDrawingMode: false, // 控制是否开启绘图模式
+      lastX: 0,
+      lastY: 0,
+      audioContext: null,
+      ambientSound: null
+    }
+  },
+  mounted() {
+    this.initCanvas()
+    this.initScrollEffects()
+    this.initAudio()
+    this.initAnimations()
+  },
+  beforeUnmount() {
+    if (this.ambientSound) {
+      this.ambientSound.stop()
+    }
+    if (this.audioContext) {
+      this.audioContext.close()
+    }
+  },
+  methods: {
+    initCanvas() {
+      const canvas = this.$refs.inkCanvas
+      // const ctx = canvas.getContext('2d')
+      canvas.width = window.innerWidth
+      canvas.height = window.innerHeight
+      
+      // Make canvas responsive
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth
+        canvas.height = window.innerHeight
+      })
+    },
+    
+    startDrawing(e) {
+      this.isDrawing = true
+      this.lastX = e.offsetX
+      this.lastY = e.offsetY
+    },
+    
+    stopDrawing() {
+      this.isDrawing = false
+    },
+    
+    draw(e) {
+      if (!this.isDrawing) return
+      
+      const canvas = this.$refs.inkCanvas
+      const ctx = canvas.getContext('2d')
+      
+      ctx.beginPath()
+      ctx.moveTo(this.lastX, this.lastY)
+      ctx.lineTo(e.offsetX, e.offsetY)
+      ctx.strokeStyle = '#333'
+      ctx.lineWidth = 2
+      ctx.lineCap = 'round'
+      ctx.stroke()
+
+      this.lastX = e.offsetX
+      this.lastY = e.offsetY
+    },
+    
+    initScrollEffects() {
+      window.addEventListener('scroll', () => {
+        const scrollPosition = window.scrollY
+        const content = document.querySelector('.content')
+        if (content) {
+          content.style.opacity = Math.min(1, scrollPosition / 100)
+        }
+      })
+    },
+    
+    initAudio() {
+      try {
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        this.ambientSound = this.audioContext.createOscillator()
+        this.ambientSound.type = 'sine'
+        this.ambientSound.frequency.value = 440 // A4 note
+        
+        const gainNode = this.audioContext.createGain()
+        gainNode.gain.value = 0.1 // Low volume for ambient sound
+        
+        this.ambientSound.connect(gainNode)
+        gainNode.connect(this.audioContext.destination)
+        this.ambientSound.start()
+      } catch (error) {
+        console.log('Audio context not supported:', error)
+      }
+    },
+    
+    playClickSound() {
+      if (!this.audioContext) return
+      
+      try {
+        const clickSound = this.audioContext.createOscillator()
+        clickSound.type = 'sine'
+        clickSound.frequency.value = 880 // A5 note
+        
+        const gainNode = this.audioContext.createGain()
+        gainNode.gain.value = 0.3
+        
+        clickSound.connect(gainNode)
+        gainNode.connect(this.audioContext.destination)
+        clickSound.start()
+        
+        setTimeout(() => {
+          clickSound.stop()
+        }, 100)
+      } catch (error) {
+        console.log('Click sound error:', error)
+      }
+    },
+    
+    handleInteractiveClick(e) {
+      this.playClickSound()
+      
+      // Draw circle on canvas at click position
+      const canvas = this.$refs.inkCanvas
+      const ctx = canvas.getContext('2d')
+      const rect = canvas.getBoundingClientRect()
+      const x = e.clientX - rect.left
+      const y = e.clientY - rect.top
+      
+      ctx.beginPath()
+      ctx.arc(x, y, 10, 0, Math.PI * 2)
+      ctx.fillStyle = '#333'
+      ctx.fill()
+      ctx.closePath()
+    },
+    
+    navigateToAnalysis() {
+      this.handleInteractiveClick(event)
+      // 这里可以添加路由跳转逻辑
+      // this.$router.push('/analysis')
+      window.location.href = 'SingleImageAnalysisPage.html'
+    },
+    
+    navigateToTradingPage() {
+      this.playClickSound()
+      // 跳转到网格交易分析页面
+      this.$router.push('/trading-page')
+    },
+    
+    handleNewsletter() {
+      if (this.email) {
+        alert(`感谢订阅！邮箱：${this.email}`)
+        this.email = ''
+      }
+    },
+    
+    toggleDrawingMode() {
+      this.isDrawingMode = !this.isDrawingMode
+      if (this.isDrawingMode) {
+        // 进入绘图模式时的提示
+        console.log('绘图模式已激活，可以在画布上绘画')
+      } else {
+        // 退出绘图模式
+        console.log('绘图模式已关闭')
+      }
+    },
+    
+    initAnimations() {
+      // 使用 Intersection Observer 来触发动画
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      }
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate')
+          }
+        })
+      }, observerOptions)
+
+      // 观察所有需要动画的元素
+      const animatedElements = document.querySelectorAll('.fade-in')
+      animatedElements.forEach(el => observer.observe(el))
+    }
+  }
+}
+</script>
+
+<style>
+/* 直接从Index.html复制的完整样式 - 清洁无冲突版本 */
+
+/* Font imports */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;500&display=swap');
+
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #1a1a1a;
+    --secondary: #f8f5f2;
+    --accent: #d4b8a0;
+    --text: #333333;
+    --light-text: #777777;
+    --transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+}
+
+.elegant-portal {
+    font-family: 'Montserrat', sans-serif;
+    color: var(--text);
+    background-color: var(--secondary);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5 {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Canvas - 默认不接收鼠标事件，只在绘图模式下激活 */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none; /* 默认不接收鼠标事件 */
+    z-index: 1;
+    transition: opacity 0.3s ease;
+}
+
+/* 绘图模式下的Canvas样式 */
+canvas[style*="pointer-events: auto"] {
+    pointer-events: auto;
+    cursor: crosshair; /* 十字光标表示绘图模式 */
+}
+
+/* Layout */
+.container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem;
+}
+
+.flex {
+    display: flex;
+}
+
+.flex-column {
+    flex-direction: column;
+}
+
+.space-between {
+    justify-content: space-between;
+}
+
+.align-center {
+    align-items: center;
+}
+
+/* Header */
+header {
+    padding: 2rem 0;
+    position: sticky;
+    top: 0;
+    background-color: rgba(248, 245, 242, 0.98);
+    z-index: 100;
+    backdrop-filter: blur(10px);
+}
+
+.logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+}
+
+.logo span {
+    color: var(--accent);
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    gap: 2.5rem;
+}
+
+nav a {
+    font-size: 0.9rem;
+    font-weight: 400;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    position: relative;
+}
+
+nav a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 1px;
+    bottom: -4px;
+    left: 0;
+    background-color: var(--accent);
+    transition: var(--transition);
+}
+
+nav a:hover::after {
+    width: 100%;
+}
+
+/* Hero section */
+.hero {
+    height: calc(100vh - 100px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 0 2rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-content {
+    max-width: 800px;
+    z-index: 1;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+.hero-title {
+    font-size: 4rem;
+    line-height: 1.1;
+    margin-bottom: 2rem;
+}
+
+.hero-description {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    color: var(--light-text);
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.8rem 2.5rem;
+    border: 1px solid var(--primary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    transition: var(--transition);
+    background: transparent;
+    cursor: pointer;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary);
+    transition: var(--transition);
+    z-index: -1;
+}
+
+.btn:hover {
+    color: var(--secondary);
+}
+
+.btn:hover::before {
+    left: 0;
+}
+
+/* Interactive elements */
+.interactive-element {
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.interactive-element:hover {
+    transform: scale(1.1);
+}
+
+/* Featured posts */
+.section {
+    padding: 8rem 0;
+}
+
+.section-header {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.section-description {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--light-text);
+}
+
+.posts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 3rem;
+}
+
+.post-card {
+    position: relative;
+    transition: var(--transition);
+}
+
+.post-image {
+    height: 420px;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+    filter: grayscale(20%);
+    transition: var(--transition);
+}
+
+.post-category {
+    font-size: 0.85rem;
+    color: var(--accent);
+    margin-bottom: 0.5rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.post-title {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    line-height: 1.3;
+    transition: var(--transition);
+}
+
+.post-excerpt {
+    font-size: 1rem;
+    color: var(--light-text);
+    margin-bottom: 1.5rem;
+}
+
+.post-meta {
+    font-size: 0.85rem;
+    color: var(--light-text);
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.post-author {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.author-image {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.post-card:hover .post-image {
+    filter: grayscale(0%);
+    transform: scale(1.02);
+}
+
+.post-card:hover .post-title {
+    color: var(--accent);
+}
+
+/* Newsletter - 清理后的干净样式 */
+.newsletter {
+    background-color: var(--primary);
+    color: var(--secondary);
+    padding: 8rem 0;
+    text-align: center;
+}
+
+.newsletter-title {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.newsletter-description {
+    font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto 3rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.newsletter-form {
+    display: flex;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.newsletter-input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: var(--secondary);
+    border-radius: 0;
+}
+
+.newsletter-input::placeholder {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.newsletter-btn {
+    padding: 0 2rem;
+    background-color: var(--accent);
+    color: var(--primary);
+    font-family: 'Montserrat', sans-serif;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.newsletter-btn:hover {
+    background-color: var(--secondary);
+}
+
+/* About section */
+.about {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 5rem;
+    align-items: center;
+}
+
+.about-image {
+    position: relative;
+}
+
+.about-image img {
+    width: 100%;
+    height: 600px;
+    object-fit: cover;
+}
+
+.about-image::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    left: -30px;
+    width: 100%;
+    height: 100%;
+    border: 1px solid var(--accent);
+    z-index: -1;
+}
+
+.about-content {
+    padding-right: 2rem;
+}
+
+.about-subtitle {
+    font-size: 1.1rem;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    font-weight: 300;
+}
+
+.about-title {
+    font-size: 3rem;
+    margin-bottom: 2rem;
+    line-height: 1.2;
+}
+
+.about-description {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    color: var(--light-text);
+}
+
+.social-links {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+.social-link:hover {
+    background-color: var(--accent);
+    color: var(--primary);
+}
+
+/* SVG图标样式 */
+.social-icon {
+    width: 24px;
+    height: 24px;
+    transition: var(--transition);
+}
+
+/* About section中的图标 - 白色背景，保持黑色 */
+.about .social-icon {
+    filter: none; /* 保持原色 */
+}
+
+/* Footer中的图标 - 黑色背景，需要变白色 */
+.social-icon-footer {
+    filter: brightness(0) invert(1); /* 将黑色图标变为白色 */
+}
+
+/* 悬停效果 */
+.social-link:hover .social-icon {
+    transform: scale(1.1);
+}
+
+.social-link:hover .social-icon-footer {
+    filter: brightness(0) invert(0); /* 悬停时变回黑色 */
+}
+
+/* Footer - 清理后的干净样式 */
+footer {
+    background-color: var(--primary);
+    color: var(--secondary);
+    padding: 5rem 0 2rem;
+}
+
+.footer-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 5rem;
+    margin-bottom: 5rem;
+}
+
+.footer-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2rem;
+    font-weight: 500;
+    letter-spacing: 3px;
+    margin-bottom: 1.5rem;
+}
+
+.footer-description {
+    color: rgba(255, 255, 255, 0.7);
+    margin-bottom: 2rem;
+}
+
+.footer-title {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 0.7rem;
+}
+
+.footer-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 30px;
+    height: 1px;
+    background-color: var(--accent);
+}
+
+.footer-links {
+    list-style: none;
+}
+
+.footer-links li {
+    margin-bottom: 1rem;
+}
+
+.footer-links a {
+    color: rgba(255, 255, 255, 0.7);
+    transition: var(--transition);
+}
+
+.footer-links a:hover {
+    color: var(--accent);
+    padding-left: 5px;
+}
+
+.footer-bottom {
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 0.9rem;
+}
+
+/* Content sections */
+.content {
+    transition: opacity 0.5s ease;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.fade-in {
+    animation: fadeIn 1s ease forwards;
+}
+
+.delay-1 {
+    animation-delay: 0.2s;
+}
+
+.delay-2 {
+    animation-delay: 0.4s;
+}
+
+.delay-3 {
+    animation-delay: 0.6s;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+    .posts-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 4rem;
+    }
+
+    .about {
+        grid-template-columns: 1fr;
+        gap: 3rem;
+    }
+
+    .about-image::before {
+        display: none;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .posts-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .newsletter-form {
+        flex-direction: column;
+    }
+
+    .newsletter-input {
+        margin-bottom: 1rem;
+    }
+
+    .footer-content {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .hero-title {
+        font-size: 3rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    nav ul {
+        display: none;
+    }
+}
+</style>

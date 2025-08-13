@@ -4,15 +4,22 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="增加了本地开发时的docker-dev版本文件">
+    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="本地开发环境dev搭建完成，门户创建完成（不好看）">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/600585历史数据.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Index.css" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Index.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Index.js" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.dev.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/docker.txt" beforeDir="false" afterPath="$PROJECT_DIR$/docker.txt" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/Dockerfile.dev" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/Dockerfile.dev" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/PortalPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/PortalPage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/GridTradingAnalyzer.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PortalPage.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/PortalPage_new.vue" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/nginx/nginx-dev.conf" beforeDir="false" afterPath="$PROJECT_DIR$/nginx/nginx-dev.conf" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/风格样式.txt" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -47,24 +54,24 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Batch.compile-test.executor": "Run",
-    "Batch.deploy-all.executor": "Run",
-    "Batch.deploy-simple.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "detached",
-    "junie.onboarding.icon.badge.shown": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Batch.compile-test.executor&quot;: &quot;Run&quot;,
+    &quot;Batch.deploy-all.executor&quot;: &quot;Run&quot;,
+    &quot;Batch.deploy-simple.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;detached&quot;,
+    &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager" selected="Batch.deploy-simple">
     <configuration name="compile-test" type="BatchConfigurationType" factoryName="Batch" temporary="true">
       <module name="summer" />
@@ -133,6 +140,7 @@
       <updated>1754916528153</updated>
       <workItem from="1754916529307" duration="4404000" />
       <workItem from="1754924179390" duration="2785000" />
+      <workItem from="1755086194039" duration="604000" />
     </task>
     <task id="LOCAL-00001" summary="部署前的一次推送，推完之后搞部署分支">
       <option name="closed" value="true" />
@@ -174,7 +182,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754974989962</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="本地开发环境dev搭建完成，门户创建完成（不好看）">
+      <option name="closed" value="true" />
+      <created>1754978105188</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1754978105188</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -198,6 +214,7 @@
     <MESSAGE value="本地构建确定没有问题" />
     <MESSAGE value="new" />
     <MESSAGE value="增加了本地开发时的docker-dev版本文件" />
-    <option name="LAST_COMMIT_MESSAGE" value="增加了本地开发时的docker-dev版本文件" />
+    <MESSAGE value="本地开发环境dev搭建完成，门户创建完成（不好看）" />
+    <option name="LAST_COMMIT_MESSAGE" value="本地开发环境dev搭建完成，门户创建完成（不好看）" />
   </component>
 </project>

@@ -1,124 +1,262 @@
 # ================================
-# Docker 基础命令
+# Summer 项目 Docker 开发手册
 # ================================
 
-# 在前台启动所有服务并显示日志 ，调试，查看启动过程
-docker compose up
+本手册包含 Summer 项目的完整 Docker 开发流程和常用命令。
 
-# （最常用）在后台启动所有服务，用于日常运行，部署
-docker compose up -d
+## 📁 项目结构
 
-# 重新构建镜像并在后台启动，用于代码或Dockerfile更新后
-docker compose up --build -d
-
-# 只构建镜像，不启动，用于预先准备镜像
-docker compose build
-
-# 查看所有服务状态
-docker compose ps
-
-# 查看服务日志
-docker compose logs [service-name]
-
-# 停止所有服务
-docker compose down
-
-# 重启服务
-docker compose restart [service-name]
-
-# 查看特定服务日志
-docker compose logs backend
-docker compose logs frontend
-docker compose logs mysql
-docker compose logs nginx
+```
+summer/
+├── docker-compose.dev.yml    # 本地开发环境（热更新）
+├── docker-compose.prod.yml   # 生产部署环境
+├── frontend/                 # Vue.js 前端
+│   ├── Dockerfile           # 生产构建
+│   └── Dockerfile.dev       # 开发环境
+├── backend/                  # Spring Boot 后端
+│   ├── Dockerfile           # 生产构建
+│   └── Dockerfile.dev       # 开发环境
+└── nginx/
+    ├── default.conf         # 生产环境配置
+    └── nginx-dev.conf       # 开发环境配置
+```
 
 # ================================
-# 本地开发最佳实践
+# 🚀 快速开始
 # ================================
 
-# 1. 快速开发流程（推荐）- 只重建前端
-# 前端代码修改后，只重建前端服务（节省时间）
-docker compose up --build frontend -d
-docker compose restart nginx
-
-# 2. 超快速开发（热更新）- 使用开发配置
-# 支持实时热更新，代码修改立即生效
+## 本地开发环境启动（推荐）
 docker compose -f docker-compose.dev.yml up -d
+# 作用：启动支持热更新的开发环境
+# - 前端：Vue dev server，代码修改立即生效
+# - 后端：Spring DevTools，支持热重载
+# - 数据库：MySQL 5.7
+# - 访问：http://localhost:8080
 
-# 3. 传统完整重建（耗时较长）
-# 修改代码后，强制重新构建并启动所有服务
-docker compose up --build -d
+## 查看服务状态
+docker compose -f docker-compose.dev.yml ps
+# 作用：显示所有开发环境容器的运行状态
 
-# 2. 开发调试
-# 前台启动，查看实时日志（适合调试）
-docker compose up --build
+## 停止开发环境
+docker compose -f docker-compose.dev.yml down
+# 作用：停止并删除开发环境的所有容器
 
-# 3. 完全重置环境
-# 停止服务 -> 清理系统 -> 重新构建启动
-docker compose down
+# ================================
+# 🛠️ 开发常用命令
+# ================================
+
+## 重建前端（前端依赖变化时）
+docker compose -f docker-compose.dev.yml up --build frontend-dev -d
+# 作用：只重建前端服务，适用于：
+# - package.json 依赖更新
+# - 前端 Dockerfile 修改
+
+## 后端代码更新流程
+# 1. 停止开发环境
+docker compose -f docker-compose.dev.yml down
+# 2. 构建新的后端镜像（使用生产配置）
+docker compose up --build backend -d
+# 3. 重启开发环境
+docker compose -f docker-compose.dev.yml up -d
+# 作用：更新后端代码并重新部署
+
+## 查看实时日志
+docker compose -f docker-compose.dev.yml logs -f
+# 作用：显示所有服务的实时日志输出
+
+## 查看特定服务日志
+docker compose -f docker-compose.dev.yml logs -f frontend-dev
+docker compose -f docker-compose.dev.yml logs -f backend-dev
+docker compose -f docker-compose.dev.yml logs -f mysql-dev
+docker compose -f docker-compose.dev.yml logs -f nginx-dev
+# 作用：查看指定服务的日志，便于调试
+
+## 重启特定服务
+docker compose -f docker-compose.dev.yml restart frontend-dev
+docker compose -f docker-compose.dev.yml restart backend-dev
+# 作用：重启指定服务，保持其他服务运行
+
+# ================================
+# 🔧 调试和维护
+# ================================
+
+## 进入容器内部调试
+docker exec -it frontend-dev /bin/sh
+docker exec -it backend-dev /bin/bash
+docker exec -it mysql-dev mysql -uroot -proot
+# 作用：进入容器内部进行调试和排错
+
+## 查看容器资源使用情况
+docker stats
+# 作用：实时显示容器的CPU、内存使用情况
+
+## 清理开发环境数据
+docker compose -f docker-compose.dev.yml down -v
+# 作用：停止服务并删除所有相关的volume数据
+# 注意：这会删除数据库数据！
+
+## 只删除容器，保留数据
+docker compose -f docker-compose.dev.yml down
+# 作用：停止并删除容器，但保留volume中的数据
+
+# ================================
+# 🚀 生产环境部署
+# ================================
+
+## 生产环境启动
+docker compose -f docker-compose.prod.yml up -d
+# 作用：启动生产环境
+# - 使用预构建的优化镜像
+# - 数据持久化
+# - 访问：http://localhost:80
+
+## 生产环境状态查看
+docker compose -f docker-compose.prod.yml ps
+# 作用：查看生产环境容器状态
+
+## 生产环境停止
+docker compose -f docker-compose.prod.yml down
+# 作用：停止生产环境
+
+# ================================
+# 🧹 系统清理命令
+# ================================
+
+## 清理未使用的镜像和容器
 docker system prune -f
-docker compose up --build -d
+# 作用：删除停止的容器、未使用的网络和悬空镜像
 
-# 4. 清理无用资源
-# 清理未使用的镜像、容器、网络
+## 深度清理（包括未使用的镜像）
 docker system prune -a -f
+# 作用：删除所有未使用的Docker对象
+# 注意：会删除所有未使用的镜像，谨慎使用
 
-# 5. 删除特定镜像重建
-# 当镜像有问题时，删除后重建
-docker rmi afrangry/summer-frontend:latest afrangry/summer-backend:latest
-docker compose up --build -d
+## 清理特定镜像
+docker rmi afrangry/summer-frontend:latest
+docker rmi afrangry/summer-backend:latest
+# 作用：删除指定镜像，强制重建
 
-# 6. 查看容器内部
-# 进入容器内部调试
-docker exec -it frontend /bin/sh
-docker exec -it backend /bin/bash
-docker exec -it mysql mysql -uroot -proot
+## 查看磁盘使用情况
+docker system df
+# 作用：显示Docker占用的磁盘空间
 
 # ================================
-# 常见问题解决
+# 🌐 访问地址
 # ================================
 
-# 问题1: 代码修改后Docker没有更新
-# 解决方案A: 只重建前端（快速，推荐）
-docker compose up --build frontend -d && docker compose restart nginx
-# 解决方案B: 使用开发模式（热更新）
-docker compose -f docker-compose.dev.yml up -d
-# 解决方案C: 完整重建（慢）
-docker compose up --build -d
+## 开发环境访问地址
+- 前端页面：http://localhost:8080 （nginx代理，推荐）
+- 前端直连：http://localhost:3000 （Vue dev server）
+- 后端API：http://localhost:9000
+- 数据库：localhost:3307 (root/root)
 
-# 问题2: 端口被占用
-# 解决: 检查端口占用并停止相关服务
+## 生产环境访问地址
+- 前端页面：http://localhost:80
+- 后端API：http://localhost:8081
+- 数据库：localhost:3307 (root/root)
+
+# ================================
+# ❗ 常见问题解决
+# ================================
+
+## 问题1：端口被占用
+# 检查端口占用
 netstat -ano | findstr :80
+netstat -ano | findstr :3000
+netstat -ano | findstr :8080
 netstat -ano | findstr :9000
 netstat -ano | findstr :3307
 
-# 问题3: 数据库连接失败
-# 解决: 检查MySQL容器状态和日志
-docker compose logs mysql
-docker exec -it mysql mysql -uroot -proot -e "SHOW DATABASES;"
+# 解决方案：
+# 1. 停止占用端口的程序
+# 2. 或修改docker-compose中的端口映射
 
-# 问题4: 前端页面无法访问
-# 解决: 检查Nginx和前端容器状态
-docker compose logs nginx
-docker compose logs frontend
+## 问题2：代码修改不生效
+# 开发环境应该自动热更新，如果不生效：
+docker compose -f docker-compose.dev.yml restart frontend-dev
+# 作用：重启前端服务
+
+# 如果仍不生效，检查volume挂载：
+docker compose -f docker-compose.dev.yml down
+docker compose -f docker-compose.dev.yml up -d
+
+## 问题3：数据库连接失败
+# 检查MySQL容器状态
+docker compose -f docker-compose.dev.yml logs mysql-dev
+# 等待MySQL完全启动（约30秒）
+
+# 测试数据库连接
+docker exec -it mysql-dev mysql -uroot -proot -e "SHOW DATABASES;"
+
+## 问题4：前端页面无法访问
+# 检查nginx和前端容器状态
+docker compose -f docker-compose.dev.yml logs nginx-dev
+docker compose -f docker-compose.dev.yml logs frontend-dev
+
+# 确认端口映射正确
+docker compose -f docker-compose.dev.yml ps
+
+## 问题5：内存不足
+# 检查容器资源使用
+docker stats
+
+# 清理无用资源
+docker system prune -f
+
+# 增加Docker内存限制（Docker Desktop设置）
 
 # ================================
-# 环境区分
+# 🔄 开发工作流程
 # ================================
 
-# 测试环境（本地开发）
-docker compose up --build -d
+## 日常开发流程
+1. 启动开发环境
+   docker compose -f docker-compose.dev.yml up -d
 
-# 生产环境部署
-docker compose -f docker-compose.prod.yml up -d
+2. 开发代码（自动热更新）
+   - 修改 frontend/src/ 下的文件
+   - 修改 backend/src/ 下的文件
+   - 浏览器自动刷新显示更改
+
+3. 查看日志调试
+   docker compose -f docker-compose.dev.yml logs -f
+
+4. 结束开发
+   docker compose -f docker-compose.dev.yml down
+
+## 新功能开发流程
+1. 创建新分支
+2. 启动开发环境
+3. 开发新功能
+4. 测试功能
+5. 提交代码
+
+## 依赖更新流程
+1. 修改 package.json 或 pom.xml
+2. 重建环境：
+   docker compose -f docker-compose.dev.yml down
+   docker compose -f docker-compose.dev.yml up --build -d
 
 # ================================
-# 性能优化建议
+# 📊 性能优化建议
 # ================================
 
-# 1. 定期清理无用资源
-docker system prune -a -f
+## 开发环境优化
+1. 定期清理无用资源：docker system prune -f
+2. 使用 .dockerignore 减少构建上下文
+3. 合理配置内存限制
+4. 使用多阶段构建优化镜像大小
 
-# 2. 使用 .dockerignore 文件减少构建上下文
-# 3. 合理设置资源限制
-# 4. 使用多阶段构建优化镜像大小
+## 热更新优化
+1. 确保文件监听正常工作
+2. 避免监听 node_modules 目录
+3. 使用轮询模式处理文件系统兼容性
+
+# ================================
+# 📝 备注
+# ================================
+
+- 开发环境支持热更新，修改代码无需重启
+- 生产环境使用优化后的静态文件
+- 数据库数据在开发环境中默认不持久化
+- 如需持久化数据，避免使用 down -v 命令

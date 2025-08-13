@@ -1,22 +1,23 @@
 services:
   frontend:
-    build: ./frontend
+    build: 
+      context: ./frontend
+      dockerfile: Dockerfile.dev
     container_name: frontend-dev
     ports:
       - "3000:3000"  # Vue dev server端口
     volumes:
-      - ./frontend/src:/app/src:ro  # 只读挂载源代码，支持热更新
-      - ./frontend/public:/app/public:ro
+      - ./frontend/src:/app/src  # 挂载源代码，支持热更新
+      - ./frontend/public:/app/public
+      - ./frontend/package.json:/app/package.json
+      - ./frontend/vue.config.js:/app/vue.config.js
+      - ./frontend/babel.config.js:/app/babel.config.js
       - frontend-node-modules:/app/node_modules  # 独立的node_modules卷
-    environment:
-      - NODE_ENV=development
-      - CHOKIDAR_USEPOLLING=true  # 支持Windows文件监听
-    command: npm run serve -- --host 0.0.0.0 --port 3000
     depends_on:
       - backend
 
   backend:
-    image: afrangry/summer-backend:latest  # 使用已构建的镜像，避免重复构建
+    image: afrangry/summer-backend:latest  # 使用已构建的镜像
     container_name: backend-dev
     ports:
       - "9000:8080"
