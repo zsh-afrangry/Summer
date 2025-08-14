@@ -1,0 +1,17 @@
+FROM maven:3-eclipse-temurin-17
+
+WORKDIR /app
+
+# 先复制 pom 以缓存依赖
+COPY pom.xml ./
+RUN mvn -B -q -DskipTests dependency:go-offline
+
+# 复制源码（开发时会被 volume 覆盖）
+COPY src ./src
+
+EXPOSE 8080
+ENV SPRING_PROFILES_ACTIVE=dev
+
+# 使用 spring-boot:run 便于开发调试
+CMD ["mvn", "-q", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Dfile.encoding=UTF-8"]
+
