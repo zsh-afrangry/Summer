@@ -4,10 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="门户搭建完成（其实就是套用之前的代码），搭建网格交易算法">
+    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="网格交易，算法本部分搭建完成">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/frontend/src/components/trading/ChartVisualization.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/trading/ChartVisualization.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/trading/TradingPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/trading/TradingPage.vue" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -130,7 +131,7 @@
       <workItem from="1754916529307" duration="4404000" />
       <workItem from="1754924179390" duration="2785000" />
       <workItem from="1755086194039" duration="1306000" />
-      <workItem from="1755096195606" duration="619000" />
+      <workItem from="1755096195606" duration="2317000" />
     </task>
     <task id="LOCAL-00001" summary="部署前的一次推送，推完之后搞部署分支">
       <option name="closed" value="true" />
@@ -188,7 +189,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755094851703</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="网格交易，算法本部分搭建完成">
+      <option name="closed" value="true" />
+      <created>1755097957910</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1755097957910</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -214,6 +223,7 @@
     <MESSAGE value="增加了本地开发时的docker-dev版本文件" />
     <MESSAGE value="本地开发环境dev搭建完成，门户创建完成（不好看）" />
     <MESSAGE value="门户搭建完成（其实就是套用之前的代码），搭建网格交易算法" />
-    <option name="LAST_COMMIT_MESSAGE" value="门户搭建完成（其实就是套用之前的代码），搭建网格交易算法" />
+    <MESSAGE value="网格交易，算法本部分搭建完成" />
+    <option name="LAST_COMMIT_MESSAGE" value="网格交易，算法本部分搭建完成" />
   </component>
 </project>

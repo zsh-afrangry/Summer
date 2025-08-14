@@ -2,420 +2,28 @@
   <div class="grid-trading-analyzer">
     <!-- 页面标题 -->
     <div class="header-section">
-      <h1 class="page-title">网格交易策略分析系统</h1>
+      <TopActionsBar title="网格交易策略分析系统" />
       <p class="page-subtitle">专业的量化交易回测平台</p>
     </div>
 
     <!-- 顶部配置区域 -->
     <div class="top-config-section">
-      <!-- 数据源配置卡片 -->
-      <div class="config-cards-row">
-        <div class="config-card">
-          <h3 class="config-title">📁 数据源选择</h3>
-          <div class="data-source-options">
-            <label class="radio-option">
-              <input type="radio" v-model="parameters.dataSource" value="upload" />
-              <span>本地文件上传</span>
-            </label>
-            <label class="radio-option">
-              <input type="radio" v-model="parameters.dataSource" value="project" />
-              <span>项目文件</span>
-            </label>
-          </div>
-          
-          <!-- 文件上传区域 -->
-          <div v-if="parameters.dataSource === 'upload'" class="upload-area">
-            <input 
-              type="file" 
-              id="csvFile" 
-              accept=".csv" 
-              @change="handleFileUpload"
-              class="file-input"
-            >
-            <label for="csvFile" class="file-upload-label">
-              <div class="upload-icon">📄</div>
-              <div class="upload-text">
-                {{ fileName || '点击选择CSV文件' }}
-              </div>
-            </label>
-          </div>
-          
-          <!-- 项目文件选择 -->
-          <div v-else-if="parameters.dataSource === 'project'" class="file-selection">
-            <div class="form-group">
-              <label>选择项目文件</label>
-              <select v-model="parameters.selectedProjectFile" class="form-select">
-                <option value="600585">海螺水泥 (600585)</option>
-                <option value="002032">苏泊尔 (002032)</option>
-                <option value="700001">东方财富 (700001)</option>
-              </select>
-            </div>
-            <div class="file-info">
-              <div class="info-item">
-                <span class="info-label">文件:</span>
-                <span class="info-value">{{ parameters.selectedProjectFile }}历史数据.csv</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">股票:</span>
-                <span class="info-value">{{ getStockName(parameters.selectedProjectFile) }}</span>
-              </div>
-              <div class="info-item">
-                <span class="info-label">数据量:</span>
-                <span class="info-value">{{ actualDataCount }}条记录</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 资金配置卡片 -->
-        <div class="config-card">
-          <h3 class="config-title">💰 资金配置</h3>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>初始资金 (万元)</label>
-              <input 
-                v-model.number="parameters.initialCapital" 
-                type="number" 
-                min="1" 
-                step="1"
-                class="form-input"
-              >
-            </div>
-            <div class="form-group">
-              <label>底仓比例 (%)</label>
-              <input 
-                v-model.number="parameters.basePositionRatio" 
-                type="number" 
-                min="0" 
-                max="50"
-                step="5"
-                class="form-input"
-              >
-            </div>
-            <div class="form-group">
-              <label>单次交易比例 (%)</label>
-              <input 
-                v-model.number="parameters.singleTradeRatio" 
-                type="number" 
-                min="1" 
-                max="20"
-                step="1"
-                class="form-input"
-              >
-            </div>
-            <div class="form-group">
-              <label>最大持仓比例 (%)</label>
-              <input 
-                v-model.number="parameters.maxPositionRatio" 
-                type="number" 
-                min="50" 
-                max="95"
-                step="5"
-                class="form-input"
-              >
-            </div>
-          </div>
-        </div>
-
-        <!-- 网格配置卡片 -->
-        <div class="config-card">
-          <h3 class="config-title">📊 网格配置</h3>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>网格层数</label>
-              <input 
-                v-model.number="parameters.gridLevels" 
-                type="number" 
-                min="5" 
-                max="50"
-                class="form-input"
-              >
-            </div>
-            <div class="form-group full-width">
-              <label>网格宽度模式</label>
-              <select v-model="parameters.gridWidthMode" class="form-select">
-                <option value="percentage">百分比模式</option>
-                <option value="value">数值模式</option>
-              </select>
-            </div>
-            <div v-if="parameters.gridWidthMode === 'percentage'" class="form-group">
-              <label>网格密度 (%)</label>
-              <input 
-                v-model.number="parameters.gridDensity" 
-                type="number" 
-                min="0.5" 
-                max="10"
-                step="0.5"
-                class="form-input"
-                placeholder="例如：2.0"
-              >
-              <small class="form-hint">网格覆盖价格波动的百分比范围</small>
-            </div>
-            <div v-else class="form-group">
-              <label>网格宽度 (元)</label>
-              <input 
-                v-model.number="parameters.gridWidth" 
-                type="number" 
-                min="0.01" 
-                step="0.01"
-                class="form-input"
-                placeholder="例如：50"
-              >
-              <small class="form-hint">每个网格的固定价格间距</small>
-            </div>
-          </div>
-        </div>
-
-        <!-- 时间配置卡片 -->
-        <div class="config-card">
-          <h3 class="config-title">⏰ 建仓配置</h3>
-          <div class="form-grid">
-            <div class="form-group full-width">
-              <label>建仓模式</label>
-              <select v-model="parameters.basePositionMode" class="form-select">
-                <option value="days">从最早日期向后N天建仓</option>
-                <option value="date">指定具体建仓日期</option>
-              </select>
-            </div>
-            <div v-if="parameters.basePositionMode === 'days'" class="form-group">
-              <label>建仓天数 (从最早日期开始)</label>
-              <input 
-                v-model.number="parameters.basePositionDays" 
-                type="number" 
-                min="1" 
-                max="100"
-                class="form-input"
-                placeholder="例如：5表示第5天建仓"
-              >
-            </div>
-            <div v-else class="form-group">
-              <label>建仓日期 (选择具体日期)</label>
-              <input 
-                v-model="parameters.basePositionDate" 
-                type="date"
-                class="form-input"
-                :min="getEarliestDate()"
-                :max="getLatestDate()"
-              >
-            </div>
-          </div>
-        </div>
-
-        <!-- 风险控制卡片 -->
-        <div class="config-card optional-module" :class="{ 'module-disabled': !moduleStates.riskControl }">
-          <div class="module-header">
-            <h3 class="config-title">🛡️ 风险控制</h3>
-            <label class="module-toggle">
-              <input type="checkbox" v-model="moduleStates.riskControl" />
-              <span class="toggle-text">启用</span>
-            </label>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>止损比例 (%)</label>
-              <input 
-                v-model.number="parameters.stopLossRatio" 
-                type="number" 
-                min="0" 
-                max="20"
-                step="1"
-                class="form-input"
-                placeholder="0=不止损"
-                :disabled="!moduleStates.riskControl"
-              >
-            </div>
-            <div class="form-group">
-              <label>止盈比例 (%)</label>
-              <input 
-                v-model.number="parameters.takeProfitRatio" 
-                type="number" 
-                min="0" 
-                max="50"
-                step="5"
-                class="form-input"
-                placeholder="0=不止盈"
-                :disabled="!moduleStates.riskControl"
-              >
-            </div>
-            <div class="form-group">
-              <label>最大回撤限制 (%)</label>
-              <input 
-                v-model.number="parameters.maxDrawdownLimit" 
-                type="number" 
-                min="0" 
-                max="30"
-                step="5"
-                class="form-input"
-                placeholder="0=无限制"
-                :disabled="!moduleStates.riskControl"
-              >
-            </div>
-            <div class="form-group">
-              <label>手续费率 (%)</label>
-              <input 
-                v-model.number="parameters.feeRate" 
-                type="number" 
-                min="0" 
-                max="1"
-                step="0.01"
-                class="form-input"
-                :disabled="!moduleStates.riskControl"
-              >
-            </div>
-          </div>
-          
-          <div class="form-group full-width">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                v-model="parameters.bearMarketProtection" 
-                :disabled="!moduleStates.riskControl"
-              />
-              <span>熊市保护 (连续下跌{{ parameters.bearMarketDays }}天暂停买入)</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 高级策略卡片 (占位) -->
-        <div class="config-card optional-module" :class="{ 'module-disabled': !moduleStates.advancedStrategy }">
-          <div class="module-header">
-            <h3 class="config-title">📈 高级策略</h3>
-            <label class="module-toggle">
-              <input type="checkbox" v-model="moduleStates.advancedStrategy" />
-              <span class="toggle-text">启用</span>
-            </label>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>标题标题标题</label>
-              <input 
-                v-model.number="parameters.advancedStrategy.trendSensitivity" 
-                type="number" 
-                min="0" 
-                max="100"
-                class="form-input"
-                placeholder="正文正文正文"
-                :disabled="!moduleStates.advancedStrategy"
-              >
-            </div>
-            <div class="form-group">
-              <label>标题标题标题</label>
-              <input 
-                v-model.number="parameters.advancedStrategy.volatilityThreshold" 
-                type="number" 
-                min="0" 
-                step="0.1"
-                class="form-input"
-                placeholder="正文正文正文"
-                :disabled="!moduleStates.advancedStrategy"
-              >
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                v-model="parameters.advancedStrategy.enableDynamicGrid" 
-                :disabled="!moduleStates.advancedStrategy"
-              />
-              <span>标题标题标题 (正文正文正文)</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 市场环境卡片 (占位) -->
-        <div class="config-card optional-module" :class="{ 'module-disabled': !moduleStates.marketEnvironment }">
-          <div class="module-header">
-            <h3 class="config-title">🌍 市场环境</h3>
-            <label class="module-toggle">
-              <input type="checkbox" v-model="moduleStates.marketEnvironment" />
-              <span class="toggle-text">启用</span>
-            </label>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>标题标题标题</label>
-              <select 
-                v-model="parameters.marketEnvironment.marketSentiment" 
-                class="form-select"
-                :disabled="!moduleStates.marketEnvironment"
-              >
-                <option value="bullish">正文正文正文 A</option>
-                <option value="neutral">正文正文正文 B</option>
-                <option value="bearish">正文正文正文 C</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label>标题标题标题</label>
-              <input 
-                v-model.number="parameters.marketEnvironment.macroFactor" 
-                type="number" 
-                min="0" 
-                step="0.1"
-                class="form-input"
-                placeholder="正文正文正文"
-                :disabled="!moduleStates.marketEnvironment"
-              >
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                v-model="parameters.marketEnvironment.sectorRotation" 
-                :disabled="!moduleStates.marketEnvironment"
-              />
-              <span>标题标题标题 (正文正文正文)</span>
-            </label>
-          </div>
-        </div>
-
-        <!-- 资金管理卡片 (占位) -->
-        <div class="config-card optional-module" :class="{ 'module-disabled': !moduleStates.fundManagement }">
-          <div class="module-header">
-            <h3 class="config-title">💼 资金管理</h3>
-            <label class="module-toggle">
-              <input type="checkbox" v-model="moduleStates.fundManagement" />
-              <span class="toggle-text">启用</span>
-            </label>
-          </div>
-          <div class="form-grid">
-            <div class="form-group">
-              <label>标题标题标题</label>
-              <input 
-                v-model.number="parameters.fundManagement.riskBudget" 
-                type="number" 
-                min="0" 
-                max="100"
-                class="form-input"
-                placeholder="正文正文正文"
-                :disabled="!moduleStates.fundManagement"
-              >
-            </div>
-            <div class="form-group">
-              <label>标题标题标题</label>
-              <select 
-                v-model="parameters.fundManagement.dynamicPosition" 
-                class="form-select"
-                :disabled="!moduleStates.fundManagement"
-              >
-                <option :value="false">正文正文正文 A</option>
-                <option :value="true">正文正文正文 B</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-group full-width">
-            <label class="checkbox-label">
-              <input 
-                type="checkbox" 
-                v-model="parameters.fundManagement.batchBuilding" 
-                :disabled="!moduleStates.fundManagement"
-              />
-              <span>标题标题标题 (正文正文正文)</span>
-            </label>
-          </div>
-        </div>
-      </div>
+      <ParamsBasic
+        :parameters="parameters"
+        :actual-data-count="actualDataCount"
+        :get-stock-name="getStockName"
+        :file-name="fileName"
+        :earliest-date="getEarliestDate()"
+        :latest-date="getLatestDate()"
+        @file-upload="handleFileUpload"
+        @update:parameters="val => parameters = val"
+      />
+      <ParamsOptional
+        :parameters="parameters"
+        :module-states="moduleStates"
+        @update:parameters="val => parameters = val"
+        @update:moduleStates="val => moduleStates = val"
+      />
       
       <!-- 分析按钮 -->
       <div class="analyze-section">
@@ -439,86 +47,9 @@
         <div class="empty-hint">支持上传CSV文件或使用项目示例数据</div>
       </div>
       
-      <div v-else class="results-container">
-        <!-- 关键指标展示 -->
-        <div class="metrics-section">
-          <h3 class="section-title">📊 核心指标</h3>
-          <div class="metrics-grid">
-            <div class="metric-card highlight">
-              <div class="metric-icon">📈</div>
-              <div class="metric-content">
-                <div class="metric-label">年化收益率</div>
-                <div class="metric-value">{{ analysisResults.annualReturn }}%</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">💰</div>
-              <div class="metric-content">
-                <div class="metric-label">总收益</div>
-                <div class="metric-value">{{ analysisResults.totalProfit }} 元</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">📉</div>
-              <div class="metric-content">
-                <div class="metric-label">最大回撤</div>
-                <div class="metric-value">{{ analysisResults.maxDrawdown }}%</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">🔄</div>
-              <div class="metric-content">
-                <div class="metric-label">交易次数</div>
-                <div class="metric-value">{{ analysisResults.tradeCount }} 次</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">⚡</div>
-              <div class="metric-content">
-                <div class="metric-label">夏普比率</div>
-                <div class="metric-value">{{ analysisResults.sharpeRatio }}</div>
-              </div>
-            </div>
-            <div class="metric-card">
-              <div class="metric-icon">🎯</div>
-              <div class="metric-content">
-                <div class="metric-label">胜率</div>
-                <div class="metric-value">{{ analysisResults.winRate }}%</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- 价格指标展示 -->
-        <div class="price-info-section">
-          <h3 class="section-title">💹 价格信息</h3>
-          <div class="price-info-grid">
-            <div class="price-info-item">
-              <span class="price-label">底仓建仓价:</span>
-              <span class="price-value">{{ analysisResults.basePositionPrice }}元</span>
-            </div>
-            <div class="price-info-item highlight-item">
-              <span class="price-label">网格基准价:</span>
-              <span class="price-value grid-center">{{ analysisResults.gridCenterPrice }}元</span>
-            </div>
-            <div class="price-info-item">
-              <span class="price-label">期间最高价:</span>
-              <span class="price-value high-price">{{ analysisResults.periodHighPrice }}元</span>
-            </div>
-            <div class="price-info-item">
-              <span class="price-label">期间最低价:</span>
-              <span class="price-value low-price">{{ analysisResults.periodLowPrice }}元</span>
-            </div>
-            <div class="price-info-item">
-              <span class="price-label">网格间距:</span>
-              <span class="price-value grid-step">{{ analysisResults.gridStep }}元</span>
-            </div>
-            <div class="price-info-item">
-              <span class="price-label">网格覆盖范围:</span>
-              <span class="price-value grid-range">{{ analysisResults.gridRange }}</span>
-            </div>
-          </div>
-        </div>
+        <div v-else class="results-container">
+          <CoreMetrics :analysis-results="analysisResults" />
+          <PriceSummary :analysis-results="analysisResults" />
 
         <!-- 图表展示区域 -->
         <div class="charts-section">
@@ -548,7 +79,7 @@
                   <span class="stat-label">年化收益</span>
                 </div>
                 <div class="stat-item">
-                  <span class="stat-number">6</span>
+                  <span class="stat-number">4</span>
                   <span class="stat-label">图表数量</span>
                 </div>
               </div>
@@ -567,45 +98,7 @@
         </div>
 
         <!-- 交易记录表格 -->
-        <div class="trades-section">
-          <h3 class="section-title">📋 交易记录 (最近{{ Math.min(analysisResults.tradeHistory.length, 20) }}笔)</h3>
-          <div class="trades-table-wrapper">
-            <table class="trades-table">
-              <thead>
-                <tr>
-                  <th>日期</th>
-                  <th>类型</th>
-                  <th>价格</th>
-                  <th>数量</th>
-                  <th>金额</th>
-                  <th>手续费</th>
-                  <th>余额</th>
-                  <th>持仓</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr 
-                  v-for="(trade, index) in analysisResults.tradeHistory.slice(-20)" 
-                  :key="index"
-                  :class="trade.type"
-                >
-                  <td>{{ trade.date }}</td>
-                  <td>
-                    <span class="trade-type" :class="trade.type">
-                      {{ trade.type === 'buy' ? '买入' : '卖出' }}
-                    </span>
-                  </td>
-                  <td>{{ trade.price.toFixed(2) }}</td>
-                  <td>{{ trade.shares.toFixed(0) }}</td>
-                  <td>{{ trade.amount.toFixed(2) }}</td>
-                  <td>{{ trade.fee.toFixed(2) }}</td>
-                  <td>{{ trade.capital.toFixed(2) }}</td>
-                  <td>{{ trade.position.toFixed(0) }}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
+        <TradesTable :trades="analysisResults.tradeHistory" />
       </div>
     </div>
 
@@ -614,12 +107,17 @@
 </template>
 
 <script>
-import { Chart, registerables } from 'chart.js'
-
-Chart.register(...registerables)
+import { parseCSV, calculateGridTrading } from '@/services/trading/gridTrading'
+import CoreMetrics from './results/CoreMetrics.vue'
+import PriceSummary from './results/PriceSummary.vue'
+import TradesTable from './results/TradesTable.vue'
+import ParamsBasic from './params/ParamsBasic.vue'
+import ParamsOptional from './params/ParamsOptional.vue'
+import TopActionsBar from '../common/TopActionsBar.vue'
 
 export default {
   name: 'TradingPage',
+  components: { CoreMetrics, PriceSummary, TradesTable, ParamsBasic, ParamsOptional, TopActionsBar },
   data() {
     return {
       fileName: '',
@@ -735,7 +233,7 @@ export default {
         this.fileName = file.name
         const reader = new FileReader()
         reader.onload = (e) => {
-          this.parseCSV(e.target.result)
+          this.csvData = parseCSV(e.target.result)
         }
         reader.readAsText(file, 'utf-8')
       }
@@ -746,7 +244,7 @@ export default {
         const fileName = this.parameters.selectedProjectFile + '历史数据.csv'
         const response = await fetch(`/datas/${fileName}`)
         const content = await response.text()
-        this.parseCSV(content)
+        this.csvData = parseCSV(content)
         return true
       } catch (error) {
         console.error('加载项目文件失败:', error)
@@ -780,36 +278,7 @@ export default {
       return dates[dates.length - 1] || ''
     },
 
-
-
-    parseCSV(content) {
-      try {
-        const lines = content.split('\n').filter(line => line.trim())
-        const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim())
-        
-        const data = []
-        for (let i = 1; i < lines.length; i++) {
-          const values = lines[i].split(',').map(v => v.replace(/"/g, '').trim())
-          // 容忍列数不完全匹配的情况
-          if (values.length >= 2 && values.length <= headers.length + 2) {
-            const row = {}
-            headers.forEach((header, index) => {
-              row[header] = index < values.length ? values[index] : ''
-            })
-            // 确保必需的列存在
-            if (row['日期'] && row['收盘']) {
-              data.push(row)
-            }
-          }
-        }
-        
-        this.csvData = data
-        console.log('CSV数据解析完成:', data.length, '条记录')
-      } catch (error) {
-        console.error('CSV解析错误:', error)
-        alert('CSV文件解析失败，请检查文件格式')
-      }
-    },
+    // CSV 解析已迁移至 services
 
     // 获取数据
     async getData() {
@@ -846,7 +315,7 @@ export default {
         await new Promise(resolve => setTimeout(resolve, 1500))
         
         // 执行网格交易算法
-        const results = this.calculateGridTrading(data)
+        const results = calculateGridTrading(data, this.parameters, this.moduleStates)
         this.analysisResults = results
         
         // v3.0: 不再在TradingPage中渲染图表，只显示预览卡片
@@ -858,345 +327,6 @@ export default {
       } finally {
         this.isAnalyzing = false
       }
-    },
-
-    // 增强的网格交易算法
-    calculateGridTrading(data) {
-      const params = this.parameters
-      const initialCapital = params.initialCapital * 10000 // 转换为元
-      
-      // 获取价格数据并反转(最新日期在后)
-      const prices = data.map(row => parseFloat(row['收盘']) || 0).reverse()
-      const dates = data.map(row => row['日期']).reverse()
-      
-      if (prices.length === 0) {
-        throw new Error('价格数据为空')
-      }
-      
-      // 获取建仓索引和建仓价格
-      const basePositionIndex = this.getBasePositionIndex(dates, params)
-      
-      // 获取建仓价格作为网格基准点
-      let gridCenterPrice
-      if (basePositionIndex >= 0 && basePositionIndex < prices.length) {
-        gridCenterPrice = prices[basePositionIndex]
-      } else {
-        // 如果没有有效的建仓索引，使用第一个价格作为基准
-        gridCenterPrice = prices[0]
-        console.warn('使用首日价格作为网格基准点')
-      }
-      
-      // 计算网格间距
-      let gridStep
-      if (params.gridWidthMode === 'percentage') {
-        // 百分比模式：基于建仓价格计算固定比例间距
-        gridStep = gridCenterPrice * params.gridDensity / 100
-      } else {
-        // 数值模式：使用固定的价格间距
-        gridStep = params.gridWidth
-      }
-      
-      // 以建仓价格为中心生成网格线
-      const gridLines = []
-      const halfLevels = Math.floor(params.gridLevels / 2)
-      
-      // 生成下方网格线（买入区域）
-      for (let i = halfLevels; i >= 0; i--) {
-        gridLines.push(gridCenterPrice - i * gridStep)
-      }
-      
-      // 生成上方网格线（卖出区域）
-      for (let i = 1; i <= halfLevels; i++) {
-        gridLines.push(gridCenterPrice + i * gridStep)
-      }
-      
-      // 排序网格线确保从低到高
-      gridLines.sort((a, b) => a - b)
-      
-      // 记录网格信息用于调试
-      console.log('网格基准价格:', gridCenterPrice.toFixed(2))
-      console.log('网格间距:', gridStep.toFixed(2))
-      console.log('网格线范围:', gridLines[0].toFixed(2), '-', gridLines[gridLines.length-1].toFixed(2))
-      
-      // 初始化变量
-      let capital = initialCapital
-      let position = 0
-      let totalProfit = 0
-      let tradeCount = 0
-      let winCount = 0
-      const profitHistory = []
-      const drawdownHistory = []
-      const tradeHistory = []
-      const allocationHistory = []
-      let maxCapital = initialCapital
-      
-      // 买入价格记录(用于计算胜率)
-      const buyPrices = []
-      
-      // 连续下跌天数
-      let consecutiveDownDays = 0
-      
-      for (let i = 0; i < prices.length; i++) {
-        const currentPrice = prices[i]
-        const currentDate = dates[i]
-        let traded = false
-        
-        // 建立底仓
-        if (i === basePositionIndex && params.basePositionRatio > 0) {
-          const baseAmount = initialCapital * params.basePositionRatio / 100
-          const shares = baseAmount / currentPrice
-          const feeRate = this.moduleStates.riskControl ? params.feeRate : 0
-          const fee = baseAmount * feeRate / 100
-          
-          capital -= (baseAmount + fee)
-          position += shares
-          tradeCount++
-          
-          tradeHistory.push({
-            date: currentDate,
-            type: 'buy',
-            price: currentPrice,
-            shares: shares,
-            amount: baseAmount,
-            fee: fee,
-            capital: capital,
-            position: position,
-            reason: '底仓建立'
-          })
-          
-          buyPrices.push(currentPrice)
-          traded = true
-        }
-        
-        // 检查连续下跌(熊市保护) - 仅在风险控制模块启用时生效
-        if (i > 0 && this.moduleStates.riskControl && params.bearMarketProtection) {
-          if (prices[i] < prices[i-1]) {
-            consecutiveDownDays++
-          } else {
-            consecutiveDownDays = 0
-          }
-        }
-        
-        // 网格交易逻辑
-        if (i > 0 && !traded) {
-          const lastPrice = prices[i - 1]
-          
-          for (let j = 0; j < gridLines.length - 1; j++) {
-            const lowerGrid = gridLines[j]
-            const upperGrid = gridLines[j + 1]
-            
-            // 价格下穿买入(考虑熊市保护)
-            if (lastPrice > lowerGrid && currentPrice <= lowerGrid) {
-              const shouldBuy = (!this.moduleStates.riskControl || !params.bearMarketProtection) || consecutiveDownDays < params.bearMarketDays
-              
-              if (shouldBuy && capital > 0) {
-                const currentPositionValue = position * currentPrice
-                const totalAssets = capital + currentPositionValue
-                const positionRatio = currentPositionValue / totalAssets * 100
-                
-                if (positionRatio < params.maxPositionRatio) {
-                  const buyAmount = Math.min(
-                    capital * params.singleTradeRatio / 100,
-                    capital * 0.9 // 保留10%现金
-                  )
-                  
-                  if (buyAmount > 100) { // 最小交易金额
-                    const shares = buyAmount / currentPrice
-                    const feeRate = this.moduleStates.riskControl ? params.feeRate : 0
-                    const fee = buyAmount * feeRate / 100
-                    
-                    capital -= (buyAmount + fee)
-                    position += shares
-                    tradeCount++
-                    
-                    tradeHistory.push({
-                      date: currentDate,
-                      type: 'buy',
-                      price: currentPrice,
-                      shares: shares,
-                      amount: buyAmount,
-                      fee: fee,
-                      capital: capital,
-                      position: position,
-                      reason: `网格买入 (${lowerGrid.toFixed(2)})`
-                    })
-                    
-                    buyPrices.push(currentPrice)
-                    break
-                  }
-                }
-              }
-            }
-            
-            // 价格上穿卖出
-            if (lastPrice < upperGrid && currentPrice >= upperGrid && position > 0) {
-              const sellShares = position * params.singleTradeRatio / 100
-              
-              if (sellShares >= 1) { // 最小卖出1股
-                const sellAmount = sellShares * currentPrice
-                const feeRate = this.moduleStates.riskControl ? params.feeRate : 0
-                const fee = sellAmount * feeRate / 100
-                
-                capital += (sellAmount - fee)
-                position -= sellShares
-                tradeCount++
-                
-                // 计算胜率(如果有买入记录)
-                if (buyPrices.length > 0) {
-                  const avgBuyPrice = buyPrices.reduce((a, b) => a + b, 0) / buyPrices.length
-                  if (currentPrice > avgBuyPrice) {
-                    winCount++
-                  }
-                }
-                
-                tradeHistory.push({
-                  date: currentDate,
-                  type: 'sell',
-                  price: currentPrice,
-                  shares: sellShares,
-                  amount: sellAmount,
-                  fee: fee,
-                  capital: capital,
-                  position: position,
-                  reason: `网格卖出 (${upperGrid.toFixed(2)})`
-                })
-                
-                break
-              }
-            }
-          }
-        }
-        
-        // 计算当前总资产
-        const currentValue = capital + position * currentPrice
-        const profit = currentValue - initialCapital
-        
-        // 风险控制检查 (仅在模块启用时执行)
-        if (this.moduleStates.riskControl) {
-          if (params.stopLossRatio > 0 && profit < -initialCapital * params.stopLossRatio / 100) {
-            // 触发止损
-            console.log('触发止损:', profit, -initialCapital * params.stopLossRatio / 100)
-          }
-          
-          if (params.takeProfitRatio > 0 && profit > initialCapital * params.takeProfitRatio / 100) {
-            // 触发止盈
-            console.log('触发止盈:', profit, initialCapital * params.takeProfitRatio / 100)
-          }
-        }
-        
-        // 其他可选模块的算法集成点 (占位)
-        if (this.moduleStates.advancedStrategy) {
-          // TODO: 集成高级策略算法
-          // console.log('高级策略模块已启用:', params.advancedStrategy)
-        }
-        
-        if (this.moduleStates.marketEnvironment) {
-          // TODO: 集成市场环境分析
-          // console.log('市场环境模块已启用:', params.marketEnvironment)
-        }
-        
-        if (this.moduleStates.fundManagement) {
-          // TODO: 集成资金管理策略
-          // console.log('资金管理模块已启用:', params.fundManagement)
-        }
-        
-        profitHistory.push({
-          date: currentDate,
-          profit: profit,
-          totalValue: currentValue,
-          profitRatio: (profit / initialCapital * 100).toFixed(2)
-        })
-        
-        // 计算回撤
-        if (currentValue > maxCapital) {
-          maxCapital = currentValue
-        }
-        const drawdown = (maxCapital - currentValue) / maxCapital * 100
-        drawdownHistory.push({
-          date: currentDate,
-          drawdown: drawdown
-        })
-        
-        // 资金分布历史
-        allocationHistory.push({
-          date: currentDate,
-          capital: capital,
-          position: position * currentPrice,
-          total: currentValue
-        })
-        
-        totalProfit = profit
-      }
-      
-      // 计算统计指标
-      const days = prices.length
-      const years = days / 365
-      const annualReturn = years > 0 ? ((totalProfit + initialCapital) / initialCapital - 1) / years * 100 : 0
-      const maxDrawdown = Math.max(...drawdownHistory.map(d => d.drawdown))
-      const winRate = tradeCount > 0 ? (winCount / tradeCount * 100).toFixed(2) : '0.00'
-      const sharpeRatio = this.calculateSharpeRatio(profitHistory)
-      
-      // 计算价格范围用于显示
-      const maxPrice = Math.max(...prices)
-      const minPrice = Math.min(...prices)
-      
-      return {
-        // 基础指标
-        annualReturn: annualReturn.toFixed(2),
-        totalProfit: totalProfit.toFixed(2),
-        maxDrawdown: maxDrawdown.toFixed(2),
-        tradeCount: tradeCount,
-        winRate: winRate,
-        sharpeRatio: sharpeRatio,
-        
-        // 价格指标
-        basePositionPrice: basePositionIndex >= 0 ? prices[basePositionIndex].toFixed(2) : '未建仓',
-        gridCenterPrice: gridCenterPrice.toFixed(2), // 新增：网格基准价格
-        periodHighPrice: maxPrice.toFixed(2),
-        periodLowPrice: minPrice.toFixed(2),
-        
-        // 网格信息
-        gridStep: gridStep.toFixed(2), // 新增：网格间距
-        gridRange: `${gridLines[0].toFixed(2)} - ${gridLines[gridLines.length-1].toFixed(2)}`, // 新增：网格覆盖范围
-        
-        // 历史数据
-        profitHistory: profitHistory,
-        drawdownHistory: drawdownHistory,
-        tradeHistory: tradeHistory,
-        allocationHistory: allocationHistory,
-        gridLines: gridLines,
-        prices: prices,
-        dates: dates
-      }
-    },
-
-    // 工具方法
-    getBasePositionIndex(dates, params) {
-      if (params.basePositionMode === 'days') {
-        return Math.min(params.basePositionDays - 1, dates.length - 1)
-      } else if (params.basePositionMode === 'date' && params.basePositionDate) {
-        const targetDate = params.basePositionDate
-        const index = dates.findIndex(date => date === targetDate)
-        return index >= 0 ? index : -1
-      }
-      return -1
-    },
-
-    calculateSharpeRatio(profitHistory) {
-      if (profitHistory.length < 2) return '0.00'
-      
-      const returns = []
-      for (let i = 1; i < profitHistory.length; i++) {
-        const dailyReturn = (profitHistory[i].totalValue - profitHistory[i-1].totalValue) / profitHistory[i-1].totalValue
-        returns.push(dailyReturn)
-      }
-      
-      const avgReturn = returns.reduce((a, b) => a + b, 0) / returns.length
-      const variance = returns.reduce((a, b) => a + Math.pow(b - avgReturn, 2), 0) / returns.length
-      const volatility = Math.sqrt(variance)
-      
-      const sharpeRatio = volatility > 0 ? (avgReturn / volatility) * Math.sqrt(252) : 0
-      return sharpeRatio.toFixed(2)
     },
 
     // v3.0: 图表渲染方法已移至ChartVisualization组件
@@ -1251,6 +381,25 @@ export default {
   text-align: center;
   margin-bottom: 30px;
 }
+
+.top-actions {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn {
+  justify-self: start;
+  padding: 6px 12px;
+  border-radius: 16px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+}
+
+.top-actions .page-title { margin: 0 auto; }
+.top-actions .nav-btn:last-child { justify-self: end; }
 
 .page-title {
   color: var(--primary);
@@ -1905,67 +1054,7 @@ export default {
   font-style: italic;
 }
 
-/* 图表容器 - 保留但不使用 */
-.charts-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-  gap: 20px;
-}
-
-.chart-card {
-  background: rgba(248, 245, 242, 0.7);
-  border-radius: var(--border-radius);
-  padding: 20px;
-  box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-  transition: var(--transition);
-  border: 1px solid rgba(212, 184, 160, 0.3);
-  backdrop-filter: blur(5px);
-}
-
-.chart-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-}
-
-.chart-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.chart-title {
-  color: #333;
-  font-size: 1.1em;
-  font-weight: 600;
-  margin: 0;
-}
-
-.detail-button {
-  background: var(--accent);
-  color: white;
-  border: none;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 0.8em;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.detail-button:hover {
-  background: #c4a888;
-  transform: scale(1.05);
-}
-
-.chart-wrapper {
-  position: relative;
-  height: 250px;
-}
-
-.chart-canvas {
-  width: 100% !important;
-  height: 100% !important;
-}
+/* 已移除：图表容器相关样式（本页不再渲染图表） */
 
 /* 交易记录表格 */
 .trades-table-wrapper {
@@ -2029,91 +1118,7 @@ export default {
   color: var(--danger-color);
 }
 
-/* 模态框 */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0,0,0,0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-  backdrop-filter: blur(5px);
-}
-
-.modal-content {
-  background: rgba(248, 245, 242, 0.95);
-  border-radius: var(--border-radius);
-  width: 90%;
-  max-width: 1200px;
-  max-height: 85%;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-  animation: modalSlideIn 0.3s ease-out;
-  border: 2px solid rgba(212, 184, 160, 0.4);
-  backdrop-filter: blur(10px);
-}
-
-@keyframes modalSlideIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9) translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1) translateY(0);
-  }
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 25px;
-  border-bottom: 1px solid #eee;
-}
-
-.modal-header h3 {
-  margin: 0;
-  color: #333;
-  font-size: 1.3em;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 1.5em;
-  cursor: pointer;
-  color: #999;
-  padding: 5px;
-  border-radius: 50%;
-  width: 35px;
-  height: 35px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: var(--transition);
-}
-
-.close-button:hover {
-  background: #f5f5f5;
-  color: #333;
-}
-
-.modal-body {
-  padding: 25px;
-  flex: 1;
-  overflow: auto;
-}
-
-.detail-chart-canvas {
-  width: 100% !important;
-  height: 450px !important;
-}
+/* 已移除：模态框样式（v3.0 已不使用） */
 
 /* 响应式设计 */
 @media (max-width: 1200px) {

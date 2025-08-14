@@ -8,6 +8,7 @@ import BlogList from '../components/BlogList.vue'
 import About from '../components/About.vue'
 import TradingPage from '../components/trading/TradingPage.vue'
 import ChartVisualization from '../components/trading/ChartVisualization.vue'
+import OperationGuide from '../components/trading/OperationGuide.vue'
 import DataSender from '../components/study/数据结构传递/DataSender.vue'
 
 const routes = [
@@ -40,6 +41,12 @@ const routes = [
     name: 'ChartVisualization',
     component: ChartVisualization,
     meta: { title: '可视化分析中心 - 专业图表分析' }
+  },
+  {
+    path: '/op-guide',
+    name: 'OperationGuide',
+    component: OperationGuide,
+    meta: { title: '可视化分析操作说明' }
   },
   // Vue数据传递演示 - 学习用途
   {
