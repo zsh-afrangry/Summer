@@ -76,6 +76,12 @@ export function calculateGridTrading(data, params, moduleStates) {
 
   // 建仓索引与基准价
   const basePositionIndex = getBasePositionIndex(dates, params)
+  // 若用户选择 date 模式但未命中有效日期，直接抛错，禁止使用隐式默认
+  if (params.basePositionMode === 'date' && (!params.basePositionDate || basePositionIndex === -1)) {
+    throw new Error('建仓日期无效或不在数据范围内')
+  }
+  // 回测起点：从建仓日开始；若未能定位建仓日，则从最早日期开始
+  const analysisStartIndex = basePositionIndex >= 0 ? basePositionIndex : 0
   let gridCenterPrice
   if (basePositionIndex >= 0 && basePositionIndex < prices.length) {
     gridCenterPrice = prices[basePositionIndex]
@@ -122,6 +128,11 @@ export function calculateGridTrading(data, params, moduleStates) {
     const currentDate = dates[i]
     let traded = false
 
+    // 到达回测起点时，重置连续下跌计数，确保不受起点之前数据影响
+    if (i === analysisStartIndex) {
+      consecutiveDownDays = 0
+    }
+
     // 底仓
     if (i === basePositionIndex && params.basePositionRatio > 0) {
       const baseAmount = initialCapital * params.basePositionRatio / 100
@@ -156,8 +167,8 @@ export function calculateGridTrading(data, params, moduleStates) {
       }
     }
 
-    // 网格交易
-    if (i > 0 && !traded) {
+    // 网格交易：仅在回测起点及之后进行
+    if (i > 0 && !traded && i >= analysisStartIndex) {
       const lastPrice = prices[i - 1]
       for (let j = 0; j < gridLines.length - 1; j++) {
         const lowerGrid = gridLines[j]

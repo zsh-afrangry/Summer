@@ -97,6 +97,14 @@ export default {
   },
   mounted() {
     this.$nextTick(() => {
+      // 没有分析数据则返回分析页
+      const hasData = !!(this.analysisResults || JSON.parse(sessionStorage.getItem('tradingAnalysisResults') || 'null'))
+      if (!hasData) {
+        alert('请先完成回测分析')
+        this.$router.push('/trading-page')
+        return
+      }
+
       this.initProfitChart()
       this.initPriceGridChart()
       this.initDrawdownChart()

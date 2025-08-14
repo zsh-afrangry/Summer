@@ -220,12 +220,92 @@ export default {
       this.analysisResults = null
       this.csvData = null
       this.fileName = ''
+      try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) {}
+    },
+    // 任意参数变化：清除现有结果，防止旧结果被误用
+    parameters: {
+      deep: true,
+      handler() {
+        this.analysisResults = null
+        try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) {}
+      }
+    },
+    // 模块开关变化：同样清除结果
+    moduleStates: {
+      deep: true,
+      handler() {
+        this.analysisResults = null
+        try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) {}
+      }
     },
     'parameters.basePositionMode'() {
       // 切换建仓模式时，不需要强制更新，Vue的响应式系统会自动处理
     }
   },
   methods: {
+    // 运行前校验：严格禁止使用默认/无效配置进入回测
+    validateBeforeRun(data) {
+      const errors = []
+      const params = this.parameters || {}
+      const states = this.moduleStates || {}
+
+      // 数据源
+      if (!Array.isArray(data) || data.length === 0) {
+        errors.push('数据源未加载或为空')
+      }
+
+      const totalDays = Array.isArray(data) ? data.length : 0
+      const allDates = Array.isArray(data) ? data.map(r => r['日期']) : []
+
+      // 资金配置
+      if (!(params.initialCapital > 0)) errors.push('初始资金必须大于0')
+      if (!(params.basePositionRatio >= 0)) errors.push('底仓比例必须≥0')
+      if (!(params.singleTradeRatio >= 1 && params.singleTradeRatio <= 20)) errors.push('单次交易比例须在[1,20]%')
+      if (!(params.maxPositionRatio >= 0 && params.maxPositionRatio <= 95)) errors.push('最大持仓比例须≤95%')
+      if (!(params.basePositionRatio <= params.maxPositionRatio)) errors.push('底仓比例不得大于最大持仓比例')
+
+      // 网格配置
+      if (!(params.gridLevels >= 5)) errors.push('网格层数须≥5')
+      if (params.gridWidthMode === 'percentage') {
+        if (!(params.gridDensity >= 0.5 && params.gridDensity <= 10)) {
+          errors.push('网格密度(%)须在[0.5,10]')
+        }
+      } else if (params.gridWidthMode === 'value') {
+        if (!(params.gridWidth > 0)) errors.push('网格宽度(元)须>0')
+      } else {
+        errors.push('网格宽度模式无效')
+      }
+
+      // 建仓配置
+      if (params.basePositionMode === 'days') {
+        if (!(Number.isFinite(params.basePositionDays) && params.basePositionDays >= 1 && params.basePositionDays <= totalDays)) {
+          errors.push('建仓天数必须在[1, 数据长度]范围内')
+        }
+      } else if (params.basePositionMode === 'date') {
+        if (!params.basePositionDate) {
+          errors.push('建仓日期未设置')
+        } else if (!allDates.includes(params.basePositionDate)) {
+          errors.push('建仓日期不在数据范围内')
+        }
+      } else {
+        errors.push('建仓模式无效')
+      }
+
+      // 可选模块：仅在启用时校验
+      if (states.riskControl) {
+        if (!(params.feeRate >= 0 && params.feeRate <= 1)) errors.push('手续费率(%)须在[0,1]')
+        if (!(params.bearMarketDays >= 1)) errors.push('熊市保护的连续下跌天数须≥1')
+        if (!(params.stopLossRatio >= 0 && params.stopLossRatio <= 20)) errors.push('止损比例(%)须在[0,20]')
+        if (!(params.takeProfitRatio >= 0 && params.takeProfitRatio <= 50)) errors.push('止盈比例(%)须在[0,50]')
+        if (!(params.maxDrawdownLimit >= 0 && params.maxDrawdownLimit <= 30)) errors.push('最大回撤限制(%)须在[0,30]')
+      }
+
+      if (errors.length > 0) {
+        alert('参数校验未通过:\n' + errors.map((e, i) => `${i + 1}. ${e}`).join('\n'))
+        return false
+      }
+      return true
+    },
     // 数据管理方法
     handleFileUpload(event) {
       const file = event.target.files[0]
@@ -301,8 +381,6 @@ export default {
 
     // 主要分析方法
     async runGridTrading() {
-      this.isAnalyzing = true
-      
       try {
         // 获取数据
         const data = await this.getData()
@@ -310,20 +388,26 @@ export default {
           alert('请先选择有效的数据源')
           return
         }
-        
+
+        // 参数校验
+        const ok = this.validateBeforeRun(data)
+        if (!ok) return
+
+        this.isAnalyzing = true
+
         // 模拟分析过程
         await new Promise(resolve => setTimeout(resolve, 1500))
-        
+
         // 执行网格交易算法
         const results = calculateGridTrading(data, this.parameters, this.moduleStates)
         this.analysisResults = results
-        
+
         // v3.0: 不再在TradingPage中渲染图表，只显示预览卡片
         // 图表渲染已移至ChartVisualization组件
-        
+
       } catch (error) {
         console.error('分析错误:', error)
-        alert('分析过程中出现错误: ' + error.message)
+        alert('分析过程中出现错误: ' + (error && error.message ? error.message : error))
       } finally {
         this.isAnalyzing = false
       }

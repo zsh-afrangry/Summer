@@ -1,50 +1,36 @@
 services:
-  frontend:
-    # 使用阿里云 ACR 镜像（服务器仅能从阿里云拉取时务必保持此格式）
-    # 当前采用自定义标签 :aliyun 用于区分阿里云版本；如需固定版本可改为 :v1.0.0 等
-    image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/summer-frontend:aliyun
-    container_name: frontend
-    volumes:
-      - frontend-dist:/usr/share/nginx/html
-
   backend:
     # 使用阿里云 ACR 镜像（与前端相同的 Registry/命名空间/仓库规则）
-    # 当前采用自定义标签 :aliyun 用于区分阿里云版本；建议仍保留版本号标签以便回滚
-    image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/summer-backend:aliyun
+    # 为减少频繁打标签，采用 stable tag：latest（如需回滚可推送带版本号的并临时改 compose）
+    image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/summer-backend:latest
     container_name: backend
-    ports:
-      - "8081:8080"
     depends_on:
       - mysql
+    restart: always
 
   mysql:
-    image: mysql:5.7
-    # 注意：若服务器无法访问 Docker Hub，请将 mysql:5.7 预先推送到 ACR 并改为如下示例：
-    # image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/mysql:5.7
+    image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/summer-mysql:latest
     container_name: mysql
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: my_blog
-    ports:
-      - "3307:3306"
     volumes:
-      - ./mysql/init:/docker-entrypoint-initdb.d
       - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-proot"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: always
 
   nginx:
-    image: nginx:latest
-    # 注意：若服务器无法访问 Docker Hub，请将 nginx:latest 预先推送到 ACR 并改为如下示例：
-    # image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/nginx:latest
+    image: crpi-q0fu55ysz8p6bskr.cn-beijing.personal.cr.aliyuncs.com/zshlyyyds/summer-nginx:latest
     container_name: nginx
     ports:
       - "80:80"
-    volumes:
-      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
-      - frontend-dist:/usr/share/nginx/html
     depends_on:
-      - frontend
       - backend
+    restart: always
 
 volumes:
   mysql-data:
-  frontend-dist:
