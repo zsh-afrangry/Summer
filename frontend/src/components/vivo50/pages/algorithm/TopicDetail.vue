@@ -1,232 +1,42 @@
 <template>
   <div class="elegant-container topic-detail-container">
     <div class="topic-detail-layout">
-      <!-- 左侧导航栏 -->
-      <aside class="topic-sidebar">
-        <div class="sidebar-header">
-          <button class="back-btn" @click="goBack">
-            <i>←</i> 返回
-          </button>
-          <h3 class="sidebar-title">{{ currentTopic.name }}</h3>
-        </div>
-        
-        <div class="sidebar-content">
-          <div class="sidebar-section">
-            <h4 class="section-title">📚 学习大纲</h4>
-            <ul class="outline-list">
-              <li 
-                v-for="section in learningSections" 
-                :key="section.id"
-                class="outline-item"
-                :class="{ active: activeSection === section.id }"
-                @click="scrollToSection(section.id)"
-              >
-                <span class="outline-icon">{{ section.icon }}</span>
-                <span class="outline-text">{{ section.title }}</span>
-                <span class="outline-status" :class="section.status">
-                  {{ getStatusIcon(section.status) }}
-                </span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </aside>
-
       <!-- 主内容区域 -->
       <main class="topic-main-content">
         <!-- 页面头部 -->
         <header class="topic-header" id="header">
+          <div class="header-top">
+            <button class="back-btn" @click="goBack">
+              <i>←</i> 返回
+            </button>
+          </div>
+          
           <div class="topic-title-section">
             <div class="topic-icon-large">{{ currentTopic.icon }}</div>
             <div class="topic-title-info">
               <h1 class="topic-main-title">{{ currentTopic.name }}</h1>
-              <p class="topic-subtitle">{{ currentTopic.description }}</p>
-              <div class="topic-meta">
-                <span class="meta-item">
-                  <i>⏱️</i> 预计 {{ currentTopic.estimatedHours }}h
-                </span>
-                <span class="meta-item">
-                  <i>📊</i> {{ currentTopic.totalProblems }} 道题
-                </span>
-                <span class="meta-item difficulty" :class="`difficulty-${currentTopic.difficulty}`">
-                  <i>🎯</i> {{ getDifficultyText(currentTopic.difficulty) }}
-                </span>
-              </div>
-            </div>
-          </div>
-          
-          <div class="topic-progress-section">
-            <div class="progress-circle">
-              <svg viewBox="0 0 36 36" class="circular-chart">
-                <path class="circle-bg"
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <path class="circle"
-                  :stroke-dasharray="`${currentTopic.progress}, 100`"
-                  d="M18 2.0845
-                    a 15.9155 15.9155 0 0 1 0 31.831
-                    a 15.9155 15.9155 0 0 1 0 -31.831"
-                />
-                <text x="18" y="20.35" class="percentage">{{ currentTopic.progress }}%</text>
-              </svg>
+              <p class="topic-subtitle">{{ currentTopic.subtitle || '副标题副标题副标题' }}</p>
             </div>
           </div>
         </header>
 
         <!-- 内容区域 -->
         <div class="topic-content">
-          <!-- 数组基础 -->
-          <section class="content-section" id="array-basic">
-            <h2 class="section-heading">
-              <span class="heading-icon">📊</span>
-              数组基础
-            </h2>
-            <div class="notion-block">
-              <div class="section-content">
-                <!-- 文字部分 -->
-                <div class="text-content">
-                  <h3>核心概念</h3>
-                  <p>数组是最基础的数据结构，将相同类型的元素存储在连续的内存空间中。数组支持随机访问，时间复杂度为 O(1)。</p>
-                  
-                  <h3>主要特点</h3>
-                  <ul>
-                    <li><strong>连续存储</strong>：元素在内存中连续存放</li>
-                    <li><strong>随机访问</strong>：通过索引可以直接访问任意元素</li>
-                    <li><strong>固定大小</strong>：创建后大小通常不可变</li>
-                    <li><strong>类型统一</strong>：所有元素必须是同一类型</li>
-                  </ul>
-
-                  <h3>时间复杂度</h3>
-                  <div class="complexity-table">
-                    <div class="complexity-item">
-                      <span class="operation">访问</span>
-                      <span class="time">O(1)</span>
-                    </div>
-                    <div class="complexity-item">
-                      <span class="operation">查找</span>
-                      <span class="time">O(n)</span>
-                    </div>
-                    <div class="complexity-item">
-                      <span class="operation">插入</span>
-                      <span class="time">O(n)</span>
-                    </div>
-                    <div class="complexity-item">
-                      <span class="operation">删除</span>
-                      <span class="time">O(n)</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 代码部分 -->
-                <div class="text-content">
-                  <h3>Java 代码实现</h3>
-                  <div class="code-display">
-                    <div class="code-header">
-                      <span class="code-filename">ArrayBasic.java</span>
-                    </div>
-                    <pre class="code-content"><code class="language-java">代码演示</code></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 哈希表基础 -->
-          <section class="content-section" id="hash-basic">
-            <h2 class="section-heading">
-              <span class="heading-icon">🔑</span>
-              哈希表基础
-            </h2>
-            <div class="notion-block">
-              <div class="section-content">
-                <!-- 文字部分 -->
-                <div class="text-content">
-                  <h3>核心概念</h3>
-                  <p>哈希表（Hash Table）是根据键（Key）直接访问在内存储存位置的数据结构。通过哈希函数计算出键对应的索引，实现快速的插入、删除和查找操作。</p>
-                  
-                  <h3>主要特点</h3>
-                  <ul>
-                    <li><strong>快速访问</strong>：平均时间复杂度 O(1)</li>
-                    <li><strong>键值对存储</strong>：通过键来访问对应的值</li>
-                    <li><strong>哈希函数</strong>：将键映射到数组索引</li>
-                    <li><strong>冲突处理</strong>：处理不同键映射到相同索引的情况</li>
-                  </ul>
-
-                  <h3>冲突解决方法</h3>
-                  <div class="method-grid">
-                    <div class="method-item">
-                      <strong>链地址法</strong>
-                      <p>在冲突位置维护一个链表</p>
-                    </div>
-                    <div class="method-item">
-                      <strong>开放地址法</strong>
-                      <p>线性探测找到下一个空位</p>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 代码部分 -->
-                <div class="text-content">
-                  <h3>Java 代码实现</h3>
-                  <div class="code-display">
-                    <div class="code-header">
-                      <span class="code-filename">HashTableBasic.java</span>
-                    </div>
-                    <pre class="code-content"><code class="language-java">代码演示</code></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          <!-- 双指针技巧 -->
-          <section class="content-section" id="two-pointer">
-            <h2 class="section-heading">
-              <span class="heading-icon">👥</span>
-              双指针技巧
-            </h2>
-            <div class="notion-block">
-              <div class="section-content">
-                <!-- 文字部分 -->
-                <div class="text-content">
-                  <h3>核心概念</h3>
-                  <p>双指针是一种常用的算法技巧，通过维护两个指针来解决数组和字符串问题。可以有效降低时间复杂度，通常将 O(n²) 的问题优化为 O(n)。</p>
-                  
-                  <h3>常见模式</h3>
-                  <div class="pattern-grid">
-                    <div class="pattern-item">
-                      <strong>对撞指针</strong>
-                      <p>两个指针从数组两端向中间移动</p>
-                      <span class="use-case">用于：回文判断、两数之和</span>
-                    </div>
-                    <div class="pattern-item">
-                      <strong>快慢指针</strong>
-                      <p>两个指针以不同速度移动</p>
-                      <span class="use-case">用于：环检测、找中点</span>
-                    </div>
-                    <div class="pattern-item">
-                      <strong>同向指针</strong>
-                      <p>两个指针同方向移动</p>
-                      <span class="use-case">用于：滑动窗口、去重</span>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- 代码部分 -->
-                <div class="text-content">
-                  <h3>Java 代码实现</h3>
-                  <div class="code-display">
-                    <div class="code-header">
-                      <span class="code-filename">TwoPointer.java</span>
-                    </div>
-                    <pre class="code-content"><code class="language-java">代码演示</code></pre>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </section>
+          <!-- 加载状态 -->
+          <div v-if="loading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p>正在加载内容...</p>
+          </div>
+          
+          <!-- 错误状态 -->
+          <div v-else-if="error" class="error-container">
+            <div class="error-icon">⚠️</div>
+            <p>{{ error }}</p>
+            <button @click="loadContent" class="retry-btn">重试</button>
+          </div>
+          
+          <!-- 动态内容 -->
+          <div v-else class="dynamic-content" v-html="contentHtml"></div>
         </div>
       </main>
     </div>
@@ -235,24 +45,81 @@
 
 <script>
 import { algorithmTopics } from '../../data/algorithmTopics.js'
+import MarkdownIt from 'markdown-it'
+import DOMPurify from 'dompurify'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/vs2015.css' // 代码高亮样式
 
 export default {
   name: 'TopicDetail',
   data() {
     return {
       currentTopic: {},
-      activeSection: 'array-basic',
-      learningSections: [
-        { id: 'array-basic', title: '数组基础', icon: '📊', status: 'completed' },
-        { id: 'hash-basic', title: '哈希表基础', icon: '🔑', status: 'in_progress' },
-        { id: 'two-pointer', title: '双指针技巧', icon: '👥', status: 'pending' }
-      ]
+      contentHtml: '', // 存储渲染后的内容
+      loading: false,
+      error: null,
+      md: null // Markdown 解析器实例
     }
   },
   created() {
+    this.initMarkdownParser()
     this.loadTopicData()
+    this.loadContent()
   },
   methods: {
+    initMarkdownParser() {
+      this.md = new MarkdownIt({
+        html: true, // 允许 HTML 标签
+        linkify: true, // 自动识别链接
+        typographer: true, // 自动替换标点符号
+        highlight: function (str, lang) {
+          if (lang && hljs.getLanguage(lang)) {
+            try {
+              return hljs.highlight(str, { language: lang }).value
+            } catch (__) {
+              // 高亮失败时忽略错误，使用默认转义
+            }
+          }
+          return '' // 使用外部默认转义
+        }
+      })
+    },
+    async loadContent() {
+      this.loading = true
+      this.error = null
+      
+      const topicId = this.$route.params.topicId || 'test' // 默认使用 test 文件
+      
+      try {
+        // 优先尝试加载 Markdown 文件
+        const mdResponse = await fetch(`/vivo50/resources/MD/${topicId}.md`)
+        if (mdResponse.ok) {
+          const mdContent = await mdResponse.text()
+          this.contentHtml = DOMPurify.sanitize(this.md.render(mdContent))
+          return
+        }
+        
+        // 如果 MD 文件不存在，尝试加载 HTML 文件
+        const htmlResponse = await fetch(`/vivo50/resources/HTML/${topicId}.html`)
+        if (htmlResponse.ok) {
+          const htmlContent = await htmlResponse.text()
+          // 对于 HTML 文件，提取 body 内容并清理
+          const bodyMatch = htmlContent.match(/<body[^>]*>([\s\S]*?)<\/body>/i)
+          const content = bodyMatch ? bodyMatch[1] : htmlContent
+          this.contentHtml = DOMPurify.sanitize(content)
+          return
+        }
+        
+        // 如果都不存在，显示错误信息
+        this.error = `未找到主题 "${topicId}" 的内容文件`
+        
+      } catch (error) {
+        console.error('加载内容失败:', error)
+        this.error = `加载内容时出错: ${error.message}`
+      } finally {
+        this.loading = false
+      }
+    },
     loadTopicData() {
       const topicId = this.$route.params.topicId || 'array'
       this.currentTopic = algorithmTopics.find(topic => topic.id === topicId) || algorithmTopics[0]
@@ -260,20 +127,15 @@ export default {
     goBack() {
       this.$router.go(-1)
     },
-    scrollToSection(sectionId) {
-      this.activeSection = sectionId
-      const element = document.getElementById(sectionId)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
-    },
-    getDifficultyText(difficulty) {
-      const map = { 'easy': '简单', 'medium': '中等', 'hard': '困难' }
-      return map[difficulty] || difficulty
-    },
-    getStatusIcon(status) {
-      const map = { 'completed': '✅', 'in_progress': '🟡', 'pending': '⚪' }
-      return map[status] || '⚪'
+
+
+
+  },
+  watch: {
+    '$route'() {
+      // 路由变化时重新加载内容
+      this.loadTopicData()
+      this.loadContent()
     }
   }
 }
@@ -289,30 +151,33 @@ export default {
 }
 
 .topic-detail-layout {
-  display: flex;
   min-height: 100vh;
-  max-width: 1400px;
+  max-width: 1200px;
   margin: 0 auto;
 }
 
-/* 侧边栏样式 - 使用主题中的卡片样式 */
-.topic-sidebar {
-  width: 280px;
-  background: var(--bg-primary);
-  border-right: 1px solid var(--border-light);
-  position: sticky;
-  top: 0;
-  height: 100vh;
+/* 主内容区域 - 使用主题样式 */
+.topic-main-content {
+  width: 100%;
+  padding: 0;
+  background: white;
   overflow-y: auto;
-  flex-shrink: 0;
 }
 
-.sidebar-header {
-  padding: 1.5rem;
+/* 页面头部 - 简化样式 */
+.topic-header {
+  padding: 2rem 3rem 3rem;
+  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
   border-bottom: 1px solid var(--border-light);
+  box-shadow: var(--card-shadow);
+  backdrop-filter: blur(10px);
 }
 
-/* 使用主题的按钮样式基础 */
+.header-top {
+  margin-bottom: 2rem;
+}
+
+/* 返回按钮样式 */
 .back-btn {
   display: inline-flex;
   align-items: center;
@@ -327,7 +192,6 @@ export default {
   cursor: pointer;
   transition: var(--transition);
   text-decoration: none;
-  margin-bottom: 1rem;
 }
 
 .back-btn:hover {
@@ -335,97 +199,10 @@ export default {
   color: white;
 }
 
-.sidebar-title {
-  font-family: 'Cormorant Garamond', serif;
-  font-weight: 500;
-  letter-spacing: 0.5px;
-  font-size: 1.1em;
-  margin: 0;
-  color: var(--text);
-}
-
-.sidebar-content {
-  padding: 1rem;
-}
-
-.sidebar-section {
-  margin-bottom: 2rem;
-}
-
-.section-title {
-  font-size: 0.9em;
-  font-weight: 600;
-  color: var(--text);
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-/* 导航列表 - 简化样式 */
-.outline-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.outline-item {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.75rem;
-  border-radius: 6px;
-  cursor: pointer;
-  transition: var(--transition);
-  font-size: 0.9em;
-}
-
-.outline-item:hover {
-  background: var(--bg-accent);
-}
-
-.outline-item.active {
-  background: var(--accent);
-  color: white;
-}
-
-.outline-icon {
-  font-size: 1.1em;
-}
-
-.outline-text {
-  flex: 1;
-  font-weight: 500;
-}
-
-.outline-status {
-  font-size: 0.8em;
-}
-
-/* 主内容区域 - 使用主题样式 */
-.topic-main-content {
-  flex: 1;
-  padding: 0;
-  background: white;
-  overflow-y: auto;
-}
-
-/* 页面头部 - 简化样式 */
-.topic-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 3rem;
-  background: linear-gradient(135deg, var(--bg-primary), var(--bg-secondary));
-  border-bottom: 1px solid var(--border-light);
-  box-shadow: var(--card-shadow);
-  backdrop-filter: blur(10px);
-}
-
 .topic-title-section {
   display: flex;
   gap: 1.5rem;
-  flex: 1;
+  align-items: flex-start;
 }
 
 .topic-icon-large {
@@ -449,69 +226,9 @@ export default {
   line-height: 1.5;
 }
 
-.topic-meta {
-  display: flex;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-}
 
-.meta-item {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.9rem;
-  color: var(--light-text);
-}
 
-/* 使用主题的功能色彩 */
-.meta-item.difficulty.difficulty-easy { color: var(--success-color); }
-.meta-item.difficulty.difficulty-medium { color: var(--warning-color); }
-.meta-item.difficulty.difficulty-hard { color: var(--danger-color); }
 
-/* 进度圆环 - 保持原有样式 */
-.topic-progress-section {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.progress-circle {
-  width: 80px;
-  height: 80px;
-}
-
-.circular-chart {
-  display: block;
-  margin: 0 auto;
-  max-width: 80%;
-  max-height: 250px;
-}
-
-.circle-bg {
-  fill: none;
-  stroke: var(--border-light);
-  stroke-width: 2.8;
-}
-
-.circle {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2.8;
-  stroke-linecap: round;
-  animation: progress 1s ease-out forwards;
-}
-
-.percentage {
-  fill: var(--text);
-  font-family: sans-serif;
-  font-size: 0.5em;
-  text-anchor: middle;
-  font-weight: 600;
-}
-
-@keyframes progress {
-  0% { stroke-dasharray: 0 100; }
-}
 
 /* 内容区域 - 使用主题样式 */
 .topic-content {
@@ -859,12 +576,176 @@ export default {
 
 
 
+/* 动态内容样式 */
+.dynamic-content {
+  background: var(--bg-primary);
+  border-radius: var(--border-radius);
+  padding: 2rem;
+  box-shadow: var(--card-shadow);
+  border: 1px solid var(--border-light);
+  backdrop-filter: blur(10px);
+}
+
+/* 确保动态内容中的样式正确 */
+.dynamic-content h1,
+.dynamic-content h2,
+.dynamic-content h3,
+.dynamic-content h4,
+.dynamic-content h5,
+.dynamic-content h6 {
+  font-family: 'Cormorant Garamond', serif;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--text);
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.dynamic-content h1 { font-size: 2rem; }
+.dynamic-content h2 { font-size: 1.6rem; }
+.dynamic-content h3 { font-size: 1.3rem; }
+
+.dynamic-content p {
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  color: var(--text);
+}
+
+.dynamic-content ul,
+.dynamic-content ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.dynamic-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.dynamic-content code {
+  background: var(--bg-accent);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: 'Consolas', 'Monaco', monospace;
+  font-size: 0.9em;
+  color: #eb5757;
+}
+
+.dynamic-content pre {
+  background: #1e1e1e;
+  border-radius: var(--border-radius);
+  padding: 1.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.dynamic-content pre code {
+  background: transparent;
+  color: #d4d4d4;
+  padding: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.dynamic-content blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1rem;
+  margin: 1rem 0;
+  color: var(--light-text);
+  font-style: italic;
+}
+
+.dynamic-content hr {
+  border: none;
+  border-top: 1px solid var(--border-light);
+  margin: 2rem 0;
+}
+
+.dynamic-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1rem 0;
+}
+
+.dynamic-content th,
+.dynamic-content td {
+  border: 1px solid var(--border-medium);
+  padding: 0.75rem;
+  text-align: left;
+}
+
+.dynamic-content th {
+  background: var(--bg-secondary);
+  font-weight: 600;
+}
+
+/* 加载状态样式 */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid var(--border-light);
+  border-top: 4px solid var(--accent);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* 错误状态样式 */
+.error-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+  background: var(--bg-primary);
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-light);
+}
+
+.error-icon {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.error-container p {
+  color: var(--light-text);
+  margin-bottom: 1.5rem;
+  font-size: 1.1rem;
+}
+
+.retry-btn {
+  padding: 0.75rem 1.5rem;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.retry-btn:hover {
+  background: var(--accent);
+  opacity: 0.8;
+}
+
 /* 响应式设计 - 简化版本 */
 @media (max-width: 1024px) {
-  .topic-sidebar {
-    width: 240px;
-  }
-  
   .topic-header {
     padding: 2rem;
   }
@@ -875,31 +756,22 @@ export default {
 }
 
 @media (max-width: 768px) {
-  .topic-detail-layout {
-    flex-direction: column;
-  }
-  
-  .topic-sidebar {
-    width: 100%;
-    height: auto;
-    position: static;
-    border-right: none;
-    border-bottom: 1px solid var(--border-light);
-  }
-  
   .topic-header {
-    flex-direction: column;
-    gap: 1.5rem;
     padding: 1.5rem;
+  }
+  
+  .topic-title-section {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
   }
   
   .topic-content {
     padding: 1rem;
   }
   
-  .complexity-table,
-  .method-grid {
-    grid-template-columns: 1fr;
+  .dynamic-content {
+    padding: 1.5rem;
   }
 }
 </style>

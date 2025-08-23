@@ -16,5 +16,11 @@
       </schema-mapping>
       <load-sources>user_and_system_sources</load-sources>
     </data-source>
+    <data-source name="my_blog@mysql-dev" uuid="7bdd1854-986a-41e1-a987-0d8a5e9ef7a0">
+      <database-info product="" version="" jdbc-version="" driver-name="" driver-version="" dbms="MYSQL" />
+      <user-name>root</user-name>
+      <schema-mapping />
+      <load-sources>user_and_system_sources</load-sources>
+    </data-source>
   </component>
 </project>

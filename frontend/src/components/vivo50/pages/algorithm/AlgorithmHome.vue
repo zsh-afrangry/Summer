@@ -63,29 +63,7 @@
     <div class="elegant-section">
       <div class="elegant-card-header">
         <h3 class="elegant-card-title">📚 知识点模块</h3>
-        <div class="algorithm-filter-tabs">
-          <button 
-            class="filter-tab" 
-            :class="{ active: activeFilter === 'all' }"
-            @click="activeFilter = 'all'"
-          >
-            全部
-          </button>
-          <button 
-            class="filter-tab" 
-            :class="{ active: activeFilter === 'in_progress' }"
-            @click="activeFilter = 'in_progress'"
-          >
-            进行中
-          </button>
-          <button 
-            class="filter-tab" 
-            :class="{ active: activeFilter === 'completed' }"
-            @click="activeFilter = 'completed'"
-          >
-            已完成
-          </button>
-        </div>
+
       </div>
       
       <div class="algorithm-topics-grid">
@@ -93,7 +71,7 @@
           v-for="topic in filteredTopics" 
           :key="topic.id" 
           class="algorithm-topic-card"
-          :class="[`difficulty-${topic.difficulty}`, { 'has-progress': topic.progress > 0 }]"
+:class="`status-${topic.status}`"
           @click="handleTopicClick(topic)"
         >
           <div class="topic-header">
@@ -102,22 +80,14 @@
               <h4 class="topic-title">{{ topic.name }}</h4>
               <p class="topic-description">{{ topic.description }}</p>
             </div>
-            <div class="topic-difficulty">
-              <span class="difficulty-badge" :class="`difficulty-${topic.difficulty}`">
-                {{ getDifficultyText(topic.difficulty) }}
+            <div class="topic-status">
+              <span class="status-badge" :class="`status-${topic.status}`">
+                {{ getStatusText(topic.status) }}
               </span>
             </div>
           </div>
           
-          <div class="topic-progress">
-            <div class="progress-info">
-              <span class="progress-text">{{ topic.completedProblems }}/{{ topic.totalProblems }} 题</span>
-              <span class="progress-percentage">{{ topic.progress }}%</span>
-            </div>
-            <div class="progress-bar">
-              <div class="progress-fill" :style="{ width: topic.progress + '%' }"></div>
-            </div>
-          </div>
+
           
           <div class="topic-tags">
             <span 
@@ -131,13 +101,10 @@
           
           <div class="topic-footer">
             <div class="topic-stats">
-              <span class="stat-item">
-                <i>⏱️</i> {{ topic.estimatedHours }}h
-              </span>
             </div>
             <div class="topic-action">
               <span class="action-text">
-                {{ topic.progress > 0 ? '继续学习' : '开始学习' }}
+                开始学习
               </span>
               <i class="action-arrow">→</i>
             </div>
@@ -225,29 +192,19 @@ export default {
   },
   computed: {
     overallStats() {
-      const totalProblems = this.algorithmTopics.reduce((sum, topic) => sum + topic.totalProblems, 0)
-      const totalCompleted = this.algorithmTopics.reduce((sum, topic) => sum + topic.completedProblems, 0)
-      const overallProgress = totalProblems > 0 ? Math.round((totalCompleted / totalProblems) * 100) : 0
-      const completedTopics = this.algorithmTopics.filter(topic => topic.progress === 100).length
-      
+      // 简化统计信息，使用静态数据
       return {
-        totalProblems,
-        totalCompleted,
-        overallProgress,
-        completedTopics,
+        totalProblems: 6, // 总模块数
+        totalCompleted: 1, // 已学习模块数
+        overallProgress: 17, // 静态进度
+        completedTopics: 1, // 已完成模块数
         studyHours: 12, // 静态数据
         streakDays: 3,  // 静态数据
         weeklyProgress: 4 // 静态数据
       }
     },
     filteredTopics() {
-      if (this.activeFilter === 'all') {
-        return this.algorithmTopics
-      } else if (this.activeFilter === 'in_progress') {
-        return this.algorithmTopics.filter(topic => topic.progress > 0 && topic.progress < 100)
-      } else if (this.activeFilter === 'completed') {
-        return this.algorithmTopics.filter(topic => topic.progress === 100)
-      }
+      // 由于删除了进度信息，所有筛选都返回全部主题
       return this.algorithmTopics
     }
   },
@@ -257,18 +214,11 @@ export default {
       // 跳转到知识点详情页
       this.$router.push(`/vivo50/algorithm/topic/${topic.id}`)
     },
-    getDifficultyText(difficulty) {
-      const map = {
-        'easy': '简单',
-        'medium': '中等',
-        'hard': '困难'
-      }
-      return map[difficulty] || difficulty
-    },
     getStatusText(status) {
       const map = {
         'completed': '已完成',
         'in_progress': '进行中',
+        'pending': '待开始',
         'planned': '计划中'
       }
       return map[status] || status
@@ -322,32 +272,7 @@ export default {
   margin-top: 0.25rem;
 }
 
-/* 筛选标签 */
-.algorithm-filter-tabs {
-  display: flex;
-  gap: 0.5rem;
-}
 
-.filter-tab {
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border-medium);
-  background: var(--bg-secondary);
-  color: var(--text);
-  border-radius: 20px;
-  font-size: 0.9em;
-  cursor: pointer;
-  transition: var(--transition);
-}
-
-.filter-tab:hover {
-  border-color: var(--accent);
-}
-
-.filter-tab.active {
-  background: var(--accent);
-  color: white;
-  border-color: var(--accent);
-}
 
 /* 知识点卡片网格 */
 .algorithm-topics-grid {
@@ -373,21 +298,19 @@ export default {
   border-color: var(--accent);
 }
 
-.algorithm-topic-card.has-progress {
-  border-left: 4px solid var(--accent);
-}
 
-/* 难度样式 */
-.algorithm-topic-card.difficulty-easy {
+
+/* 状态样式 */
+.algorithm-topic-card.status-completed {
   background: linear-gradient(135deg, var(--bg-secondary), rgba(76, 175, 80, 0.05));
 }
 
-.algorithm-topic-card.difficulty-medium {
+.algorithm-topic-card.status-in_progress {
   background: linear-gradient(135deg, var(--bg-secondary), rgba(255, 152, 0, 0.05));
 }
 
-.algorithm-topic-card.difficulty-hard {
-  background: linear-gradient(135deg, var(--bg-secondary), rgba(244, 67, 54, 0.05));
+.algorithm-topic-card.status-pending {
+  background: linear-gradient(135deg, var(--bg-secondary), rgba(158, 158, 158, 0.05));
 }
 
 .topic-header {
@@ -419,63 +342,29 @@ export default {
   line-height: 1.4;
 }
 
-.difficulty-badge {
+.status-badge {
   padding: 0.25rem 0.75rem;
   border-radius: 12px;
   font-size: 0.8em;
   font-weight: 500;
 }
 
-.difficulty-badge.difficulty-easy {
+.status-badge.status-completed {
   background: rgba(76, 175, 80, 0.1);
   color: #4CAF50;
 }
 
-.difficulty-badge.difficulty-medium {
+.status-badge.status-in_progress {
   background: rgba(255, 152, 0, 0.1);
   color: #FF9800;
 }
 
-.difficulty-badge.difficulty-hard {
-  background: rgba(244, 67, 54, 0.1);
-  color: #F44336;
+.status-badge.status-pending {
+  background: rgba(158, 158, 158, 0.1);
+  color: #9E9E9E;
 }
 
-/* 进度条 */
-.topic-progress {
-  margin-bottom: 1rem;
-}
 
-.progress-info {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.9em;
-}
-
-.progress-text {
-  color: var(--text);
-  font-weight: 500;
-}
-
-.progress-percentage {
-  color: var(--accent);
-  font-weight: 600;
-}
-
-.progress-bar {
-  height: 6px;
-  background: var(--bg-accent);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent), #c4a888);
-  transition: width 0.3s ease;
-}
 
 /* 标签 */
 .topic-tags {

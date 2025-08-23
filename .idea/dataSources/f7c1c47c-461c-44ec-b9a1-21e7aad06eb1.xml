@@ -882,7 +882,7 @@
     <schema id="279" parent="1" name="my_blog">
       <AutoIntrospectionLevel>3</AutoIntrospectionLevel>
       <LastIntrospectionLevel>3</LastIntrospectionLevel>
-      <LastIntrospectionLocalTimestamp>2025-08-18.13:49:25</LastIntrospectionLocalTimestamp>
+      <LastIntrospectionLocalTimestamp>2025-08-23.11:19:04</LastIntrospectionLocalTimestamp>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </schema>
     <user id="280" parent="1" name="mysql.infoschema">
@@ -904,1346 +904,266 @@
       <Host>localhost</Host>
       <Plugin>caching_sha2_password</Plugin>
     </user>
-    <table id="284" parent="279" name="algorithm_problems">
-      <Comment>算法题目表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="285" parent="279" name="algorithm_topics">
+    <table id="284" parent="279" name="algorithm_topics">
       <Comment>算法主题表</Comment>
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="286" parent="279" name="article">
-      <Comment>文章表</Comment>
+    <table id="285" parent="279" name="departments">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="287" parent="279" name="article_stats">
-      <Comment>文章统计表</Comment>
+    <table id="286" parent="279" name="employees">
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="288" parent="279" name="article_tag">
-      <Comment>文章标签关联表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="289" parent="279" name="departments">
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="290" parent="279" name="employees">
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="291" parent="279" name="profile">
-      <Comment>用户资料表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="292" parent="279" name="skill">
-      <Comment>技能表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="293" parent="279" name="study_records">
-      <Comment>学习记录表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="294" parent="279" name="system_config">
-      <Comment>系统配置表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="295" parent="279" name="tag">
-      <Comment>标签表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <table id="296" parent="279" name="user">
+    <table id="287" parent="279" name="user">
       <Comment>用户基础表</Comment>
       <DetailsLevel>3</DetailsLevel>
       <Engine>InnoDB</Engine>
       <CollationName>utf8mb4_unicode_ci</CollationName>
     </table>
-    <table id="297" parent="279" name="user_topic_progress">
-      <Comment>用户主题学习进度表</Comment>
-      <DetailsLevel>3</DetailsLevel>
-      <Engine>InnoDB</Engine>
-      <CollationName>utf8mb4_unicode_ci</CollationName>
-    </table>
-    <column id="298" parent="284" name="id">
-      <AutoIncrement>6</AutoIncrement>
-      <Comment>主键ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="299" parent="284" name="topic_id">
-      <Comment>所属主题ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="300" parent="284" name="title">
-      <Comment>题目标题</Comment>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>varchar(200)|0s</StoredType>
-    </column>
-    <column id="301" parent="284" name="description">
-      <Comment>题目描述</Comment>
-      <Position>4</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="302" parent="284" name="difficulty">
-      <Comment>题目难度</Comment>
-      <DefaultExpression>&apos;easy&apos;</DefaultExpression>
-      <Position>5</Position>
-      <StoredType>enum(&apos;easy&apos;, &apos;medium&apos;, &apos;hard&apos;)|0e</StoredType>
-    </column>
-    <column id="303" parent="284" name="leetcode_id">
-      <Comment>LeetCode题号</Comment>
-      <Position>6</Position>
-      <StoredType>varchar(20)|0s</StoredType>
-    </column>
-    <column id="304" parent="284" name="problem_url">
-      <Comment>题目链接</Comment>
-      <Position>7</Position>
-      <StoredType>varchar(500)|0s</StoredType>
-    </column>
-    <column id="305" parent="284" name="tags">
-      <Comment>标签数组(如[&quot;双指针&quot;,&quot;滑动窗口&quot;])</Comment>
-      <Position>8</Position>
-      <StoredType>json|0s</StoredType>
-    </column>
-    <column id="306" parent="284" name="solution_code">
-      <Comment>参考解答代码</Comment>
-      <Position>9</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="307" parent="284" name="solution_explanation">
-      <Comment>解题思路说明</Comment>
-      <Position>10</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="308" parent="284" name="time_complexity">
-      <Comment>时间复杂度</Comment>
-      <Position>11</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="309" parent="284" name="space_complexity">
-      <Comment>空间复杂度</Comment>
-      <Position>12</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="310" parent="284" name="sort_order">
-      <Comment>在主题内的排序</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>13</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="311" parent="284" name="status">
-      <Comment>状态:1-启用,0-禁用</Comment>
-      <DefaultExpression>1</DefaultExpression>
-      <Position>14</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="312" parent="284" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>15</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="313" parent="284" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>16</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="314" parent="284" name="fk_problems_topic">
-      <ColNames>topic_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>algorithm_topics</RefTableName>
-    </foreign-key>
-    <index id="315" parent="284" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="316" parent="284" name="idx_topic_id">
-      <ColNames>topic_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="317" parent="284" name="idx_difficulty">
-      <ColNames>difficulty</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="318" parent="284" name="idx_leetcode_id">
-      <ColNames>leetcode_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="319" parent="284" name="idx_sort_order">
-      <ColNames>sort_order</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="320" parent="284" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <column id="321" parent="285" name="id">
+    <column id="288" parent="284" name="id">
       <AutoIncrement>9</AutoIncrement>
       <Comment>主键ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="322" parent="285" name="topic_key">
+    <column id="289" parent="284" name="topic_key">
       <Comment>主题标识符(如array, linkedlist)</Comment>
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="323" parent="285" name="name">
+    <column id="290" parent="284" name="name">
       <Comment>主题名称</Comment>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <column id="324" parent="285" name="icon">
+    <column id="291" parent="284" name="icon">
       <Comment>主题图标(emoji)</Comment>
       <Position>4</Position>
       <StoredType>varchar(10)|0s</StoredType>
     </column>
-    <column id="325" parent="285" name="description">
+    <column id="292" parent="284" name="description">
       <Comment>主题描述</Comment>
       <Position>5</Position>
       <StoredType>text|0s</StoredType>
     </column>
-    <column id="326" parent="285" name="difficulty">
+    <column id="293" parent="284" name="difficulty">
       <Comment>难度等级</Comment>
       <DefaultExpression>&apos;easy&apos;</DefaultExpression>
       <Position>6</Position>
       <StoredType>enum(&apos;easy&apos;, &apos;medium&apos;, &apos;hard&apos;)|0e</StoredType>
     </column>
-    <column id="327" parent="285" name="estimated_hours">
+    <column id="294" parent="284" name="estimated_hours">
       <Comment>预计学习时长(小时)</Comment>
       <DefaultExpression>0</DefaultExpression>
       <Position>7</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="328" parent="285" name="total_problems">
+    <column id="295" parent="284" name="total_problems">
       <Comment>题目总数</Comment>
       <DefaultExpression>0</DefaultExpression>
       <Position>8</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="329" parent="285" name="sort_order">
+    <column id="296" parent="284" name="sort_order">
       <Comment>排序权重</Comment>
       <DefaultExpression>0</DefaultExpression>
       <Position>9</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="330" parent="285" name="status">
+    <column id="297" parent="284" name="status">
       <Comment>状态:1-启用,0-禁用</Comment>
       <DefaultExpression>1</DefaultExpression>
       <Position>10</Position>
       <StoredType>tinyint|0s</StoredType>
     </column>
-    <column id="331" parent="285" name="created_at">
+    <column id="298" parent="284" name="created_at">
       <Comment>创建时间</Comment>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>11</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <column id="332" parent="285" name="updated_at">
+    <column id="299" parent="284" name="updated_at">
       <Comment>更新时间</Comment>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
       <Position>12</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <index id="333" parent="285" name="PRIMARY">
+    <index id="300" parent="284" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="334" parent="285" name="uk_topic_key">
+    <index id="301" parent="284" name="uk_topic_key">
       <ColNames>topic_key</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="335" parent="285" name="idx_difficulty">
+    <index id="302" parent="284" name="idx_difficulty">
       <ColNames>difficulty</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="336" parent="285" name="idx_sort_order">
+    <index id="303" parent="284" name="idx_sort_order">
       <ColNames>sort_order</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="337" parent="285" name="PRIMARY">
+    <key id="304" parent="284" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="338" parent="285" name="uk_topic_key">
+    <key id="305" parent="284" name="uk_topic_key">
       <UnderlyingIndexName>uk_topic_key</UnderlyingIndexName>
     </key>
-    <column id="339" parent="286" name="id">
-      <AutoIncrement>3</AutoIncrement>
-      <Comment>文章ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="340" parent="286" name="title">
-      <Comment>文章标题</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>varchar(200)|0s</StoredType>
-    </column>
-    <column id="341" parent="286" name="summary">
-      <Comment>文章摘要</Comment>
-      <Position>3</Position>
-      <StoredType>varchar(500)|0s</StoredType>
-    </column>
-    <column id="342" parent="286" name="content">
-      <Position>4</Position>
-      <StoredType>longtext|0s</StoredType>
-    </column>
-    <column id="343" parent="286" name="author_id">
-      <Comment>作者ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>5</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="344" parent="286" name="status">
-      <DefaultExpression>1</DefaultExpression>
-      <Position>6</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="345" parent="286" name="read_time">
-      <Comment>预估阅读时间(分钟)</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>7</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="346" parent="286" name="cover_image">
-      <Comment>封面图片</Comment>
-      <Position>8</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="347" parent="286" name="is_top">
-      <DefaultExpression>0</DefaultExpression>
-      <Position>9</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="348" parent="286" name="allow_comment">
-      <DefaultExpression>1</DefaultExpression>
-      <Position>10</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="349" parent="286" name="published_at">
-      <Comment>发布时间</Comment>
-      <Position>11</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="350" parent="286" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>12</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="351" parent="286" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>13</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="352" parent="286" name="fk_article_author_id">
-      <ColNames>author_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>user</RefTableName>
-    </foreign-key>
-    <index id="353" parent="286" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="354" parent="286" name="ft_title_content">
-      <ColNames>title
-content</ColNames>
-      <Type>fulltext</Type>
-    </index>
-    <index id="355" parent="286" name="idx_author_id">
-      <ColNames>author_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="356" parent="286" name="idx_status">
-      <ColNames>status</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="357" parent="286" name="idx_is_top">
-      <ColNames>is_top</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="358" parent="286" name="idx_published_at">
-      <ColNames>published_at</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="359" parent="286" name="idx_created_at">
-      <ColNames>created_at</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="360" parent="286" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <column id="361" parent="287" name="id">
-      <AutoIncrement>3</AutoIncrement>
-      <Comment>统计ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="362" parent="287" name="article_id">
-      <Comment>文章ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="363" parent="287" name="view_count">
-      <Comment>浏览次数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>3</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="364" parent="287" name="like_count">
-      <Comment>点赞次数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>4</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="365" parent="287" name="comment_count">
-      <Comment>评论次数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>5</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="366" parent="287" name="share_count">
-      <Comment>分享次数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>6</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="367" parent="287" name="collect_count">
-      <Comment>收藏次数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>7</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="368" parent="287" name="last_view_at">
-      <Comment>最后浏览时间</Comment>
-      <Position>8</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="369" parent="287" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>9</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="370" parent="287" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>10</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="371" parent="287" name="fk_article_stats_article_id">
-      <ColNames>article_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>article</RefTableName>
-    </foreign-key>
-    <index id="372" parent="287" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="373" parent="287" name="uk_article_id">
-      <ColNames>article_id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="374" parent="287" name="idx_view_count">
-      <ColNames>view_count</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="375" parent="287" name="idx_like_count">
-      <ColNames>like_count</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="376" parent="287" name="idx_last_view_at">
-      <ColNames>last_view_at</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="377" parent="287" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="378" parent="287" name="uk_article_id">
-      <UnderlyingIndexName>uk_article_id</UnderlyingIndexName>
-    </key>
-    <column id="379" parent="288" name="id">
-      <AutoIncrement>8</AutoIncrement>
-      <Comment>关联ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="380" parent="288" name="article_id">
-      <Comment>文章ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="381" parent="288" name="tag_id">
-      <Comment>标签ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="382" parent="288" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>4</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="383" parent="288" name="fk_article_tag_article_id">
-      <ColNames>article_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>article</RefTableName>
-    </foreign-key>
-    <foreign-key id="384" parent="288" name="fk_article_tag_tag_id">
-      <ColNames>tag_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>tag</RefTableName>
-    </foreign-key>
-    <index id="385" parent="288" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="386" parent="288" name="uk_article_tag">
-      <ColNames>article_id
-tag_id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="387" parent="288" name="idx_article_id">
-      <ColNames>article_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="388" parent="288" name="idx_tag_id">
-      <ColNames>tag_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="389" parent="288" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="390" parent="288" name="uk_article_tag">
-      <UnderlyingIndexName>uk_article_tag</UnderlyingIndexName>
-    </key>
-    <column id="391" parent="289" name="dept_id">
+    <column id="306" parent="285" name="dept_id">
       <AutoIncrement>5</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="392" parent="289" name="dept_name">
+    <column id="307" parent="285" name="dept_name">
       <Position>2</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="393" parent="289" name="dept_localtion">
+    <column id="308" parent="285" name="dept_localtion">
       <Position>3</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <index id="394" parent="289" name="PRIMARY">
+    <index id="309" parent="285" name="PRIMARY">
       <ColNames>dept_id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="395" parent="289" name="PRIMARY">
+    <key id="310" parent="285" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="396" parent="290" name="id">
+    <column id="311" parent="286" name="id">
       <AutoIncrement>10</AutoIncrement>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>int|0s</StoredType>
     </column>
-    <column id="397" parent="290" name="first_name">
+    <column id="312" parent="286" name="first_name">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="398" parent="290" name="last_name">
+    <column id="313" parent="286" name="last_name">
       <Position>3</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="399" parent="290" name="department">
+    <column id="314" parent="286" name="department">
       <Position>4</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="400" parent="290" name="salary">
+    <column id="315" parent="286" name="salary">
       <Position>5</Position>
       <StoredType>decimal(10,2 digit)|0s</StoredType>
     </column>
-    <column id="401" parent="290" name="hire_date">
+    <column id="316" parent="286" name="hire_date">
       <Position>6</Position>
       <StoredType>date|0s</StoredType>
     </column>
-    <index id="402" parent="290" name="PRIMARY">
+    <index id="317" parent="286" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <key id="403" parent="290" name="PRIMARY">
+    <key id="318" parent="286" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <column id="404" parent="291" name="id">
-      <AutoIncrement>1</AutoIncrement>
-      <Comment>资料ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="405" parent="291" name="user_id">
-      <Comment>用户ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="406" parent="291" name="nickname">
-      <Comment>昵称</Comment>
-      <Position>3</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="407" parent="291" name="real_name">
-      <Comment>真实姓名</Comment>
-      <Position>4</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="408" parent="291" name="bio">
-      <Position>5</Position>
-      <StoredType>tinytext|0s</StoredType>
-    </column>
-    <column id="409" parent="291" name="job_title">
-      <Comment>职位标题</Comment>
-      <Position>6</Position>
-      <StoredType>varchar(100)|0s</StoredType>
-    </column>
-    <column id="410" parent="291" name="company">
-      <Comment>公司</Comment>
-      <Position>7</Position>
-      <StoredType>varchar(100)|0s</StoredType>
-    </column>
-    <column id="411" parent="291" name="location">
-      <Comment>所在地</Comment>
-      <Position>8</Position>
-      <StoredType>varchar(100)|0s</StoredType>
-    </column>
-    <column id="412" parent="291" name="website">
-      <Comment>个人网站</Comment>
-      <Position>9</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="413" parent="291" name="github">
-      <Comment>GitHub地址</Comment>
-      <Position>10</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="414" parent="291" name="linkedin">
-      <Comment>LinkedIn地址</Comment>
-      <Position>11</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="415" parent="291" name="twitter">
-      <Comment>Twitter地址</Comment>
-      <Position>12</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="416" parent="291" name="motto">
-      <Comment>个人座右铭</Comment>
-      <Position>13</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="417" parent="291" name="years_experience">
-      <Comment>工作年限</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>14</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="418" parent="291" name="project_count">
-      <Comment>项目数量</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>15</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="419" parent="291" name="article_count">
-      <Comment>文章数量</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>16</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="420" parent="291" name="code_commits">
-      <Comment>代码提交数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>17</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="421" parent="291" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>18</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="422" parent="291" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>19</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="423" parent="291" name="fk_profile_user_id">
-      <ColNames>user_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>user</RefTableName>
-    </foreign-key>
-    <index id="424" parent="291" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="425" parent="291" name="uk_user_id">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="426" parent="291" name="idx_nickname">
-      <ColNames>nickname</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="427" parent="291" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="428" parent="291" name="uk_user_id">
-      <UnderlyingIndexName>uk_user_id</UnderlyingIndexName>
-    </key>
-    <column id="429" parent="292" name="id">
-      <AutoIncrement>9</AutoIncrement>
-      <Comment>技能ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="430" parent="292" name="user_id">
-      <Comment>用户ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="431" parent="292" name="name">
-      <Comment>技能名称</Comment>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="432" parent="292" name="level">
-      <Comment>技能等级(0-100)</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>4</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="433" parent="292" name="category">
-      <Comment>技能分类</Comment>
-      <Position>5</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="434" parent="292" name="description">
-      <Position>6</Position>
-      <StoredType>tinytext|0s</StoredType>
-    </column>
-    <column id="435" parent="292" name="sort_order">
-      <Comment>排序顺序</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>7</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="436" parent="292" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>8</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="437" parent="292" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>9</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="438" parent="292" name="fk_skill_user_id">
-      <ColNames>user_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>user</RefTableName>
-    </foreign-key>
-    <index id="439" parent="292" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="440" parent="292" name="idx_user_id">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="441" parent="292" name="idx_category">
-      <ColNames>category</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="442" parent="292" name="idx_sort_order">
-      <ColNames>sort_order</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="443" parent="292" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <column id="444" parent="293" name="id">
+    <column id="319" parent="287" name="id">
       <AutoIncrement>4</AutoIncrement>
-      <Comment>主键ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="445" parent="293" name="user_id">
-      <Comment>用户ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="446" parent="293" name="topic_id">
-      <Comment>主题ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="447" parent="293" name="problem_id">
-      <Comment>题目ID(可选)</Comment>
-      <Position>4</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="448" parent="293" name="study_type">
-      <Comment>学习类型</Comment>
-      <DefaultExpression>&apos;practice&apos;</DefaultExpression>
-      <Position>5</Position>
-      <StoredType>enum(&apos;theory&apos;, &apos;practice&apos;, &apos;review&apos;, &apos;note&apos;)|0e</StoredType>
-    </column>
-    <column id="449" parent="293" name="title">
-      <Comment>学习内容标题</Comment>
-      <NotNull>1</NotNull>
-      <Position>6</Position>
-      <StoredType>varchar(200)|0s</StoredType>
-    </column>
-    <column id="450" parent="293" name="description">
-      <Comment>学习内容描述</Comment>
-      <Position>7</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="451" parent="293" name="duration_minutes">
-      <Comment>学习时长(分钟)</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>8</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="452" parent="293" name="status">
-      <Comment>学习状态</Comment>
-      <DefaultExpression>&apos;in_progress&apos;</DefaultExpression>
-      <Position>9</Position>
-      <StoredType>enum(&apos;in_progress&apos;, &apos;completed&apos;, &apos;paused&apos;)|0e</StoredType>
-    </column>
-    <column id="453" parent="293" name="difficulty_rating">
-      <Comment>难度评分(1-5)</Comment>
-      <Position>10</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="454" parent="293" name="understanding_rating">
-      <Comment>理解程度评分(1-5)</Comment>
-      <Position>11</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="455" parent="293" name="notes">
-      <Comment>学习心得笔记</Comment>
-      <Position>12</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="456" parent="293" name="code_solution">
-      <Comment>代码解答</Comment>
-      <Position>13</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="457" parent="293" name="study_date">
-      <Comment>学习日期</Comment>
-      <NotNull>1</NotNull>
-      <Position>14</Position>
-      <StoredType>date|0s</StoredType>
-    </column>
-    <column id="458" parent="293" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>15</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="459" parent="293" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>16</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="460" parent="293" name="fk_records_user">
-      <ColNames>user_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>user</RefTableName>
-    </foreign-key>
-    <foreign-key id="461" parent="293" name="fk_records_topic">
-      <ColNames>topic_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>algorithm_topics</RefTableName>
-    </foreign-key>
-    <foreign-key id="462" parent="293" name="fk_records_problem">
-      <ColNames>problem_id</ColNames>
-      <OnDelete>set-null</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>algorithm_problems</RefTableName>
-    </foreign-key>
-    <index id="463" parent="293" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="464" parent="293" name="idx_user_id">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="465" parent="293" name="idx_topic_id">
-      <ColNames>topic_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="466" parent="293" name="idx_problem_id">
-      <ColNames>problem_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="467" parent="293" name="idx_study_type">
-      <ColNames>study_type</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="468" parent="293" name="idx_status">
-      <ColNames>status</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="469" parent="293" name="idx_study_date">
-      <ColNames>study_date</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="470" parent="293" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <column id="471" parent="294" name="id">
-      <AutoIncrement>10</AutoIncrement>
-      <Comment>配置ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="472" parent="294" name="config_key">
-      <Comment>配置键</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>varchar(100)|0s</StoredType>
-    </column>
-    <column id="473" parent="294" name="config_value">
-      <Position>3</Position>
-      <StoredType>tinytext|0s</StoredType>
-    </column>
-    <column id="474" parent="294" name="config_type">
-      <Comment>配置类型</Comment>
-      <DefaultExpression>&apos;string&apos;</DefaultExpression>
-      <Position>4</Position>
-      <StoredType>varchar(20)|0s</StoredType>
-    </column>
-    <column id="475" parent="294" name="description">
-      <Comment>配置描述</Comment>
-      <Position>5</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="476" parent="294" name="category">
-      <Comment>配置分类</Comment>
-      <DefaultExpression>&apos;system&apos;</DefaultExpression>
-      <Position>6</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="477" parent="294" name="is_editable">
-      <DefaultExpression>1</DefaultExpression>
-      <Position>7</Position>
-      <StoredType>tinyint|0s</StoredType>
-    </column>
-    <column id="478" parent="294" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>8</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="479" parent="294" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>9</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <index id="480" parent="294" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="481" parent="294" name="uk_config_key">
-      <ColNames>config_key</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="482" parent="294" name="idx_category">
-      <ColNames>category</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="483" parent="294" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="484" parent="294" name="uk_config_key">
-      <UnderlyingIndexName>uk_config_key</UnderlyingIndexName>
-    </key>
-    <column id="485" parent="295" name="id">
-      <AutoIncrement>15</AutoIncrement>
-      <Comment>标签ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="486" parent="295" name="name">
-      <Comment>标签名称</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="487" parent="295" name="color">
-      <Comment>标签颜色</Comment>
-      <DefaultExpression>&apos;#667eea&apos;</DefaultExpression>
-      <Position>3</Position>
-      <StoredType>varchar(20)|0s</StoredType>
-    </column>
-    <column id="488" parent="295" name="description">
-      <Comment>标签描述</Comment>
-      <Position>4</Position>
-      <StoredType>varchar(255)|0s</StoredType>
-    </column>
-    <column id="489" parent="295" name="article_count">
-      <Comment>文章数量</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>5</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="490" parent="295" name="sort_order">
-      <Comment>排序顺序</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>6</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="491" parent="295" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>7</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="492" parent="295" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>8</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <index id="493" parent="295" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="494" parent="295" name="uk_name">
-      <ColNames>name</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="495" parent="295" name="idx_article_count">
-      <ColNames>article_count</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="496" parent="295" name="idx_sort_order">
-      <ColNames>sort_order</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="497" parent="295" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="498" parent="295" name="uk_name">
-      <UnderlyingIndexName>uk_name</UnderlyingIndexName>
-    </key>
-    <column id="499" parent="296" name="id">
-      <AutoIncrement>3</AutoIncrement>
       <Comment>用户ID</Comment>
       <NotNull>1</NotNull>
       <Position>1</Position>
       <StoredType>bigint|0s</StoredType>
     </column>
-    <column id="500" parent="296" name="username">
+    <column id="320" parent="287" name="username">
       <NotNull>1</NotNull>
       <Position>2</Position>
       <StoredType>varchar(50)|0s</StoredType>
     </column>
-    <column id="501" parent="296" name="password">
+    <column id="321" parent="287" name="password">
       <Comment>密码</Comment>
       <NotNull>1</NotNull>
       <Position>3</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="502" parent="296" name="email">
+    <column id="322" parent="287" name="email">
       <Comment>邮箱</Comment>
       <Position>4</Position>
       <StoredType>varchar(100)|0s</StoredType>
     </column>
-    <column id="503" parent="296" name="avatar">
+    <column id="323" parent="287" name="avatar">
       <Comment>头像URL</Comment>
       <Position>5</Position>
       <StoredType>varchar(255)|0s</StoredType>
     </column>
-    <column id="504" parent="296" name="status">
+    <column id="324" parent="287" name="status">
       <DefaultExpression>1</DefaultExpression>
       <Position>6</Position>
       <StoredType>tinyint|0s</StoredType>
     </column>
-    <column id="505" parent="296" name="created_at">
+    <column id="325" parent="287" name="created_at">
       <Comment>创建时间</Comment>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <Position>7</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <column id="506" parent="296" name="updated_at">
+    <column id="326" parent="287" name="updated_at">
       <Comment>更新时间</Comment>
       <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
       <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
       <Position>8</Position>
       <StoredType>timestamp|0s</StoredType>
     </column>
-    <index id="507" parent="296" name="PRIMARY">
+    <index id="327" parent="287" name="PRIMARY">
       <ColNames>id</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="508" parent="296" name="uk_username">
+    <index id="328" parent="287" name="uk_username">
       <ColNames>username</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="509" parent="296" name="uk_email">
+    <index id="329" parent="287" name="uk_email">
       <ColNames>email</ColNames>
       <Type>btree</Type>
       <Unique>1</Unique>
     </index>
-    <index id="510" parent="296" name="idx_status">
+    <index id="330" parent="287" name="idx_status">
       <ColNames>status</ColNames>
       <Type>btree</Type>
     </index>
-    <index id="511" parent="296" name="idx_created_at">
+    <index id="331" parent="287" name="idx_created_at">
       <ColNames>created_at</ColNames>
       <Type>btree</Type>
     </index>
-    <key id="512" parent="296" name="PRIMARY">
+    <key id="332" parent="287" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <Primary>1</Primary>
       <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
     </key>
-    <key id="513" parent="296" name="uk_username">
+    <key id="333" parent="287" name="uk_username">
       <UnderlyingIndexName>uk_username</UnderlyingIndexName>
     </key>
-    <key id="514" parent="296" name="uk_email">
+    <key id="334" parent="287" name="uk_email">
       <UnderlyingIndexName>uk_email</UnderlyingIndexName>
-    </key>
-    <column id="515" parent="297" name="id">
-      <AutoIncrement>3</AutoIncrement>
-      <Comment>主键ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>1</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="516" parent="297" name="user_id">
-      <Comment>用户ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>2</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="517" parent="297" name="topic_id">
-      <Comment>主题ID</Comment>
-      <NotNull>1</NotNull>
-      <Position>3</Position>
-      <StoredType>bigint|0s</StoredType>
-    </column>
-    <column id="518" parent="297" name="completed_problems">
-      <Comment>已完成题目数</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>4</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="519" parent="297" name="total_study_time">
-      <Comment>总学习时长(分钟)</Comment>
-      <DefaultExpression>0</DefaultExpression>
-      <Position>5</Position>
-      <StoredType>int|0s</StoredType>
-    </column>
-    <column id="520" parent="297" name="progress_percentage">
-      <Comment>进度百分比(0-100)</Comment>
-      <DefaultExpression>0.00</DefaultExpression>
-      <Position>6</Position>
-      <StoredType>decimal(5,2 digit)|0s</StoredType>
-    </column>
-    <column id="521" parent="297" name="current_section">
-      <Comment>当前学习章节</Comment>
-      <Position>7</Position>
-      <StoredType>varchar(50)|0s</StoredType>
-    </column>
-    <column id="522" parent="297" name="last_study_date">
-      <Comment>最近学习日期</Comment>
-      <Position>8</Position>
-      <StoredType>date|0s</StoredType>
-    </column>
-    <column id="523" parent="297" name="mastery_level">
-      <Comment>掌握程度</Comment>
-      <DefaultExpression>&apos;beginner&apos;</DefaultExpression>
-      <Position>9</Position>
-      <StoredType>enum(&apos;beginner&apos;, &apos;intermediate&apos;, &apos;advanced&apos;, &apos;expert&apos;)|0e</StoredType>
-    </column>
-    <column id="524" parent="297" name="notes">
-      <Comment>学习笔记</Comment>
-      <Position>10</Position>
-      <StoredType>text|0s</StoredType>
-    </column>
-    <column id="525" parent="297" name="created_at">
-      <Comment>创建时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <Position>11</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <column id="526" parent="297" name="updated_at">
-      <Comment>更新时间</Comment>
-      <DefaultExpression>CURRENT_TIMESTAMP</DefaultExpression>
-      <OnUpdate>CURRENT_TIMESTAMP</OnUpdate>
-      <Position>12</Position>
-      <StoredType>timestamp|0s</StoredType>
-    </column>
-    <foreign-key id="527" parent="297" name="fk_progress_user">
-      <ColNames>user_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>user</RefTableName>
-    </foreign-key>
-    <foreign-key id="528" parent="297" name="fk_progress_topic">
-      <ColNames>topic_id</ColNames>
-      <OnDelete>cascade</OnDelete>
-      <RefColNames>id</RefColNames>
-      <RefTableName>algorithm_topics</RefTableName>
-    </foreign-key>
-    <index id="529" parent="297" name="PRIMARY">
-      <ColNames>id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="530" parent="297" name="uk_user_topic">
-      <ColNames>user_id
-topic_id</ColNames>
-      <Type>btree</Type>
-      <Unique>1</Unique>
-    </index>
-    <index id="531" parent="297" name="idx_user_id">
-      <ColNames>user_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="532" parent="297" name="idx_topic_id">
-      <ColNames>topic_id</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="533" parent="297" name="idx_progress">
-      <ColNames>progress_percentage</ColNames>
-      <Type>btree</Type>
-    </index>
-    <index id="534" parent="297" name="idx_last_study">
-      <ColNames>last_study_date</ColNames>
-      <Type>btree</Type>
-    </index>
-    <key id="535" parent="297" name="PRIMARY">
-      <NameSurrogate>1</NameSurrogate>
-      <Primary>1</Primary>
-      <UnderlyingIndexName>PRIMARY</UnderlyingIndexName>
-    </key>
-    <key id="536" parent="297" name="uk_user_topic">
-      <UnderlyingIndexName>uk_user_topic</UnderlyingIndexName>
     </key>
   </database-model>
 </dataSource>

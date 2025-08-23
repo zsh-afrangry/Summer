@@ -35,11 +35,14 @@ services:
         condition: service_healthy
 
   mysql:
-    image: mysql:5.7
+    image: mysql:8.0
     container_name: mysql-dev
+    command: --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --init-connect='SET NAMES utf8mb4' --character-set-client-handshake=FALSE
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: my_blog
+      MYSQL_USER: dbadmin
+      MYSQL_PASSWORD: admin888
     ports:
       - "3307:3306"
     volumes:
@@ -62,6 +65,20 @@ services:
     depends_on:
       - frontend
       - backend
+
+  adminer:
+    image: adminer
+    container_name: adminer-dev
+    restart: always
+    ports:
+      - "8081:8080"
+    environment:
+      - ADMINER_DEFAULT_SERVER=mysql-dev
+      - ADMINER_DESIGN=pepa-linha-dark
+      - LANG=C.UTF-8
+      - LC_ALL=C.UTF-8
+    depends_on:
+      - mysql
 
 volumes:
   frontend-node-modules:

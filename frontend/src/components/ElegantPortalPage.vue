@@ -1,13 +1,6 @@
 <template>
   <div class="elegant-portal">
-    <!-- Canvas for ink effects - 只在绘图模式下激活 -->
-    <canvas 
-      ref="inkCanvas" 
-      @mousemove="isDrawingMode ? draw : null" 
-      @mousedown="isDrawingMode ? startDrawing : null"
-      @mouseup="isDrawingMode ? stopDrawing : null"
-      :style="{ pointerEvents: isDrawingMode ? 'auto' : 'none' }"
-    ></canvas>
+
 
     <!-- Header -->
     <header>
@@ -18,8 +11,8 @@
             <li><a href="#">Home</a></li>
             <li><a href="#" @click.prevent="navigateToVivo50">Vivo50</a></li>
             <li><a href="#" @click="navigateToTradingPage">cpdd</a></li>
-            <li><a href="#" @click="toggleDrawingMode">{{ isDrawingMode ? '退出绘图' : '绘图模式' }}</a></li>
-            <li><a href="#">Contact us</a></li>
+
+            <li><a href="#" @click="navigateToDatabase">数据库管理</a></li>
           </ul>
         </nav>
       </div>
@@ -201,70 +194,15 @@ export default {
   name: 'ElegantPortalPage',
   data() {
     return {
-      email: '',
-      isDrawing: false,
-      isDrawingMode: false, // 控制是否开启绘图模式
-      lastX: 0,
-      lastY: 0,
-      audioContext: null,
-      ambientSound: null
+      email: ''
     }
   },
   mounted() {
-    this.initCanvas()
     this.initScrollEffects()
-    this.initAudio()
     this.initAnimations()
   },
-  beforeUnmount() {
-    if (this.ambientSound) {
-      this.ambientSound.stop()
-    }
-    if (this.audioContext) {
-      this.audioContext.close()
-    }
-  },
   methods: {
-    initCanvas() {
-      const canvas = this.$refs.inkCanvas
-      // const ctx = canvas.getContext('2d')
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
-      
-      // Make canvas responsive
-      window.addEventListener('resize', () => {
-        canvas.width = window.innerWidth
-        canvas.height = window.innerHeight
-      })
-    },
-    
-    startDrawing(e) {
-      this.isDrawing = true
-      this.lastX = e.offsetX
-      this.lastY = e.offsetY
-    },
-    
-    stopDrawing() {
-      this.isDrawing = false
-    },
-    
-    draw(e) {
-      if (!this.isDrawing) return
-      
-      const canvas = this.$refs.inkCanvas
-      const ctx = canvas.getContext('2d')
-      
-      ctx.beginPath()
-      ctx.moveTo(this.lastX, this.lastY)
-      ctx.lineTo(e.offsetX, e.offsetY)
-      ctx.strokeStyle = '#333'
-      ctx.lineWidth = 2
-      ctx.lineCap = 'round'
-      ctx.stroke()
 
-      this.lastX = e.offsetX
-      this.lastY = e.offsetY
-    },
     
     initScrollEffects() {
       window.addEventListener('scroll', () => {
@@ -275,81 +213,24 @@ export default {
         }
       })
     },
-    
-    initAudio() {
-      try {
-        this.audioContext = new (window.AudioContext || window.webkitAudioContext)()
-        this.ambientSound = this.audioContext.createOscillator()
-        this.ambientSound.type = 'sine'
-        this.ambientSound.frequency.value = 440 // A4 note
-        
-        const gainNode = this.audioContext.createGain()
-        gainNode.gain.value = 0.1 // Low volume for ambient sound
-        
-        this.ambientSound.connect(gainNode)
-        gainNode.connect(this.audioContext.destination)
-        this.ambientSound.start()
-      } catch (error) {
-        console.log('Audio context not supported:', error)
-      }
-    },
-    
-    playClickSound() {
-      if (!this.audioContext) return
-      
-      try {
-        const clickSound = this.audioContext.createOscillator()
-        clickSound.type = 'sine'
-        clickSound.frequency.value = 880 // A5 note
-        
-        const gainNode = this.audioContext.createGain()
-        gainNode.gain.value = 0.3
-        
-        clickSound.connect(gainNode)
-        gainNode.connect(this.audioContext.destination)
-        clickSound.start()
-        
-        setTimeout(() => {
-          clickSound.stop()
-        }, 100)
-      } catch (error) {
-        console.log('Click sound error:', error)
-      }
-    },
-    
-    handleInteractiveClick(e) {
-      this.playClickSound()
-      
-      // Draw circle on canvas at click position
-      const canvas = this.$refs.inkCanvas
-      const ctx = canvas.getContext('2d')
-      const rect = canvas.getBoundingClientRect()
-      const x = e.clientX - rect.left
-      const y = e.clientY - rect.top
-      
-      ctx.beginPath()
-      ctx.arc(x, y, 10, 0, Math.PI * 2)
-      ctx.fillStyle = '#333'
-      ctx.fill()
-      ctx.closePath()
-    },
+
     
     navigateToAnalysis() {
-      this.handleInteractiveClick(event)
-      // 这里可以添加路由跳转逻辑
-      // this.$router.push('/analysis')
-      window.location.href = 'SingleImageAnalysisPage.html'
+      // 跳转到登录页面
+      this.$router.push('/login')
     },
     
     navigateToTradingPage() {
-      this.playClickSound()
       // 跳转到网格交易分析页面
       this.$router.push('/trading')
     },
     
     navigateToVivo50() {
-      this.playClickSound()
       this.$router.push('/vivo50')
+    },
+    
+    navigateToDatabase() {
+      this.$router.push('/database')
     },
     
     handleNewsletter() {
@@ -359,16 +240,7 @@ export default {
       }
     },
     
-    toggleDrawingMode() {
-      this.isDrawingMode = !this.isDrawingMode
-      if (this.isDrawingMode) {
-        // 进入绘图模式时的提示
-        console.log('绘图模式已激活，可以在画布上绘画')
-      } else {
-        // 退出绘图模式
-        console.log('绘图模式已关闭')
-      }
-    },
+
     
     initAnimations() {
       // 使用 Intersection Observer 来触发动画
@@ -441,23 +313,7 @@ img {
     display: block;
 }
 
-/* Canvas - 默认不接收鼠标事件，只在绘图模式下激活 */
-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none; /* 默认不接收鼠标事件 */
-    z-index: 1;
-    transition: opacity 0.3s ease;
-}
 
-/* 绘图模式下的Canvas样式 */
-canvas[style*="pointer-events: auto"] {
-    pointer-events: auto;
-    cursor: crosshair; /* 十字光标表示绘图模式 */
-}
 
 /* Layout */
 .container {

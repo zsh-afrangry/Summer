@@ -8,6 +8,7 @@ import ChartVisualization from '../components/trading/ChartVisualization.vue'
 import OperationGuide from '../components/trading/OperationGuide.vue'
 import DataSender from '../components/study/数据结构传递/DataSender.vue'
 import Vivo50Home from '../components/vivo50/Vivo50Home.vue'
+import DatabaseManager from '../components/DBsettings/DatabaseManager.vue'
 
 const routes = [
   // ==================== 主页面 ====================
@@ -109,6 +110,14 @@ const routes = [
         meta: { title: 'Vue数据传递演示 - 学习用途' }
       }
     ]
+  },
+
+  // ==================== 数据库管理模块 ====================
+  {
+    path: '/database',
+    name: 'DatabaseManager',
+    component: DatabaseManager,
+    meta: { title: '数据库管理器 - MySQL可视化管理' }
   },
 
   // ==================== 主应用布局 ====================
