@@ -16,7 +16,7 @@
         <nav>
           <ul>
             <li><a href="#">Home</a></li>
-            <li><a href="#">Vivo50</a></li>
+            <li><a href="#" @click.prevent="navigateToVivo50">Vivo50</a></li>
             <li><a href="#" @click="navigateToTradingPage">cpdd</a></li>
             <li><a href="#" @click="toggleDrawingMode">{{ isDrawingMode ? '退出绘图' : '绘图模式' }}</a></li>
             <li><a href="#">Contact us</a></li>
@@ -344,7 +344,12 @@ export default {
     navigateToTradingPage() {
       this.playClickSound()
       // 跳转到网格交易分析页面
-      this.$router.push('/trading-page')
+      this.$router.push('/trading')
+    },
+    
+    navigateToVivo50() {
+      this.playClickSound()
+      this.$router.push('/vivo50')
     },
     
     handleNewsletter() {

@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: frontend-dev
     ports:
-      - "3000:3000"  # Vue dev server端口
+      - "9001:3000"  # 避免端口冲突，映射到9001
     volumes:
       - ./frontend/src:/app/src  # 挂载源代码，支持热更新
       - ./frontend/public:/app/public
@@ -13,6 +13,9 @@ services:
       - ./frontend/vue.config.js:/app/vue.config.js
       - ./frontend/babel.config.js:/app/babel.config.js
       - frontend-node-modules:/app/node_modules  # 独立的node_modules卷
+    environment:
+      - NODE_ENV=development
+      - CHOKIDAR_USEPOLLING=true
     depends_on:
       - backend
 
@@ -28,7 +31,8 @@ services:
       - ./backend/pom.xml:/app/pom.xml
       - backend-m2:/root/.m2
     depends_on:
-      - mysql
+      mysql:
+        condition: service_healthy
 
   mysql:
     image: mysql:5.7
@@ -41,6 +45,12 @@ services:
     volumes:
       - ./mysql/init:/docker-entrypoint-initdb.d
       - mysql-dev-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      timeout: 10s
+      retries: 10
+      interval: 5s
+      start_period: 30s
 
   nginx:
     image: nginx:latest

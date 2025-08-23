@@ -154,7 +154,7 @@ export default {
         gridWidth: 50,            // 网格宽度(元) - 数值模式
         
         // 时间配置
-        basePositionMode: 'days', // 建仓模式: 'days'|'date'
+        basePositionMode: 'date', // 建仓模式: 'days'|'date'
         basePositionDays: 5,      // 第N天建仓
         basePositionDate: '',     // 指定建仓日期
         
@@ -220,14 +220,14 @@ export default {
       this.analysisResults = null
       this.csvData = null
       this.fileName = ''
-      try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) {}
+      try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) { void e }
     },
     // 任意参数变化：清除现有结果，防止旧结果被误用
     parameters: {
       deep: true,
       handler() {
         this.analysisResults = null
-        try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) {}
+        try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) { void e }
       }
     },
     // 模块开关变化：同样清除结果
@@ -235,7 +235,7 @@ export default {
       deep: true,
       handler() {
         this.analysisResults = null
-        try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) {}
+        try { sessionStorage.removeItem('tradingAnalysisResults') } catch (e) { void e }
       }
     },
     'parameters.basePositionMode'() {

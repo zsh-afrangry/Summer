@@ -1,6 +1,13 @@
 FROM maven:3-eclipse-temurin-17
 
+# 安装 MySQL 客户端用于健康检查
+RUN apt-get update && apt-get install -y default-mysql-client && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
+
+# 复制等待脚本
+COPY wait-for-mysql.sh ./
+RUN chmod +x wait-for-mysql.sh
 
 # 先复制 pom 以缓存依赖
 COPY pom.xml ./
@@ -10,8 +17,13 @@ RUN mvn -B -q -DskipTests dependency:go-offline
 COPY src ./src
 
 EXPOSE 8080
-ENV SPRING_PROFILES_ACTIVE=dev
 
-# 使用 spring-boot:run 便于开发调试
-CMD ["mvn", "-q", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Dfile.encoding=UTF-8"]
+# 开发环境变量 - 显示详细日志和SQL
+ENV SHOW_SQL=true
+ENV FORMAT_SQL=true
+ENV LOG_LEVEL=DEBUG
+ENV SQL_LOG_LEVEL=DEBUG
+
+# 使用等待脚本确保MySQL准备就绪后再启动
+CMD ["./wait-for-mysql.sh", "mysql", "3306", "mvn", "-q", "spring-boot:run", "-Dspring-boot.run.jvmArguments=-Dfile.encoding=UTF-8"]
 

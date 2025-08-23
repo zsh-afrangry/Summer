@@ -4,7 +4,48 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="开发+部署-双环境版本-v1.0.0" />
+    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="初步上线。开发改运维了属于是">
+      <change afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/backend/src/main/resources/sql/database_init.sql" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/compiler.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/_2025_8_12_12_30____.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/shelf/在进行合并之前于_2025_8_12_12_30_取消提交了更改_[更改]/shelved.patch" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/sqldialects.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Dockerfile.dev" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Dockerfile.dev" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/controller/UserController.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/controller/user/UserController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/Article.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/ArticleStat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/ArticleTag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/Profile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/Skill.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/SystemConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/Tag.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/User.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/entity/user/User.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/ArticleRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/ArticleStatRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/ArticleTagRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/ProfileRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/SkillRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/SystemConfigRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/TagRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/UserRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/repository/user/UserRepository.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/service/UserService.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/service/user/UserService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/service/UserServiceImpl.java" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/java/com/zshyyds/backend/service/user/UserServiceImpl.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/deploy-simple.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker-compose.dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.dev.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/About.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/BlogHome.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/BlogList.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/ElegantPortalPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ElegantPortalPage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/HelloWorld.vue" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/trading/TradingPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/trading/TradingPage.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -30,6 +71,10 @@
     &quot;accountId&quot;: &quot;75fada1d-5d43-4a57-b16b-89acdb1e2719&quot;
   }
 }</component>
+  <component name="KubernetesApiPersistence">{}</component>
+  <component name="KubernetesApiProvider">{
+  &quot;isMigrated&quot;: true
+}</component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 4
 }</component>
@@ -44,69 +89,57 @@
     &quot;Batch.deploy-all.executor&quot;: &quot;Run&quot;,
     &quot;Batch.deploy-simple.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;Spring Boot.BackendApplication.executor&quot;: &quot;Run&quot;,
+    &quot;deletionFromPopupRequiresConfirmation&quot;: &quot;false&quot;,
     &quot;git-widget-placeholder&quot;: &quot;detached&quot;,
     &quot;junie.onboarding.icon.badge.shown&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/张斯涵/IdeaProjects/summer/backend/src/main/resources/sql&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;mysql&quot;
+    ]
   }
 }</component>
-  <component name="RunManager" selected="Batch.deploy-simple">
-    <configuration name="compile-test" type="BatchConfigurationType" factoryName="Batch" temporary="true">
-      <module name="summer" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="./backend" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SCRIPT_NAME" value="compile-test.bat" />
-      <option name="PARAMETERS" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="deploy-all" type="BatchConfigurationType" factoryName="Batch" temporary="true">
-      <module name="summer" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SCRIPT_NAME" value="deploy-all.bat" />
-      <option name="PARAMETERS" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
-    <configuration name="deploy-simple" type="BatchConfigurationType" factoryName="Batch" temporary="true">
-      <module name="summer" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="PARENT_ENVS" value="true" />
-      <option name="SCRIPT_NAME" value="deploy-simple.bat" />
-      <option name="PARAMETERS" value="" />
-      <method v="2">
-        <option name="Make" enabled="true" />
-      </method>
-    </configuration>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\张斯涵\IdeaProjects\summer\backend\src\main\resources\sql" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\张斯涵\IdeaProjects\summer\backend\src\main\java\com\zshyyds\backend\service\user" />
+      <recent name="C:\Users\张斯涵\IdeaProjects\summer\backend\src\main\java\com\zshyyds\backend\repository\system" />
+      <recent name="C:\Users\张斯涵\IdeaProjects\summer\backend\src\main\java\com\zshyyds\backend\repository\user" />
+      <recent name="C:\Users\张斯涵\IdeaProjects\summer\backend\src\main\java\com\zshyyds\backend\repository\blog" />
+      <recent name="C:\Users\张斯涵\IdeaProjects\summer\backend\src\main\java\com\zshyyds\backend\controller\user" />
+    </key>
+  </component>
+  <component name="RunManager">
     <configuration name="BackendApplication" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot" nameIsGenerated="true">
+      <option name="ALTERNATIVE_JRE_PATH" value="D:/ENVIRONMENT/jdk-17.0.12" />
+      <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
       <module name="backend" />
+      <selectedOptions>
+        <option name="environmentVariables" />
+      </selectedOptions>
       <option name="SPRING_BOOT_MAIN_CLASS" value="com.zshyyds.backend.BackendApplication" />
       <method v="2">
         <option name="Make" enabled="true" />
       </method>
     </configuration>
-    <recent_temporary>
-      <list>
-        <item itemvalue="Batch.deploy-simple" />
-        <item itemvalue="Batch.deploy-all" />
-        <item itemvalue="Batch.compile-test" />
-        <item itemvalue="Batch.deploy-simple" />
-        <item itemvalue="Batch.compile-test" />
-      </list>
-    </recent_temporary>
   </component>
   <component name="SharedIndexes">
     <attachedChunks>
@@ -129,6 +162,15 @@
       <workItem from="1755096195606" duration="2317000" />
       <workItem from="1755149428131" duration="350000" />
       <workItem from="1755155707616" duration="96000" />
+      <workItem from="1755163793972" duration="132000" />
+      <workItem from="1755240061909" duration="25000" />
+      <workItem from="1755492162756" duration="1000" />
+      <workItem from="1755495460122" duration="629000" />
+      <workItem from="1755524486082" duration="5542000" />
+      <workItem from="1755665264137" duration="11418000" />
+      <workItem from="1755692743851" duration="2349000" />
+      <workItem from="1755743404507" duration="2631000" />
+      <workItem from="1755847424857" duration="2083000" />
     </task>
     <task id="LOCAL-00001" summary="部署前的一次推送，推完之后搞部署分支">
       <option name="closed" value="true" />
@@ -218,7 +260,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755155752026</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="初步上线。开发改运维了属于是">
+      <option name="closed" value="true" />
+      <created>1755163886848</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1755163886848</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -248,6 +298,7 @@
     <MESSAGE value="网格交易算法模块初步完成，上传服务器" />
     <MESSAGE value="网格交易算法模块初步完成，上传服务器1" />
     <MESSAGE value="开发+部署-双环境版本-v1.0.0" />
-    <option name="LAST_COMMIT_MESSAGE" value="开发+部署-双环境版本-v1.0.0" />
+    <MESSAGE value="初步上线。开发改运维了属于是" />
+    <option name="LAST_COMMIT_MESSAGE" value="初步上线。开发改运维了属于是" />
   </component>
 </project>

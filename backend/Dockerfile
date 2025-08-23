@@ -23,6 +23,12 @@ COPY --from=build-stage /app/target/backend-0.0.1-SNAPSHOT.jar app.jar
 # 设置 JVM 内存参数和优化参数
 ENV JAVA_OPTS="-Xmx384m -Xms128m -XX:MaxMetaspaceSize=128m -XX:+UseG1GC -XX:+UseContainerSupport"
 
+# 生产环境变量 - 关闭详细日志
+ENV SHOW_SQL=false
+ENV FORMAT_SQL=false
+ENV LOG_LEVEL=INFO
+ENV SQL_LOG_LEVEL=WARN
+
 # 暴露端口
 EXPOSE 8080
 
