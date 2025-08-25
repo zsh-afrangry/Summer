@@ -4,7 +4,13 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="IDEA连接不上Docker里的MySQL容器，怎么解决？" />
+    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="“数据库”卡片的第一章上传，暂时无后端啥事，准备设计数据库了">
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/test-docker-dev.bat" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -139,6 +145,8 @@
       <workItem from="1755945119750" duration="10435000" />
       <workItem from="1755957699895" duration="1950000" />
       <workItem from="1755960003101" duration="2474000" />
+      <workItem from="1756114080497" duration="96000" />
+      <workItem from="1756124864560" duration="2379000" />
     </task>
     <task id="LOCAL-00001" summary="部署前的一次推送，推完之后搞部署分支">
       <option name="closed" value="true" />
@@ -252,7 +260,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755962447559</updated>
     </task>
-    <option name="localTasksCounter" value="15" />
+    <task id="LOCAL-00015" summary="“数据库”卡片的第一章上传，暂时无后端啥事，准备设计数据库了">
+      <option name="closed" value="true" />
+      <created>1756114150589</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1756114150589</updated>
+    </task>
+    <option name="localTasksCounter" value="16" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -285,6 +301,7 @@
     <MESSAGE value="初步上线。开发改运维了属于是" />
     <MESSAGE value="开始做界面，模块1-1-1" />
     <MESSAGE value="IDEA连接不上Docker里的MySQL容器，怎么解决？" />
-    <option name="LAST_COMMIT_MESSAGE" value="IDEA连接不上Docker里的MySQL容器，怎么解决？" />
+    <MESSAGE value="“数据库”卡片的第一章上传，暂时无后端啥事，准备设计数据库了" />
+    <option name="LAST_COMMIT_MESSAGE" value="“数据库”卡片的第一章上传，暂时无后端啥事，准备设计数据库了" />
   </component>
 </project>

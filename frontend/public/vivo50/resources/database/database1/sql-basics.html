@@ -1,0 +1,862 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>SQL基础与CRUD操作</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.highlight-default_background {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(142, 58, 1, 0.141); }
+.select-value-color-orange { background-color: rgba(213, 96, 0, 0.188); }
+.select-value-color-yellow { background-color: rgba(209, 155, 0, 0.238); }
+.select-value-color-green { background-color: rgba(1, 104, 42, 0.145); }
+.select-value-color-blue { background-color: rgba(0, 108, 191, 0.156); }
+.select-value-color-purple { background-color: rgba(104, 1, 184, 0.125); }
+.select-value-color-pink { background-color: rgba(204, 1, 88, 0.137); }
+.select-value-color-red { background-color: rgba(228, 26, 0, 0.148); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="25424c0c-396a-80ac-9811-c470e189328e" class="page sans"><header><h1 class="page-title">SQL基础与CRUD操作</h1><p class="page-description"></p></header><div class="page-body"><h1 id="25524c0c-396a-807e-ac4d-e129748c457a" class="">数据定义子语言DDL</h1><p id="25524c0c-396a-80d9-832f-ccc104897123" class="">用于定义和管理 数据库对象 的结构，比如表本身。这类操作会改变表结构</p><ul id="25524c0c-396a-8029-8db4-f9a228da6385" class="bulleted-list"><li style="list-style-type:disc">创建表 <code>CREATE TABLE</code></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-80ae-8b9f-da33904826fd" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 需要定义表名、列名、每一列的数据类型、约束（主键、非空等）
+CREATE TABLE employees(
+		id INT PRIMARY KEY, -- id，int类型，是主键，逗号隔开
+		first_name VARCHAR(50) NOT NULL, -- 名，50字符以内的字符串，不可为空
+		last_name VARCHAR(50),
+    department VARCHAR(50),
+    salary DECIMAL(10, 2), -- 薪资，使用DECIMAL类型，数字型128bit，小数点左边10位，右边2位
+    hire_date DATE -- 聘用日期，数据类型是DATE（年月日，没有时分秒）
+);</code></pre><ul id="25524c0c-396a-80ba-a00b-dfe89b5b4d0a" class="bulleted-list"><li style="list-style-type:disc">修改表 <code>ALTER TABLE</code></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-8044-89c1-ecb9a81f1680" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 增加一个新列
+ALTER TABLE employees ADD email_address VARCHAR(50);
+-- 删除一个原有列
+ALTER TABLE employees DROP COLUMN email_address;
+-- 修改某一个列的数据类型
+ALTER TABLE employees MODIFY COLUMN salary INT;
+-- 修改数据表的名字
+ALTER TABLE employees TO staff;
+-- 修改列名，用的是UPDATE</code></pre><ul id="25524c0c-396a-80fb-8e83-e4a78dcca0d8" class="bulleted-list"><li style="list-style-type:disc">删除表 <code>DROP TABLE</code></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-80e9-b933-f251dd50e2c5" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">DROP TABLE employees;</code></pre><ul id="25524c0c-396a-8007-af5f-d7cf559787f7" class="bulleted-list"><li style="list-style-type:disc">清空表 truncate <code>TRUNCATE TABLE</code></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-80d3-902b-cc8c2693743d" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">TRUNCATE TABLE employees; -- 操作速度比删除表快，有的数据不支持回滚</code></pre><table id="25424c0c-396a-8062-889e-d611942f4342" class="simple-table"><tbody><tr id="25424c0c-396a-8019-976e-cb311e54bdd9"><td id="\zxB" class="">id</td><td id="i&lt;qX" class="">first_name</td><td id="J}&gt;P" class="">last_name</td><td id="mhSf" class="">department</td><td id="Dcr=" class="">salary</td><td id="WHyC" class="">hire_date</td></tr><tr id="25424c0c-396a-8048-aa75-c5e9633e886b"><td id="\zxB" class="">1</td><td id="i&lt;qX" class="">John</td><td id="J}&gt;P" class="">Doe</td><td id="mhSf" class="">HR</td><td id="Dcr=" class="">60000</td><td id="WHyC" class="">2022-01-15</td></tr><tr id="25424c0c-396a-8035-b469-e2f9354bea1f"><td id="\zxB" class="">2</td><td id="i&lt;qX" class="">Jane</td><td id="J}&gt;P" class="">Smith</td><td id="mhSf" class="">Engineering</td><td id="Dcr=" class="">85000</td><td id="WHyC" class="">2021-03-22</td></tr><tr id="25424c0c-396a-8010-81c6-ea7af7608ebe"><td id="\zxB" class="">3</td><td id="i&lt;qX" class="">Peter</td><td id="J}&gt;P" class="">Jones</td><td id="mhSf" class="">Engineering</td><td id="Dcr=" class="">95000</td><td id="WHyC" class="">2020-05-30</td></tr><tr id="25424c0c-396a-80f9-a114-c5f2e5ccc75f"><td id="\zxB" class="">4</td><td id="i&lt;qX" class="">Emily</td><td id="J}&gt;P" class="">Williams</td><td id="mhSf" class="">Sales</td><td id="Dcr=" class="">72000</td><td id="WHyC" class="">2022-08-10</td></tr><tr id="25424c0c-396a-800c-ad54-e512837d24a8"><td id="\zxB" class="">5</td><td id="i&lt;qX" class="">Michael</td><td id="J}&gt;P" class="">Brown</td><td id="mhSf" class="">Sales</td><td id="Dcr=" class="">78000</td><td id="WHyC" class="">2021-11-01</td></tr><tr id="25424c0c-396a-803e-8da7-df14611dcce8"><td id="\zxB" class="">6</td><td id="i&lt;qX" class="">Sarah</td><td id="J}&gt;P" class="">Davis</td><td id="mhSf" class="">HR</td><td id="Dcr=" class="">NULL</td><td id="WHyC" class="">2023-02-20</td></tr></tbody></table><h1 id="25524c0c-396a-80e5-b901-edb936d21db4" class="">数据库查询子语言DQL</h1><h2 id="25424c0c-396a-803a-b2ce-fd35bb5f0f32" class="">SELECT（读取数据）</h2><p id="25424c0c-396a-80e7-b499-e72565e498e3" class="">假设目前有一张<code>employees</code>的数据表</p><ul id="25424c0c-396a-806d-bfcf-e77a1bcf5c13" class="bulleted-list"><li style="list-style-type:disc"><code>SELECT</code>基础</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-80cf-ae2a-e6e9fbaf630e" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT * FROM employees; # 查询所有列
+SELECT first_name, salary FROM employees; # 查询两个列</code></pre><ul id="25424c0c-396a-80a9-81cc-ee93bfb56c61" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE</code>条件筛选，只返回满足条件的行</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8004-9568-d6ae5b735e45" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询Engineering部门的全部员工的名字
+SELECT  first_name FROM employees WHERE department = &#x27;Engineering&#x27;;
+-- 查询薪水大于 80000 的所有员工
+SELECT first_name, salary FROM employees WHERE salary &gt; 80000;</code></pre><ul id="25424c0c-396a-8073-a102-f4f7aca346ee" class="bulleted-list"><li style="list-style-type:disc"><code>LIKE</code>模糊匹配：<code>%</code>代表0个、1个、多个字符，<code>_</code>代表单一字符</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-80cf-8e78-ed35bf764995" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询所有姓氏以S开头的员工
+SELECT * FROM employees WHERE last_name LIKE &#x27;S%&#x27;;
+-- 查询所有名字中有ah的员工
+SELECT * FROM employees WHERE first_name LIKE &#x27;%ah%&#x27;;
+-- 查询所有 姓氏的第三个字母是J的四字员工
+SELECT * FROM employees WHERE first_name LIKE &#x27;__J_&#x27;;
+-- 查询第二个字母是a，且结尾是s的任意长度的字符串
+SELECT * FROM employees WHERE first_name LIKE &#x27;_a%s&#x27;</code></pre><ul id="25424c0c-396a-8088-9817-dc02345d1ee8" class="bulleted-list"><li style="list-style-type:disc"><code>IN</code>在…之中，<code>BETWEEN</code>在… 和… 之间</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-807b-97fd-c48d94695d73" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询 HR 和 Engineering这两个部门内的所有员工
+SELECT * FROM employees WHERE department IN (&#x27;HR&#x27;, &#x27;Engineering&#x27;)
+-- 查询薪资在70000~80000的员工
+SELECT * FROM employees WHERE salary BETWEEN 70000 and 80000</code></pre><ul id="25424c0c-396a-802f-b562-e1f969f99750" class="bulleted-list"><li style="list-style-type:disc"><code>IS NULL</code> (是空值)，不能用=，必须要用<code>IS</code></li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-80cf-a06b-f731c64458f2" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询薪水未知的员工
+SELECT * FROM employees WHERE salary IS NULL;</code></pre><ul id="25424c0c-396a-80b1-8d22-c8697ecd482b" class="bulleted-list"><li style="list-style-type:disc"><code>ORDER BY</code> 排序，升序<code>ASC</code>，降序<code>DESC</code>，多条件时按先后排序</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8020-a06e-e0521e6f0e83" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 按薪水从低到高排序
+SELECT first_name, salary FROM employees ORDER BY salary ASC;
+-- 先按部门排序，部门相同时再按薪水降序排序
+SELECT * FROM employees ORDER BY department, salary DESC;</code></pre><ul id="25424c0c-396a-806a-9141-edd3e001f530" class="bulleted-list"><li style="list-style-type:disc"><code>LIMIT</code>分页，限制返回数量N</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-80a4-9828-d18f1e101e5f" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- LIMIT [offset,] count，offset 是起始行的索引（从0开始），count 是要返回的行数
+-- 返回薪水最高的三名员工
+SELECT * FROM employees ORDER BY salary ASC LIMIT 3;
+-- 返回“从第11个数据开始的5个数据”，这个类似于“第三页”(10表示第11个数据，下标从0开始)
+SELECT * FROM employees ORDER BY salary ASC LIMIT 10, 5;</code></pre><h1 id="25424c0c-396a-804a-9e21-f4998eed1037" class="">数据操纵子语言<strong> </strong>DML</h1><h2 id="25424c0c-396a-8024-9543-e5e8ac05d73d" class="">INSERT（插入数据）</h2><p id="25424c0c-396a-806d-9755-f76d4b2f7153" class="">分为两种，一种插入完整的一条数据，一种是插入部分数据</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-80b7-a61a-cd27c893577b" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 插入一条完整的数据，列名与值的顺序必须一一对应
+INSERT INTO employees (id, first_name, last_name, department, salary, hire_date)
+VALUES (7, &#x27;David&#x27;, &#x27;Lee&#x27;, &#x27;Engineering&#x27;, 92000, &#x27;2023-05-18&#x27;);
+-- 插入部分列的数据，未指定的列将被置为默认值或NULL
+INSERT INTO employees (id, first_name, last_name, department, hire_date)
+VALUES (8, &#x27;Nancy&#x27;, &#x27;Chen&#x27;, &#x27;Marketing&#x27;, &#x27;2023-06-01&#x27;);</code></pre><h2 id="25424c0c-396a-8005-a2cd-f0efa3f2c539" class="">UPDATE（更新数据）</h2><p id="25424c0c-396a-80cf-ab1c-d05495d2e38f" class="">UPDTAE () SET () WHERE () </p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8026-953a-dd9f4e82abf6" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 将Sales部门的所有员工，薪资涨为1.2倍，且将部门改名为SalesPlus
+UPDATE employees
+SET salary = salary * 1.2, department = &#x27;SalesPlus&#x27;
+WHERE department = &#x27;Sales&#x27;
+-- 非常重要： UPDATE 语句一定要带 WHERE 子句，否则将更新表中的所有行！</code></pre><h2 id="25424c0c-396a-8095-999d-d4c745bcd01d" class="">DELETE（删除数据）</h2><p id="25424c0c-396a-8042-804f-eda9e47b7628" class="">DELETE FROM () WHERE ()</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8095-a263-d4ef4a37af51" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">--  与 UPDATE 一样，DELETE 语句通常也必须带 WHERE 子句，否则将删除表中的所有行！
+DELETE FROM employees
+WHERE salary &lt; 65000;</code></pre><h1 id="25424c0c-396a-80fa-8550-cbcc345d48b8" class="">聚合 与 分组</h1><h2 id="25424c0c-396a-80fe-af66-fa31faf2c41a" class="">聚合函数</h2><p id="25424c0c-396a-8055-aa3b-d23af19b97a7" class="">聚合函数会对一组值进行计算，并返回单个值</p><ul id="25424c0c-396a-8057-abef-d6e1c3b0f6ef" class="bulleted-list"><li style="list-style-type:disc">COUNT - 计数</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8095-af42-db4134f2fb06" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 计算员工总数
+SELECT COUNT(id) FROM employees;
+-- 会自动忽略NULL
+SELECT COUNT(salary) FROM employees;-- 如果有一行的salary是NULL，它的输出比上面的小1</code></pre><ul id="25424c0c-396a-80db-a68f-ea98293e9c6e" class="bulleted-list"><li style="list-style-type:disc">SUM - 求和</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-806b-80a4-ccdfa7de2664" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 计算公司年度总薪水支出
+SELECT SUM(salary) FROM employees; </code></pre><ul id="25424c0c-396a-8019-84d5-ebcb83d60433" class="bulleted-list"><li style="list-style-type:disc">AVG - 平均值</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8050-8451-e269b7d3738f" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 计算薪资的平均值(会自动忽略NULL)
+SELECT AVG(salary) FROM employees;</code></pre><ul id="25424c0c-396a-8032-ae65-f5d0c75f109a" class="bulleted-list"><li style="list-style-type:disc">MAX / MIN - 最大值 / 最小值</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8073-b733-c7ca4f9873ee" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 计算薪资中的最大值和最小值
+SELECT MAX(salary), MIN(salary) FROM employees;</code></pre><h2 id="25424c0c-396a-8094-bd7f-ce9c97687f9c" class="">分组<code>GROUP BY</code></h2><p id="25424c0c-396a-8082-9473-ebd9d05a5447" class="">GROUP语句经常和 聚合函数 放在一起使用，根据列 将结果进行分组，然后对每个列进行聚合函数</p><ul id="25424c0c-396a-8059-85ec-c4da1ac4caf5" class="bulleted-list"><li style="list-style-type:disc">GROUP BY的使用</li></ul><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8075-ba9b-fd10ea2a5180" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT department, COUNT(id) AS employee_count
+FROM employees
+GROUP BY department</code></pre><p id="25424c0c-396a-807d-a320-f48190dce712" class="">如何理解上述SQL语句：</p><ol type="1" id="25424c0c-396a-8039-b391-fcd74d063a76" class="numbered-list" start="1"><li>系统扫描department表</li></ol><ol type="1" id="25424c0c-396a-8031-b432-e15801033477" class="numbered-list" start="2"><li>根据department的值，将员工分成n组<ol type="a" id="25424c0c-396a-80b2-b268-fde1d64eef4c" class="numbered-list" start="1"><li>比如这个表里，department列只有 “HR”、“Engineering”、“Sales”</li></ol><ol type="a" id="25424c0c-396a-8056-804a-f2c834b08586" class="numbered-list" start="2"><li>因此，系统根据department将员工分成3组</li></ol></li></ol><ol type="1" id="25424c0c-396a-807b-9dff-f0bedd549905" class="numbered-list" start="3"><li>对每个组分别进行COUNT(id)计算，并返回结果</li></ol><ol type="1" id="25424c0c-396a-802c-89eb-d8739ada7a33" class="numbered-list" start="4"><li>这个结果类似于下表<ol type="a" id="25424c0c-396a-8071-943e-c6d176057ca5" class="numbered-list" start="1"><li>只有两列是因为<code>SELECT</code>只选了两列，一列是<code>department</code>，一列是<code>employee_count</code></li></ol><ol type="a" id="25424c0c-396a-807a-808b-e568a440b2f4" class="numbered-list" start="2"><li><code>GROUP BY department</code>明确了最终的查询结果应该以department为主，一个department一行</li></ol><table id="25424c0c-396a-8090-bc76-cf36d4c72c42" class="simple-table"><tbody><tr id="25424c0c-396a-800c-b516-d15f70d6606f"><td id=";AVV" class="">department </td><td id="iub|" class="">employee_count </td></tr><tr id="25424c0c-396a-805e-b6d1-e11ba83295cc"><td id=";AVV" class="">HR </td><td id="iub|" class="">2</td></tr><tr id="25424c0c-396a-808f-ac12-d7e12f10d98d"><td id=";AVV" class="">Engineering </td><td id="iub|" class="">3</td></tr><tr id="25424c0c-396a-80e5-8aab-c4adb6d90525"><td id=";AVV" class="">Sales </td><td id="iub|" class="">4</td></tr></tbody></table></li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-80c9-a042-fb4b04a51b9b" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 计算所有部门的平均薪资
+SELECT department, AVG(salary) AS average_salary
+FROM employees
+GROUP BY department</code></pre><h2 id="25424c0c-396a-807a-aa5d-ed0aaaafb6b3" class=""><strong>分组后筛选 </strong><code><strong>HAVING</strong></code></h2><p id="25424c0c-396a-803f-913f-de4bb89258a8" class=""><code>HAVING</code> 和 <code>WHERE</code> 的区别</p><ul id="25424c0c-396a-8025-9a5e-d2b1a461bab0" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE</code>在分组之前进行筛选，它过滤的是原始表中的<code>行</code></li></ul><ul id="25424c0c-396a-80bb-84ba-c34e4e34fb26" class="bulleted-list"><li style="list-style-type:disc"><code>HAVING</code>在分组之后进行过滤，它过滤的是GROUP BY产出的<code>组</code></li></ul><ul id="25424c0c-396a-807e-bfce-f1179803373d" class="bulleted-list"><li style="list-style-type:disc">在<code>HAVING</code>句子中可以使用聚合函数，但是在<code>WHERE</code>句子中不能</li></ul><p id="25424c0c-396a-80a3-914a-f693b5ebd807" class="">之前提到的分组中，有一个是“计算所有部门的平均薪资”</p><p id="25424c0c-396a-807d-834f-d03807fd4670" class="">然后现在，可以 “计算部门数大于3的部门的平均薪资”</p><p id="25424c0c-396a-80bc-9464-c58bdad38189" class="">也就是说，是先对数据进行分组后，得到所有部门的平均薪资，再从中进行筛选出人数大于3的部门</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25424c0c-396a-8053-800f-f2b8e6644e86" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 筛选出 人数大于的 部门 的 平均薪资
+SELECT 
+	department,
+	COUNT(id) AS employee_count,
+	AVG(salary) AS avg_salary
+FROM 
+	employees
+GROUP BY
+	department
+HAVING
+	employee_count &gt; 3;</code></pre><p id="25424c0c-396a-806e-9902-eefa8465d165" class="">执行步骤：</p><ol type="1" id="25424c0c-396a-80be-aa5a-f394bf6d1fd4" class="numbered-list" start="1"><li>确定数据来源表 <code>employees</code></li></ol><ol type="1" id="25424c0c-396a-80bd-8877-c01f66321363" class="numbered-list" start="2"><li>确定分组形式：<code>GROUP BY department</code>，按部门分组</li></ol><ol type="1" id="25424c0c-396a-802d-bb4a-dc70acc4809d" class="numbered-list" start="3"><li>分组完毕，对每组进行聚合函数计算，得到每一组的id总数 和 salary</li></ol><ol type="1" id="25424c0c-396a-8099-ad8d-de0b50cdc873" class="numbered-list" start="4"><li>最后用HAVIING筛选，在得到的表中，只显示id总数大于3的</li></ol><h1 id="25524c0c-396a-807b-bf82-ed22bb8ae3c4" class="">多表查询 Joins-高频考点</h1><p id="25524c0c-396a-807c-93ca-cb255ae234f4" class="">当一个数据分散在多个表中时，就要用JOIN来将它们连接起来</p><p id="25524c0c-396a-8007-a0cb-c8c29fc527ab" class="">除去上面的表，我们再创建一个部门表：<code>departments</code></p><table id="25524c0c-396a-80b3-9341-c5ec7bbc1597" class="simple-table"><tbody><tr id="25524c0c-396a-80c6-a113-d2133b75e108"><td id="]&lt;CY" class="">dept_id</td><td id="ZGq^" class="">dept_name</td><td id="FW@K" class="">location</td></tr><tr id="25524c0c-396a-80ce-9c06-f38b24b321fe"><td id="]&lt;CY" class="">1</td><td id="ZGq^" class="">HR</td><td id="FW@K" class="">New York</td></tr><tr id="25524c0c-396a-8048-9db7-c7a95052bd30"><td id="]&lt;CY" class="">2</td><td id="ZGq^" class="">Engineering</td><td id="FW@K" class="">San Francisco</td></tr><tr id="25524c0c-396a-802c-8862-d65fb7d4ab0d"><td id="]&lt;CY" class="">3</td><td id="ZGq^" class="">Sales</td><td id="FW@K" class="">New York</td></tr><tr id="25524c0c-396a-80a0-a408-f6bdcaf173f4"><td id="]&lt;CY" class="">4</td><td id="ZGq^" class="">IT</td><td id="FW@K" class="">Chicago</td></tr></tbody></table><h2 id="25524c0c-396a-8018-9503-e5a03322d430" class="">内连结 INNER JOIN</h2><p id="25524c0c-396a-808f-b950-f2667600737c" class="">只返回两个表中连结字段能匹配上的行。</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25524c0c-396a-805e-8256-d577997dd85e"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25524c0c-396a-80ab-85a9-e0fafca300e4" class="">可以想象成两个集合（表）的交集（共有的列）</p></div></figure><p id="25524c0c-396a-800e-bbd5-ccdcde19e4c7" class="">比如：我们想查询 每个员工 所在的 部门 的地点</p><p id="25524c0c-396a-8047-a9ff-d2e403d04d4e" class=""><strong>查询逻辑：在department钟遍历每一列，获取每个员工的部门信息，再去</strong><code><strong>departments</strong></code><strong>找每个部门对应的location。最终的结果需要的是：员工名字+部门信息+部门地点</strong></p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-806d-badf-c80741b5ba3b" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询 每个员工 所在的 部门 的地点
+SELECT
+	e.first_name,
+	e.last_name,
+	d.dept_name,
+	d.location
+FROM
+	employees AS e
+INNER JOIN
+	departments AS d ON e.department = d.dept_name;</code></pre><ol type="1" id="25524c0c-396a-80ef-b841-c34f9176c0f5" class="numbered-list" start="1"><li>根据查询逻辑可知，我们本次查询需要用到两张表，因此需要连结</li></ol><ol type="1" id="25524c0c-396a-80a7-9dd9-e82be0c24bb0" class="numbered-list" start="2"><li>确认要用到的两张表：employees和departments，分别命名e 和 d</li></ol><ol type="1" id="25524c0c-396a-80f6-9bbe-fa6cd54d84e3" class="numbered-list" start="3"><li>连结条件：ON e.department = d.dept_name;<ol type="a" id="25524c0c-396a-8015-9426-fbbd75db6814" class="numbered-list" start="1"><li>数据库会逐行检查 e表的department 字段 和 d表的dept_name字段是否相等</li></ol><ol type="a" id="25524c0c-396a-800d-91a6-c03e46ca5b21" class="numbered-list" start="2"><li>只有两个字段的值能匹配上的时候，两行数据才会被组合在一起，最终显示</li></ol></li></ol><ol type="1" id="25524c0c-396a-80b2-9671-edac31a39d30" class="numbered-list" start="4"><li>然后根据需求，确认查询的结果：名字+部门信息+部门地点，写在SELECT里</li></ol><figure id="25524c0c-396a-80ca-b402-dd77d691b0af" class="image"><a href="../images/image.png"><img style="width:709.9791870117188px" src="../images/image.png"/></a></figure><h2 id="25524c0c-396a-800b-9c2b-d541ba90c77a" class="">左连结 LEFT JOIN</h2><p id="25524c0c-396a-80f1-aad1-e1e9d3179f97" class="">左连结的结果是返回左表（FROM后面的表）的所有行。</p><p id="25524c0c-396a-804d-9549-ebc439ca5b4c" class="">如果在右表中没有匹配的行，返回结果就是NULL</p><p id="25524c0c-396a-80f4-9ce5-c96864225ff4" class="">查询逻辑：在employees表钟遍历所有的员工，查询他们的姓名+部门信息，然后对于每一个员工的所在部门，都映射到department表中的dept_name，根据dept_name查询对应的dept_location</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-80f8-b768-fb9c632d29ca" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询所有员工的部门信息，以及部门的所在地点
+SELECT
+    e.first_name,
+    e.last_name,
+    d.dept_name,
+    d.dept_localtion
+FROM
+    employees AS e
+LEFT JOIN
+		departments AS d on e.department = d.dept_name</code></pre><p id="25524c0c-396a-807e-aa2a-fcb138e447d8" class="">所有的SQL语句 跟 内连结 差不多，唯一的区别是：多了一条<code>Tom Hanks null null</code></p><p id="25524c0c-396a-80df-9516-e45e31a1de21" class="">与内连结相比，左连结一定会返回左表（<code>employees表</code>）内存在的数据，哪怕这个数据对应的在右表中不存在（不存在就会返回NULL）</p><p id="25524c0c-396a-8094-a139-ef907cf919e0" class="">因为在左表中，<code>Tom Hanks</code> 的部门是Marketing，在右表是没有对应的，所以返回NULL</p><figure id="25524c0c-396a-80f3-8a51-ff886fe9b3a6" class="image"><a href="../images/image1.png"><img style="width:710px" src="../images/image1.png"/></a></figure><h2 id="25524c0c-396a-80b6-bd7c-f9d92c128bff" class="">右连结 RIGHT JOIN</h2><p id="25524c0c-396a-80c1-8de7-c91d5ff1f43f" class="">右连结返回的是右表的所有的行</p><p id="25524c0c-396a-80f6-ac26-f4eecceb48cb" class="">如果左表中没有匹配的行，就返回NULL</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-8025-94e7-fc2f0470aa87" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询所有部门、部门所在地址、部门内成员
+SELECT
+    d.dept_name, d.dept_localtion, e.first_name, e.last_name
+FROM
+    employees AS e
+RIGHT JOIN departments AS d on e.department = d.dept_name;</code></pre><p id="25524c0c-396a-80a7-9bc5-e2b58df6b4f9" class="">跟上面的SQL语句大致是一样的，然后把LEFT JOIN改成RIGHT JOIN</p><p id="25524c0c-396a-80a1-94ac-c894713f784b" class="">这样，右表（<code>departments表</code>）里的全部数据都会返回。如果右表里的数据在左表找不到对应（也就是不存在）就返回NULL</p><p id="25524c0c-396a-80b7-b296-fb27b62b42da" class="">因为在右表中，有一个IT部门，而左边没有一个员工是属于IT部门的，所以返回NULL</p><figure id="25524c0c-396a-80fa-b13b-c54af35c13e5" class="image"><a href="../images/image2.png"><img style="width:709.9896240234375px" src="../images/image2.png"/></a></figure><h2 id="25524c0c-396a-80ec-9c60-e72afe715162" class="">全外连结 FULL OUTER JOIN</h2><p id="25524c0c-396a-8067-88bc-f87658aeaf7c" class="">如果说全内连结返回的是左表和右表的交集的话，全外连结返回的就是左表和右表的并集</p><p id="25524c0c-396a-80a0-a50a-f2a8c263e4df" class="">MYSQL并不支持FULL OUTER JOIN，但是它跟LEFT JOIN UNION RIGHT JOIN是一样的</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-804e-a2ce-cea06b08fa20" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT
+    d.dept_name, d.dept_localtion, e.first_name, e.last_name
+FROM employees AS e
+LEFT JOIN departments AS d on e.department = d.dept_name
+
+UNION
+
+SELECT
+    d.dept_name, d.dept_localtion, e.first_name, e.last_name
+FROM employees AS e
+RIGHT JOIN departments AS d on e.department = d.dept_name</code></pre><p id="25524c0c-396a-808f-b969-d7d6835f333e" class="">会返回左表和右表共有的内容，如果左侧有而右侧没有（比如TOM）则右侧查询结果为NULL</p><p id="25524c0c-396a-803b-b8a8-c818cfa6465d" class="">如果右侧有的左侧没有（比如IT）则左侧查询结果为NULL</p><figure id="25524c0c-396a-806d-940f-ef54fdfaba81" class="image"><a href="../images/image3.png"><img style="width:709.9791870117188px" src="../images/image3.png"/></a></figure><h2 id="25524c0c-396a-8062-b959-eb66edbc5ee8" class="">交叉连结</h2><p id="25524c0c-396a-80d5-9408-e684b5f53754" class="">返回左表和右表的笛卡尔积，结果的行数 = 左表行数 * 右表行数，一般在没有on的情况下产生</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-80a5-9b1a-e8c66ab795cd" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT
+    e.first_name, e.last_name, d.dept_name, d.dept_localtion
+FROM
+    employees AS e
+CROSS JOIN departments AS d;</code></pre><p id="25424c0c-396a-80b0-9ba9-fcae7e8503fd" class="">如果在这个SQL语句最后加上on的话，结果跟INNER JOIN是一样的，所以有一个说法，CROSS JOIN是INNER JOIN的容错写法，这俩在 MySQL 中没有区别</p><h1 id="25524c0c-396a-8032-8a03-d2cc68772745" class="">子查询</h1><p id="25524c0c-396a-80e6-a96e-e8a7a1289aef" class="">SQL语句的一般执行过程：</p><ul id="25524c0c-396a-802a-82ab-f2f888461a49" class="bulleted-list"><li style="list-style-type:disc"><strong>FROM</strong>: 首先，确定要从哪个表 (<code>employees</code>) 中获取数据。</li></ul><ul id="25524c0c-396a-8006-90a9-d5b1d91d70d0" class="bulleted-list"><li style="list-style-type:disc"><strong>WHERE</strong>: 然后，<strong>逐行</strong>扫描表，根据 <code>WHERE</code> 子句中的条件来筛选行。</li></ul><ul id="25524c0c-396a-8005-9aa5-cfef9695ea5d" class="bulleted-list"><li style="list-style-type:disc"><strong>GROUP BY</strong>: 对筛选后的行进行分组。</li></ul><ul id="25524c0c-396a-806e-b150-f166ca5f993e" class="bulleted-list"><li style="list-style-type:disc"><strong>HAVING</strong>: 筛选分组后的结果。</li></ul><ul id="25524c0c-396a-80ef-b30e-c08b4f783d60" class="bulleted-list"><li style="list-style-type:disc"><strong>SELECT</strong>: 最后，选取要显示的列，并在此阶段执行聚合函数（如 <code>AVG()</code>）。</li></ul><ul id="25524c0c-396a-80a9-94e4-e46502b35ce5" class="bulleted-list"><li style="list-style-type:disc"><strong>ORDER BY</strong>: 对最终结果进行排序。</li></ul><h2 id="25524c0c-396a-80a6-8c7e-cd9cde562e37" class="">WHERE中的子查询</h2><p id="25524c0c-396a-8047-87c5-d9a793bcc141" class="">子查询时嵌套在另一个SQL查询（CRUD）中的查询</p><p id="25524c0c-396a-8031-831e-e60cfc4f211a" class="">比如说我需要<code>查询公司中所有薪资高于平均薪资的员工</code></p><p id="25524c0c-396a-8095-93cb-cfcb78f5806a" class="">这样的查询由两部分组成：先查询出AVG(salary)，然后用WHERE筛选出所有salary高于AVG(salary)的结果。思考下列是否可行：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-8067-86eb-d2f0a9056043" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT
+    first_name, last_name, salary
+FROM
+    employees
+WHERE
+    salary &gt; AVG(salary);</code></pre><p id="25524c0c-396a-802a-b7b2-ce0ca69d04dc" class="">AVG(salary)是一个聚合函数，表示的是”求平均值“，也就是说它只有计算功能，没有扫描功能</p><p id="25524c0c-396a-8047-98a1-eb3b69044479" class="">想要算出平均薪资，必须是 ”扫描全部薪资+求平均值“ 这两个过程</p><p id="25524c0c-396a-8019-93f5-db9f3434b526" class="">因此，AVG(salary)不能单独作为一个值，而必须：<code>SELECT AVG(salary) FROM employees</code>，扫描employees表，求出平均值以后，再进行WHERE筛选，WHERE是逐行过滤</p><p id="25524c0c-396a-808c-afa9-c6522e97104f" class="">因此正确的写法应该是</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-8028-a55c-fb4b3abfa3d4" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT
+    first_name, last_name, salary
+FROM
+    employees
+WHERE
+    salary &gt; (SELECT AVG(salary) FROM employees);</code></pre><h2 id="25524c0c-396a-8087-9704-cfbbffec81fe" class="">HAVING中的子查询</h2><p id="25524c0c-396a-80d5-ae7a-cbae6264b52b" class="">上面的WHERE查询中，子查询<code>SELECT AVG(salary) FROM employees</code>返回的是一个平均值</p><p id="25524c0c-396a-80af-a258-da8db44d9dca" class="">现在来一个<code>查询公司中所有薪资高于平均薪资的部门</code> </p><p id="25524c0c-396a-800f-97aa-e8bb667ec6c6" class="">之前员工的薪资查询，是统计<code>employees表</code>的<code>salary</code>列，计算平均值，再逐个比较</p><p id="25524c0c-396a-806b-a509-e7a5f633e308" class="">分析如下：</p><p id="25524c0c-396a-80c6-8e0c-d4164fb1ac37" class="">没有部门-薪资表，只有员工-员工薪资-部门表，首先需要统计所有部门的全部薪资，再计算每个部门的平均薪资，再找出部门平均薪资 高于 所有部门平均薪资 的 部门</p><ol type="1" id="25524c0c-396a-808d-ba00-c87ce567343d" class="numbered-list" start="1"><li>所有部门的平均薪资，就是所有员工的平均薪资，即<code>SELECT AVG(salary) FROM employees</code></li></ol><ol type="1" id="25524c0c-396a-80e9-b030-dacd560b1d0b" class="numbered-list" start="2"><li>每个部门的平均薪资：<ol type="a" id="25524c0c-396a-8051-93ee-ffdf5d06356c" class="numbered-list" start="1"><li>将员工按部门进行分组<code>GROUP BY department</code></li></ol><ol type="a" id="25524c0c-396a-802b-90f3-d29b0776c4c9" class="numbered-list" start="2"><li>计算每个分组的平均薪资<code>SELECT department, AVG(salary)</code></li></ol></li></ol><ol type="1" id="25524c0c-396a-80d1-a2ef-cbc7497fad16" class="numbered-list" start="3"><li>筛选出所有高于平均薪资的分组</li></ol><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-80be-8edb-c2f102746d5a" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 查询公司中所有薪资高于平均薪资的部门
+SELECT
+	department, AVG(salary) AS dprt_avg_salary
+FROM
+	employees
+GROUP BY
+	department
+HAVING
+	dprt_avg_salary &gt; (SELECT AVG(salary) FROM employees)</code></pre><h2 id="25524c0c-396a-8086-8666-e7492a9094fa" class="">FROM中的子查询</h2><p id="25624c0c-396a-8007-bc02-ccce84f719e5" class="">FROM的子查询，会在FROM部分生成一个临时的表，这个表可以跟其他物理实表一样，支持所有表操作。</p><p id="25624c0c-396a-80f3-bae3-ef9b47566fb7" class="">这个非常有用，因为我可以先对数据表进行复杂操作（聚合之类的），然后对处理结果进行二次查询<br/><code>假设我们想查询出员工数大于2的部门的平均薪资，同时还要显示出该部门的员工人数</code></p><p id="25624c0c-396a-803d-b796-cc2a8c316f6e" class="">思路是，首先要按部门进行分组。然后对每个部门，计算员工人数和平均薪资</p><p id="25624c0c-396a-8043-b16d-ccb52ccc9e08" class="">所以子查询的任务是对部门分组GROUP BY department，筛选出每个部门的员工和薪资，做成表</p><p id="25624c0c-396a-8068-8d97-c1981884122e" class="">然后操作这张表就行</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25524c0c-396a-8098-b587-d78e8d6e26cc" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT
+    department_stats.department,
+    department_stats.dprt_total_num,
+    department_stats.avg_salary
+FROM
+    (
+        SELECT
+            department,
+            AVG(salary) AS avg_salary,
+            COUNT(id) AS dprt_total_num
+        FROM
+            employees
+        GROUP BY
+            department
+    ) AS department_stats -- 必须为子查询创建的临时表指定一个别名
+WHERE
+    department_stats.dprt_total_num &gt; 1;</code></pre><p id="25624c0c-396a-8080-b018-e277c4297196" class="">这个表中的FROM句子里，生成了一个新的表，这个表的表名是department_stats，有三列，一列部门，两列聚合。然后我们所有的操作就在这个表里面进行</p><p id="25624c0c-396a-8011-a41c-db66c292f3ca" class="">当然，上面这个查询有些复杂，主要是为了演示FROM子查询，其实上面的式子等价于</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25624c0c-396a-80e8-b759-d0f51e230b26" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT
+    department,
+    COUNT(id) AS dprt_total_num,
+    AVG(salary) AS dprt_avg_salary
+FROM
+    employees
+GROUP BY
+    department
+Having
+    dprt_total_num &gt; 1;</code></pre><h2 id="25524c0c-396a-80c4-846f-f7263ec84696" class="">SELECT中的子查询</h2><h1 id="25524c0c-396a-807a-ba4c-ef531b476673" class="">数据库控制子语言DCL</h1><p id="25824c0c-396a-805d-adb3-fbc2ba56656c" class="">DCL的核心是管理用户权限，即决定“谁能对数据做什么事”</p><p id="25824c0c-396a-808f-894c-c6767215cf75" class="">主要命令事<code>GRANT（授予）</code>和<code>REVOKE（撤销）</code></p><h2 id="25824c0c-396a-805b-a3c6-e0b95e26b630" class="">创建管理员</h2><p id="25824c0c-396a-80ba-9a6f-f5c22a248051" class="">首先我们创建两个新用户：数据分析师 和 人事主管</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25824c0c-396a-80ef-aeee-da6b3ea2f3c1" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 创建数据分析师用户
+CREATE USER &#x27;data_analyst&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;password123&#x27;;
+
+-- 创建人事主管用户
+CREATE USER &#x27;hr_admin&#x27;@&#x27;localhost&#x27; IDENTIFIED BY &#x27;password456&#x27;;</code></pre><p id="25824c0c-396a-80c7-aac7-cebafee84216" class="">刚刚创建的这两个用户是没有任何权限的（哪怕是查询），会收到“拒绝访问”的报错</p><h2 id="25824c0c-396a-8085-945b-fe4f2e40144f" class="">授予权限</h2><p id="25824c0c-396a-80f2-be7f-c0c3a9b1a9a4" class="">首先明确业务需求：数据分析师 <code>不允许修改</code>employees表的任何数据，他只能从表中<code>读取数据</code>，人事主管 只允许<code>读取employees表</code>、<code>修改表中salary列</code> </p><p id="25824c0c-396a-80dd-a03f-c7f851ebc7ba" class="">注意最小权限原则</p><p id="25824c0c-396a-8005-9981-e1459f7eae9b" class="">综上：授予数据分析师 读取表的权限，授予人事主管 读取表 + 修改薪资 的权限</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25824c0c-396a-80b7-81c4-c55b6fccf202" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 授予 SELECT 权限 在 employees表 给 数据分析师
+GRANT SELECT ON employees TO &#x27;data_analyst&#x27;@&#x27;localhost&#x27;;
+
+-- 授予 SELECT权限 和 UPDATE(salary列)权限 在 employees表 给 人事主管
+GRANT SELECT, UPDATE(salary) ON employees TO &#x27;hr_admin&#x27;@&#x27;localhost&#x27;;</code></pre><h2 id="25824c0c-396a-8055-bd79-fdb82fd9ed44" class="">撤销权限</h2><p id="25824c0c-396a-805f-abb1-f21e065952a3" class="">假设数据分析师后来离职了，那么为了防止数据泄露，需要 撤销他的权限</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25824c0c-396a-80c1-af36-d34c489758b4" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 撤销 data_analyst 对 employees 表的 SELECT 权限
+REVOKE SELECT ON employees FROM &#x27;data_analyst&#x27;@&#x27;localhost&#x27;;</code></pre><h1 id="25524c0c-396a-8047-9f19-c6ec4da115e8" class="">事务控制语言TCL</h1><p id="25824c0c-396a-80b9-94b6-cbb7174d14de" class="">TCL的核心是管理事务，确保一系列的事务要么全部成功，要么全部失败（原子性），从而保证数据的完整性 和 一致性。关于它的金融例子，可以在ACID讲解中提到</p><p id="25824c0c-396a-805c-86ae-f79a6173783c" class="">TCL的核心是：<code>START TRANSACTION</code>, <code>COMMIT</code>, <code>ROLLBACK</code></p><p id="25824c0c-396a-80f6-9fa9-e9a6f1d1b782" class="">当前假设一个原子事务：人事主管 要为员工 <code>Jane Smith</code> (id=2) 进行晋升调薪</p><p id="25824c0c-396a-8067-b556-c155caf3129f" class="">这个事务为：将薪资从 <code>85000</code> 提升到 <code>95000</code>，部门从 <code>Engineering</code> 改为 <code>Senior Engineering</code></p><h2 id="25824c0c-396a-801e-805a-efd600ff2808" class="">成功提交COMMIT</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25824c0c-396a-8030-8343-cb5b6038b28a" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 步骤1: 开启一个事务
+START TRANSACTION;
+
+-- 步骤2: 执行第一个更新操作 (加薪)
+UPDATE employees SET salary = 95000 WHERE id = 2;
+
+-- 步骤3: 执行第二个更新操作 (改部门)
+UPDATE employees SET department = &#x27;Senior Engineering&#x27; WHERE id = 2;
+
+-- 步骤4: 确认所有操作都正确无误后，提交事务
+COMMIT;</code></pre><h2 id="25824c0c-396a-8065-85d8-d2d5532424ad" class="">失败回滚ROLLBACK</h2><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25824c0c-396a-80cd-82ec-c8329a185b5d" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 步骤1: 开启一个事务
+START TRANSACTION;
+
+-- 步骤2: 执行加薪操作
+UPDATE employees SET salary = 105000 WHERE id = 3;
+
+-- 步骤3: 发现操作有误（比如，加薪的金额不对或加错人了）
+-- 决定撤销本次事务中的所有操作
+ROLLBACK;</code></pre></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>

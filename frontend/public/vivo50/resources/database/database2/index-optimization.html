@@ -1,0 +1,696 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>数据库核心理论与设计</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.collection-content td {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.highlight-default_background {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-default { background-color: rgba(42, 28, 0, 0.07); }
+.select-value-color-gray { background-color: rgba(28, 19, 1, 0.11); }
+.select-value-color-brown { background-color: rgba(142, 58, 1, 0.141); }
+.select-value-color-orange { background-color: rgba(213, 96, 0, 0.188); }
+.select-value-color-yellow { background-color: rgba(209, 155, 0, 0.238); }
+.select-value-color-green { background-color: rgba(1, 104, 42, 0.145); }
+.select-value-color-blue { background-color: rgba(0, 108, 191, 0.156); }
+.select-value-color-purple { background-color: rgba(104, 1, 184, 0.125); }
+.select-value-color-pink { background-color: rgba(204, 1, 88, 0.137); }
+.select-value-color-red { background-color: rgba(228, 26, 0, 0.148); }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="25524c0c-396a-8018-af64-d0fb27898ca9" class="page sans"><header><h1 class="page-title">数据库核心理论与设计</h1><p class="page-description"></p></header><div class="page-body"><p id="25824c0c-396a-8099-9711-d54b45569159" class="">之前提到的TCL，这里会有演示</p><h1 id="25824c0c-396a-80ee-b7aa-f7019e791abb" class="">事务</h1><p id="25824c0c-396a-8044-a747-d86eed400d38" class="">事务是一组 必须 作为一个整体进行执行的SQL操作序列，这个序列要么全部成功执行（提交），要么全部不执行（回滚）</p><h2 id="25824c0c-396a-80a0-9407-e2e33c1a3e07" class="">ACID</h2><p id="25824c0c-396a-80dd-bf2d-cdcb10bcb5ed" class="">以”银行转账“为例，A要给B转100块钱。这个操作包含两个步骤：</p><ol type="1" id="25824c0c-396a-80a3-8aae-d9e6dc200734" class="numbered-list" start="1"><li>A的账户里扣除了100块钱</li></ol><ol type="1" id="25824c0c-396a-80bd-a889-c1b5f2b527ad" class="numbered-list" start="2"><li>B的账户里增加了100块钱</li></ol><h3 id="25824c0c-396a-80d3-bd76-f08efbad9e2b" class="">原子性 atomicity</h3><ul id="25824c0c-396a-8058-9285-eefaa35dc3a5" class="bulleted-list"><li style="list-style-type:disc">解释：<ul id="25824c0c-396a-804b-b528-f8d421fe7abe" class="bulleted-list"><li style="list-style-type:circle">事务是不可分割的最小工作单元</li></ul><ul id="25824c0c-396a-809e-a810-e59a8e7164e3" class="bulleted-list"><li style="list-style-type:circle">事务中的所有操作要么全部成功</li></ul><ul id="25824c0c-396a-80a5-bb76-eb02e086e337" class="bulleted-list"><li style="list-style-type:circle">一旦有一个步骤出错，将会全部回滚到事务开始前的状态，就像什么都没发生一样</li></ul></li></ul><ul id="25824c0c-396a-80b2-bbad-db856266fcfb" class="bulleted-list"><li style="list-style-type:disc">本例：<ul id="25824c0c-396a-8002-962e-da484ea969a9" class="bulleted-list"><li style="list-style-type:circle">如果从A账户扣除了100块钱后，系统突然崩溃</li></ul><ul id="25824c0c-396a-80ff-89a7-db7e1554c1bc" class="bulleted-list"><li style="list-style-type:circle">原子性保证了系统恢复后，会撤销A账户扣除的100块钱（回滚），A的钱会回来</li></ul><ul id="25824c0c-396a-80f3-a896-daede1922762" class="bulleted-list"><li style="list-style-type:circle">绝对不能出现”A的钱扣了，B的钱没增加“的情况</li></ul></li></ul><h3 id="25824c0c-396a-8081-bf7d-e29e831388a6" class="">一致性 Consistency</h3><ul id="25824c0c-396a-8015-900f-fcd5c3f81239" class="bulleted-list"><li style="list-style-type:disc">解释：<ul id="25824c0c-396a-8077-ac06-c16d8efc5b1e" class="bulleted-list"><li style="list-style-type:circle">事务的执行必须 使得 数据库 从 一个 <code>一致性状态</code> 到 另一个 <code>一致性状态</code></li></ul><ul id="25824c0c-396a-8080-9b82-c3ae9414148d" class="bulleted-list"><li style="list-style-type:circle">一致性 关注的是，某个事务的进行前后，数据库的<code>业务规则</code>和<code>约束</code>没有被破坏</li></ul></li></ul><ul id="25924c0c-396a-8098-9347-cacafddbcdc7" class="bulleted-list"><li style="list-style-type:disc">本例：<ul id="25924c0c-396a-802b-a103-e9b90551a4de" class="bulleted-list"><li style="list-style-type:circle">一致性可以指”银行存款的总金额保持不变“</li></ul><ul id="25924c0c-396a-804b-aff1-efcc1eed0108" class="bulleted-list"><li style="list-style-type:circle">转之前A+B总金额是X，转之后A-100，B+100，A+B应该还是X</li></ul><ul id="25924c0c-396a-8079-a202-d1a74f4d4c11" class="bulleted-list"><li style="list-style-type:circle">数据库保持一致性，即事务保持所有业务规则不能发生变化</li></ul></li></ul><h3 id="25924c0c-396a-80b8-8d54-d4d6aaf76c8c" class="">隔离性</h3><ul id="25924c0c-396a-8052-b4da-e959c268d3a6" class="bulleted-list"><li style="list-style-type:disc">解释：<ul id="25924c0c-396a-801b-9744-da372ece376f" class="bulleted-list"><li style="list-style-type:circle">当多个事务并发执行时，一个事务的执行 不应该被 其他事务干扰</li></ul><ul id="25924c0c-396a-80f6-b422-e83b1d5c46ba" class="bulleted-list"><li style="list-style-type:circle">一个事务内部的操作及其 使用的数据 对i其他并发事务时隔离的</li></ul><ul id="25924c0c-396a-80d1-966a-f7e4637af134" class="bulleted-list"><li style="list-style-type:circle">执行期间，各个事务之间不能相互干扰</li></ul></li></ul><ul id="25824c0c-396a-80fb-ae2b-de3bbeadef1f" class="bulleted-list"><li style="list-style-type:disc">本例：<ul id="25824c0c-396a-803c-a6d8-d8a04bb57c88" class="bulleted-list"><li style="list-style-type:circle">在A向B转账的事务（事务1）完成之前，有另一个查询（事务2）对此 进行观测</li></ul><ul id="25924c0c-396a-80f5-9b2c-c05623ef778a" class="bulleted-list"><li style="list-style-type:circle">它（事务2）绝对不能看到“A已扣款，B暂时未到账”这种中间 状态</li></ul><ul id="25924c0c-396a-80b9-af4b-e1842e5d10cb" class="bulleted-list"><li style="list-style-type:circle">隔离性保证了事务2只能看到<code>A未向B转账</code>或者<code>A向B转账完成</code>这两种状态，别的都不行</li></ul></li></ul><h3 id="25924c0c-396a-8031-8af7-c2ab2e702ea6" class="">持久性 Durability</h3><ul id="25924c0c-396a-80c1-a1fc-f477bd4228dc" class="bulleted-list"><li style="list-style-type:disc">解释：<ul id="25924c0c-396a-807d-be35-dbb9d9f2c1a7" class="bulleted-list"><li style="list-style-type:circle">一旦事务被成功提交，它对数据库中数据的改变就是永久性的</li></ul><ul id="25924c0c-396a-801f-ba47-e6b0c2dcbd8c" class="bulleted-list"><li style="list-style-type:circle">即使接下来系统发生崩溃，数据库也能够通过日志等方式恢复</li></ul><ul id="25924c0c-396a-80e5-a179-d0e2a186788d" class="bulleted-list"><li style="list-style-type:circle">已提交的事务结果不会被丢失</li></ul></li></ul><ul id="25924c0c-396a-8046-b5e7-c0082c1356ba" class="bulleted-list"><li style="list-style-type:disc">本例：<ul id="25924c0c-396a-809d-8a0b-c51b66278a09" class="bulleted-list"><li style="list-style-type:circle">A向B转账100块钱成功以后，显示事务已提交，然后这一瞬间机房断电了</li></ul><ul id="25924c0c-396a-8073-b286-e37bb3bc71dc" class="bulleted-list"><li style="list-style-type:circle">后来电力恢复，数据库重启</li></ul><ul id="25924c0c-396a-80e3-93f9-dcdfae7d631b" class="bulleted-list"><li style="list-style-type:circle">持久性保证了 恢复后A给B转账这个事件是确凿存在的，数据不会因为宕机而丢失</li></ul></li></ul><h2 id="25924c0c-396a-80e1-97bb-cef5a3d4cbee" class="">事务的隔离级别</h2><p id="25924c0c-396a-8007-959a-e788d6aca740" class="">隔离性并不是绝对的”0“或”1“，而是有不同程度的</p><p id="25924c0c-396a-8004-a354-e08ea43c6636" class="">数据库定义了四种隔离级别，由低到高，隔离性越来越强，但并发性能越来越差</p><p id="25924c0c-396a-80e2-818b-d2f26fcfc647" class="">四种隔离级别分别是：读未提交、读提交、重复读、序列化</p><p id="25924c0c-396a-8070-a984-ca39aea69068" class="">应对的是三类SQL问题问题：脏读、不可重复读、幻读</p><h3 id="25924c0c-396a-805a-9d14-ca781ab65299" class="">并发场景下的三类问题</h3><ul id="25924c0c-396a-806f-8f6e-e0c2dd5e2aca" class="bulleted-list"><li style="list-style-type:disc">脏读：事务T1 读到了 事务T2 未提交的更改，且事务T2回滚<ul id="25924c0c-396a-8027-8ae3-eef83a771c66" class="bulleted-list"><li style="list-style-type:circle">T1读取到的是一个脏的，未在数据库中正式存在过的无效数据</li></ul></li></ul><ul id="25924c0c-396a-8041-a8c7-c21d6178d2e6" class="bulleted-list"><li style="list-style-type:disc">不可重复读：事务T1在同一个事务中，<code>先后两次</code>读取<code>同一行</code>数据，得到<code>不同结果</code><ul id="25924c0c-396a-8028-8a36-e883506655db" class="bulleted-list"><li style="list-style-type:circle">因为：两次读取之间，事务T2对改行数据执行了<code>UPDATE</code>或 <code>DELETE</code>且<code>提交了事务</code></li></ul></li></ul><ul id="25924c0c-396a-801f-96a5-f68d7741b3d2" class="bulleted-list"><li style="list-style-type:disc">幻读：事务T1在同一个事务中，<code>先后两次</code>读取<code>同一行</code>数据，两次结果集的行数发生变化<ul id="25924c0c-396a-8020-8bea-d8d941c6b886" class="bulleted-list"><li style="list-style-type:circle">因为：两次读取之间，事务T2对改行数据执行了<code>INSERT</code>且<code>提交了事务</code></li></ul></li></ul><h3 id="25924c0c-396a-8012-b4e3-cd9a339ff839" class="">Read uncommitted</h3><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25924c0c-396a-806f-8c16-fb9ff9af6f29"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25924c0c-396a-80ce-ba86-c3f2eed4a3ba" class="">一个事务可以读取到另一个事务<strong>尚未提交</strong>的修改</p><p id="25924c0c-396a-806d-831b-d48dbfe3a151" class="">这是最低级的隔离级别，几乎没有任何并发控制</p></div></figure><p id="25924c0c-396a-80e9-af53-d7477987b7b7" class="">可能发生的并发问题：脏读、不可重复读、幻读</p><h3 id="25924c0c-396a-8032-8871-c204e826e84f" class="">Read  committed</h3><p id="25924c0c-396a-8001-9249-e3b2ca55f659" class="">Oracle 和 SQL Server的默认隔离级别</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25924c0c-396a-808c-8078-ded9e67591a1"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25924c0c-396a-8086-9ccc-ea60b11638cc" class="">解决了脏读这个最严重的问题，至少保证了不会拿到一份从未在数据库存在的“假数据”</p><p id="25924c0c-396a-8048-84f1-e4f21155d2e2" class="">但是无法保证，在一个读的过程中，某行数据会被人修改</p></div></figure><p id="25924c0c-396a-80fb-b8fd-d33fc4e66cfa" class="">可能发生的并发问题：不可重复读、幻读</p><h3 id="25924c0c-396a-80ff-a4e4-d66fff69d405" class="">Repeatable read</h3><p id="25924c0c-396a-804c-8577-ce62de567dcb" class="">MySQL的默认隔离级别，防止了<code>UPDATE</code>和<code>DELETE</code>的并发</p><p id="25924c0c-396a-80d4-8f4b-d596878143e5" class="">可以看成是，对数据库的指定范围内进行一次快照，以后不管怎么读，只要是这个范围内的数据，都按 快照 里的的数据进行返回。但是快照外可能多出来一行，这个没法解决</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25924c0c-396a-8037-9dfd-d8498b77a713"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25924c0c-396a-8088-bfae-fa6c6f67aaf3" class="">确保了在一个事务内，无论怎么读，同一行的数据是绝对不会变的</p><p id="25924c0c-396a-809d-8c21-c88ae21e65f2" class="">但是无法保证，会突然多读出一行出来</p></div></figure><p id="25924c0c-396a-8078-ba34-f76eb8dbc3b9" class="">可能发生的并发问题：幻读</p><h3 id="25924c0c-396a-80b0-aeb5-fc80422b595e" class="">Serializable</h3><p id="25924c0c-396a-80bb-85cf-e77ebf3525a5" class="">提供了最强的数据一致性保证</p><p id="25924c0c-396a-8069-824a-f4d24767c215" class="">它强制所有的事务，一个一个的串行执行，T1没执行好的时候，T2和T3不允许执行</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25924c0c-396a-801a-958d-de3e97d1c978"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25924c0c-396a-8082-9e14-f540e257b686" class="">这是绝对安全的并发控制，代价是牺牲了并发性，导致性能极差</p></div></figure><p id="25924c0c-396a-8098-b4b6-ec3855c578f2" class="">可以用于银行等 对于安全性要求极高的场合，类比银行柜台业务，前一个人没办完，后面的只能等</p><ul id="25924c0c-396a-80c8-abaf-cef38a0ada8a" class="bulleted-list"><li style="list-style-type:disc">隔离级别越高，安全性越强，性能越低</li></ul><ul id="25924c0c-396a-809d-b4f7-f32e791e7f92" class="bulleted-list"><li style="list-style-type:disc">隔离级别的选择，本质上 是在 数据一致性 与 系统并发性能 之间做取舍</li></ul><h1 id="25924c0c-396a-808f-9666-f40471593965" class="">索引</h1><h2 id="25924c0c-396a-8072-ae88-e945f4acbafb" class="">索引的概念</h2><p id="25924c0c-396a-80b4-8255-c3244c365306" class="">索引就是一本书的目录</p><p id="25924c0c-396a-8013-927f-d8f53e899153" class="">思考这个情境：我想从一本厚厚的，有着1000页的《现代数据库大全》里找关于“B+树” 的章节</p><ul id="25924c0c-396a-809b-a245-ebbf1ee01422" class="bulleted-list"><li style="list-style-type:disc">没有索引：<ul id="25924c0c-396a-8012-a186-cdf48b800826" class="bulleted-list"><li style="list-style-type:circle">唯一的办法就是从第一页开始，遍历整本书，直到找到为止</li></ul><ul id="25924c0c-396a-8099-960b-ee5c1ff5b0cb" class="bulleted-list"><li style="list-style-type:circle">运气最差需要1000次，复杂度为O(n)</li></ul></li></ul><ul id="25924c0c-396a-80c4-8d5f-c42bdaeae449" class="bulleted-list"><li style="list-style-type:disc">有索引：<ul id="25924c0c-396a-80b2-b77f-faaa1644da66" class="bulleted-list"><li style="list-style-type:circle">我可以先翻到书最前面的目录，按照章节标题（比如字母表或者其他顺序）快速查找</li></ul><ul id="25924c0c-396a-804e-bb36-f14e476fa6a6" class="bulleted-list"><li style="list-style-type:circle">找到“B“开头的章节后，定位”B+树“，找到它所在页数，直接翻过去即可</li></ul><ul id="25924c0c-396a-8011-8a24-c7d6f0412e1b" class="bulleted-list"><li style="list-style-type:circle">只有标题的查找，可以近似于O(1)</li></ul></li></ul><p id="25924c0c-396a-80e8-822d-fd0b78cb229f" class="">在数据库中：</p><ul id="25924c0c-396a-804c-9c2c-c138a0ac4174" class="bulleted-list"><li style="list-style-type:disc">这本《现代数据库大全》就是我的数据库表</li></ul><ul id="25924c0c-396a-805f-8dd7-ecce256eed16" class="bulleted-list"><li style="list-style-type:disc">书的内容 就是 表中的数据行</li></ul><ul id="25924c0c-396a-80d5-b804-c095a7ed78e0" class="bulleted-list"><li style="list-style-type:disc">目录 就是 我创建的索引</li></ul><p id="25924c0c-396a-80ad-bfe9-e87bf3b19402" class="">所以，索引这种特殊的数据结构</p><p id="25924c0c-396a-8095-a29f-db727ee24b4d" class="">它以一种高效的方式存储了表中<code>特定列的值</code>以及<code>这些值所在行的物理地址</code>（指针）</p><p id="25924c0c-396a-8097-ab9f-c49ad70182f8" class="">在数据库查询时，先查索引，快速定位到数据行，再进行查找，从而避免了全表扫描</p><h2 id="25924c0c-396a-80f9-9db6-f95411eec8a0" class="">索引的演示</h2><h3 id="25924c0c-396a-80e4-8013-d1ee793c50c5" class="">单列索引</h3><p id="25924c0c-396a-80a0-85f7-eb60f85a716a" class="">还是以员工表为例，之前我们已经设计了一个员工表：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25924c0c-396a-80a9-abe7-c01cd445de6c" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 需要定义表名、列名、每一列的数据类型、约束（主键、非空等）
+CREATE TABLE employees(
+		id INT PRIMARY KEY, -- id，int类型，是主键，逗号隔开
+		first_name VARCHAR(50) NOT NULL, -- 名，50字符以内的字符串，不可为空
+		last_name VARCHAR(50),
+    department VARCHAR(50),
+    salary DECIMAL(10, 2), -- 薪资，使用DECIMAL类型，数字型128bit，小数点左边10位，右边2位
+    hire_date DATE -- 聘用日期，数据类型是DATE（年月日，没有时分秒）
+);</code></pre><p id="25924c0c-396a-80a3-8b3a-e30d894db3cb" class="">然后模拟了数据：</p><table id="25924c0c-396a-80c1-a6fb-facff2eb228a" class="simple-table"><tbody><tr id="25924c0c-396a-806a-8cc0-f62e497fde05"><td id="\zxB" class="">id</td><td id="i&lt;qX" class="">first_name</td><td id="J}&gt;P" class="">last_name</td><td id="mhSf" class="">department</td><td id="Dcr=" class="">salary</td><td id="WHyC" class="">hire_date</td></tr><tr id="25924c0c-396a-8053-b80d-da4983bb5683"><td id="\zxB" class="">1</td><td id="i&lt;qX" class="">John</td><td id="J}&gt;P" class="">Doe</td><td id="mhSf" class="">HR</td><td id="Dcr=" class="">60000</td><td id="WHyC" class="">2022-01-15</td></tr><tr id="25924c0c-396a-8010-8819-ead1386ec01a"><td id="\zxB" class="">2</td><td id="i&lt;qX" class="">Jane</td><td id="J}&gt;P" class="">Smith</td><td id="mhSf" class="">Engineering</td><td id="Dcr=" class="">85000</td><td id="WHyC" class="">2021-03-22</td></tr><tr id="25924c0c-396a-80e2-b7f6-c335c2d93e06"><td id="\zxB" class="">3</td><td id="i&lt;qX" class="">Peter</td><td id="J}&gt;P" class="">Jones</td><td id="mhSf" class="">Engineering</td><td id="Dcr=" class="">95000</td><td id="WHyC" class="">2020-05-30</td></tr><tr id="25924c0c-396a-80b7-9340-c50aefc60a40"><td id="\zxB" class="">4</td><td id="i&lt;qX" class="">Emily</td><td id="J}&gt;P" class="">Williams</td><td id="mhSf" class="">Sales</td><td id="Dcr=" class="">72000</td><td id="WHyC" class="">2022-08-10</td></tr><tr id="25924c0c-396a-80d9-b562-e21624f96905"><td id="\zxB" class="">5</td><td id="i&lt;qX" class="">Michael</td><td id="J}&gt;P" class="">Brown</td><td id="mhSf" class="">Sales</td><td id="Dcr=" class="">78000</td><td id="WHyC" class="">2021-11-01</td></tr><tr id="25924c0c-396a-8069-ab9c-e35f60cda04a"><td id="\zxB" class="">6</td><td id="i&lt;qX" class="">Sarah</td><td id="J}&gt;P" class="">Davis</td><td id="mhSf" class="">HR</td><td id="Dcr=" class="">NULL</td><td id="WHyC" class="">2023-02-20</td></tr></tbody></table><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25924c0c-396a-80e4-b8be-c7b83acf0383"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25924c0c-396a-804a-9967-d7354822957f" class="">注意！索引并不需要自己的”索引表“或者”目录表“！它是一个独立的特殊数据文件</p><p id="25924c0c-396a-80e4-8b95-cfd94c1a5f6a" class="">数据库管理系统DBMS（MySQL）会自己去管理索引文件，我们只需要创建和使用就行</p></div></figure><p id="25924c0c-396a-80d9-adbc-fa782d3dc35f" class="">我们执行查找语句一般是这个：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25924c0c-396a-8056-99ec-c32b001037c9" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 找出所有销售部门的员工
+SELECT * FROM employees WHERE department = &#x27;Sales&#x27;;</code></pre><p id="25924c0c-396a-80a8-9715-dd51b87dd477" class="">这就相当于HR拿着员工花名册，一个一个去看员工是否是销售部，效率比较低</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25924c0c-396a-80d0-999a-e8496cc89406" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">-- 现在，我们可以给department创建一个索引：
+CREATE INDEX idx_department ON employees (department);</code></pre><ul id="25924c0c-396a-80f4-8a11-f517bc66281b" class="bulleted-list"><li style="list-style-type:disc"><code>CREATE INDEX</code> 是创建索引的指令</li></ul><ul id="25924c0c-396a-80cc-850c-db0526d89ab8" class="bulleted-list"><li style="list-style-type:disc"><code>idx_department</code>是我们给索引起的名字，为了便于识别，一般是<code>idx_</code>+<code>列名</code> </li></ul><ul id="25924c0c-396a-80c1-a4ce-c37a72ce3163" class="bulleted-list"><li style="list-style-type:disc"><code>ON employees</code> 指明了这个索引是建立在<code>employees</code>表上的</li></ul><ul id="25924c0c-396a-80f8-b172-db292d6e6c91" class="bulleted-list"><li style="list-style-type:disc"><code>(department)</code>指明了这个索引是建立在<code>department</code>列上的</li></ul><ul id="25924c0c-396a-8042-bd7a-eea197c0c8e5" class="bulleted-list"><li style="list-style-type:disc">至此，一个索引创建完成，接下来是运用这个索引进行查找，查找语句与之前完全相同</li></ul><ul id="25924c0c-396a-8037-b55d-e28f33814aa9" class="bulleted-list"><li style="list-style-type:disc">现在，DBMS不再扫描employees表，而是先看我们创建的idx_department索引</li></ul><ul id="25924c0c-396a-8040-9a17-ef59ce0c914a" class="bulleted-list"><li style="list-style-type:disc">这个索引文件是按department列的字母序号排列的（所有的<code>Engineering</code>在最前面）</li></ul><ul id="25924c0c-396a-8071-af6f-c33acaa684aa" class="bulleted-list"><li style="list-style-type:disc">这样，在索引中，能很快找到所有Sales条目，而每个条目后面都跟着原始数据行指针</li></ul><ul id="25924c0c-396a-80b5-8a8f-d78267411e65" class="bulleted-list"><li style="list-style-type:disc">然后DBMS就能直接定位原始数据表中目标列</li></ul><h3 id="25924c0c-396a-80a6-9e0d-d094d16d49f0" class="">复合索引</h3><p id="25924c0c-396a-807d-a103-f5460f79b668" class="">如果需求变更，不单单是根据department列来查找，而是频繁根据部门+名字的组合查找</p><p id="25924c0c-396a-8080-8dd7-c71d3893801c" class="">比如：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25924c0c-396a-80c6-83f7-fe6971572af9" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">SELECT * FROM employees WHERE department = &#x27;Engineering&#x27; AND last_name = &#x27;Smith&#x27;;</code></pre><p id="25924c0c-396a-8000-86bb-f0a01004a4ce" class="">如果只用department索引，确实能查出所有Engineering部门的人，再从里面找人</p><p id="25924c0c-396a-806e-bd3e-cb10f569bbc0" class="">这样确实比以前快，但是依然有优化的空间：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="25924c0c-396a-802a-a399-c5d30113f273" class="code code-wrap"><code class="language-SQL" style="white-space:pre-wrap;word-break:break-all">CREATE INDEX idx_dept_lastname ON employees (department, last_name);</code></pre><p id="25924c0c-396a-80b1-b093-f9e4bebcc883" class="">创建组合索引（先按<code>department</code> 排序，在 <code>department</code> 相同的情况下，再按 <code>last_name</code> 排序）</p><p id="25924c0c-396a-80ce-919b-d7d986df9543" class=""><strong>这个索引可以高效地支持以下查询：</strong></p><ul id="25924c0c-396a-8059-96f6-e8ef172cfc92" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE department = &#x27;...&#x27;</code> (遵循最左前缀原则)</li></ul><ul id="25924c0c-396a-80ee-9c9c-f5a45b8f985c" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE department = &#x27;...&#x27; AND last_name = &#x27;...&#x27;</code> (遵循最左前缀原则)</li></ul><p id="25924c0c-396a-80f3-af7e-d20107013a8c" class=""><strong>但无法高效支持这个查询：</strong></p><ul id="25924c0c-396a-801b-a1a6-cc2f40f743c1" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE last_name = &#x27;...&#x27;</code> (因为跳过了最左边的 <code>department</code>，索引失效)</li></ul><h3 id="25924c0c-396a-8063-9e1c-cb0b398459af" class="">主键索引</h3><p id="25924c0c-396a-8025-91e1-c0795c0bfe66" class="">在创建表的语句中有一个<code>id INT PRIMARY KEY</code></p><p id="25924c0c-396a-804d-b10c-cedfbc91e291" class="">当我把id设置为<code>PRIMARY KEY</code>的时候，数据库就自动为其创建了一个唯一且非空的索引，即主键索引</p><p id="25924c0c-396a-8047-876c-e09c1e620858" class="">所以，用主键查询索引<code>SELECT * FROM employees WHERE id = 101</code>，这是最快的！</p><h2 id="25924c0c-396a-80b7-8f9e-dba742c38945" class="">索引的优缺点</h2><p id="25924c0c-396a-802a-8d92-dc9720c7ac96" class="">优点：大大提高了查询速度<code>SELECT</code></p><p id="25924c0c-396a-80b2-961f-e3e4a45bb1b0" class="">缺点：降低了修改数据的速度（<code>UPDATE，INSERT，DELETE</code>）</p><p id="25924c0c-396a-806e-b857-c48ff0d01546" class="">如果对数据表的内容做了修改，目录可能也需要跟着更新</p><p id="25924c0c-396a-8048-b37a-fac8e9fd0afc" class="">（每次在word里改完报告之后，都要重新生成目录）</p><ul id="25924c0c-396a-80f7-95fd-c6610e8f228b" class="bulleted-list"><li style="list-style-type:disc">INSERT：比如在书中增加了一个章节，那么必须在目录中增加新章节的标题和页码</li></ul><ul id="25924c0c-396a-804d-bfa1-fe42aa48bef5" class="bulleted-list"><li style="list-style-type:disc">DELETE：在书中删掉了</li></ul><h2 id="25924c0c-396a-80b1-a6c8-c8130e23a0b3" class="">索引的底层结构</h2><p id="25924c0c-396a-8006-a296-e55baefca2ad" class="">数据库索引可以是多种数据结构实现，但是目前关系型数据库中用的最多的，是B+树</p><p id="25924c0c-396a-80b4-9171-d17daae5a665" class="">为什么要是B+树？因为其非常适合磁盘存储。这里简答介绍一下B+树的一些特点</p><ol type="1" id="25a24c0c-396a-80bf-86bd-fb74bbb98f39" class="numbered-list" start="1"><li>它是一棵平衡树<ol type="a" id="25a24c0c-396a-80e9-bcaa-c0a102ecff56" class="numbered-list" start="1"><li>无论树有多高多大，从根节点到任何一个叶子节点的路径长度都几乎相同</li></ol><ol type="a" id="25a24c0c-396a-8027-bdfd-ed5405227f91" class="numbered-list" start="2"><li>这意味着任何一次查询的I/O次数都非常稳定，没有“运气不好，查得慢”的情况</li></ol></li></ol><ol type="1" id="25a24c0c-396a-801f-94af-d98ac60e0170" class="numbered-list" start="2"><li>非叶子节点 只储存目录信息，不储存实际数据<ol type="a" id="25a24c0c-396a-80ad-a9ed-d06809a8678d" class="numbered-list" start="1"><li>目录信息即 键值 和 指针</li></ol><ol type="a" id="25a24c0c-396a-80c6-9e62-d543e848dcb5" class="numbered-list" start="2"><li>这使得每个节点可以容纳更多的键值，从而让整棵树变得“矮胖”</li></ol><ol type="a" id="25a24c0c-396a-80de-917b-c5837cc6c91b" class="numbered-list" start="3"><li>树越矮，查询时磁盘的IO次数越少，速度就越快</li></ol><ol type="a" id="25a24c0c-396a-80b0-830c-d185769a1743" class="numbered-list" start="4"><li>B+树本身的查询速度也达到了logN级别</li></ol></li></ol><ol type="1" id="25a24c0c-396a-8007-b7e2-e706451169de" class="numbered-list" start="3"><li>所有数据都存储在叶子节点上</li></ol><ol type="1" id="25a24c0c-396a-803e-a011-e32710847e48" class="numbered-list" start="4"><li>所有的叶子节点组成了一个双向链表<ol type="a" id="25a24c0c-396a-8071-9d6a-e907213c3106" class="numbered-list" start="1"><li>这是B+树的点睛之笔，所有叶子节点都串联在一起，而且是有序的</li></ol><ol type="a" id="25a24c0c-396a-8007-ae30-c52c7c5b0e7f" class="numbered-list" start="2"><li>这个特性使得 范围查询 变得容易（比如<code>WHERE age BETWEEN 20 AND 30</code>）</li></ol><ol type="a" id="25a24c0c-396a-801c-9b41-ec93ca614920" class="numbered-list" start="3"><li>这样数据库只需要定位到20，再沿着链表遍历到30即可</li></ol></li></ol><h2 id="25a24c0c-396a-80ca-a0b7-d515d4b5d707" class="">索引的设计原则（实战关键）</h2><p id="25a24c0c-396a-80f8-a6d8-cb531757cd6c" class="">理论知识落地。如何评判一个索引的好坏？如何设计一个好的索引？</p><h3 id="25a24c0c-396a-80cc-859f-fbb4016f911f" class="">哪些列适合做索引</h3><p id="25a24c0c-396a-8094-b117-ca10d1ccb57b" class="">简单来说，哪些列查在找时用的多，就拿过来做索引</p><ul id="25a24c0c-396a-80a3-8d33-f1a3b63968b6" class="bulleted-list"><li style="list-style-type:disc">经常在<code>WHERE</code>字句中作为查询条件的列<ul id="25a24c0c-396a-80e3-87ec-cd47c6284001" class="bulleted-list"><li style="list-style-type:circle"><code>SELECT * FROM users WHERE user_id = 123;</code> </li></ul><ul id="25a24c0c-396a-807a-9397-de37a919df5f" class="bulleted-list"><li style="list-style-type:circle">给 <code>user_id</code> 这个列创建一个索引</li></ul></li></ul><ul id="25a24c0c-396a-80fc-8b0b-d1f78a25c0de" class="bulleted-list"><li style="list-style-type:disc">经常在 <code>JOIN</code> 子句中作为<code>ON条件</code>，即<code>关联条件</code>的列（通常是外键）<ul id="25a24c0c-396a-8038-b225-d3d9adc0ed10" class="bulleted-list"><li style="list-style-type:circle"><code>SELECT * FROM employees AS e JOIN departments AS d ON e.department = d.dept_name;</code></li></ul></li></ul><ul id="25a24c0c-396a-8012-b383-e9623fc78572" class="bulleted-list"><li style="list-style-type:disc">经常在 <code>ORDER BY</code> 或 <code>GROUP BY</code> 子句中用于排序或分组的列<ul id="25a24c0c-396a-80f6-8f72-f14c3ddca528" class="bulleted-list"><li style="list-style-type:circle">索引本身是有序的，可以避免额外的ORDER的排序开销</li></ul></li></ul><h3 id="25a24c0c-396a-80ed-b793-fead90f849e6" class="">最左前缀原则</h3><p id="25a24c0c-396a-8052-b6f9-d470979afcf0" class="">这是复合索引的核心规则，非常重要，之前也有过演示</p><p id="25a24c0c-396a-80fa-88aa-e09d1d8f68d8" class="">如果我对（col1，col2，col3）这三个列建立了一个复合索引，那么我的查询条件必须从左往右</p><p id="25a24c0c-396a-80d1-8d46-dd08840aed3c" class="">否则，索引不会生效</p><p id="25a24c0c-396a-8068-a3e1-e3c622d5af55" class="">比如我建立的复合索引是<code>INDEX(name, age, city)</code>，有以下查询</p><ul id="25a24c0c-396a-80f5-8767-fa05451be407" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE name = &#x27;A&#x27; AND age = 20 AND city = &#x27;B&#x27;</code> -&gt; 三个都有，索引生效</li></ul><ul id="25a24c0c-396a-80f5-9cae-fbb8a92456d7" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE name = &#x27;A&#x27; AND age = 20</code> -&gt; 有name 和 age，索引生效</li></ul><ul id="25a24c0c-396a-80d9-a505-cffd64341668" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE name = &#x27;A&#x27;</code> -&gt; 有最左边的name，索引生效</li></ul><ul id="25a24c0c-396a-8031-99d5-d388039debcc" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE age = 20</code> -&gt; 查询是中间的age，索引不生效</li></ul><ul id="25a24c0c-396a-807a-9a59-f5c8ece60547" class="bulleted-list"><li style="list-style-type:disc"><code>WHERE name = &#x27;A&#x27; AND city = &#x27;B&#x27;</code> -&gt; 查name部分，索引生效，跳过了age到city，city的索引不生效<ul id="25a24c0c-396a-804a-9515-fead2749e259" class="bulleted-list"><li style="list-style-type:circle">数据库利用索引的<code>name</code>部分，通过B+树快速定位到第一个<code>name=&#x27;A&#x27;</code> 的数据</li></ul><ul id="25a24c0c-396a-8042-96d0-e447e9141d67" class="bulleted-list"><li style="list-style-type:circle">由于索引是有序的，所以所有的<code>name=&#x27;A&#x27;</code>的数据在逻辑上连续存放，DBMS沿着链表扫描，很快就能得到所有<code>name=&#x27;A&#x27;</code>的数据的地址</li></ul><ul id="25a24c0c-396a-80da-9eb5-dc9c4fdf9d12" class="bulleted-list"><li style="list-style-type:circle">DBMS拿到地址后，回到数据库读取完整数据（回表），对每个数据，检查其city值</li></ul><ul id="25a24c0c-396a-80c7-acbc-d3297814b42f" class="bulleted-list"><li style="list-style-type:circle"><code>也就是说city部分的查询是遍历，不走索引</code></li></ul></li></ul><p id="25a24c0c-396a-80e5-a1c3-e749cbe952fb" class="">
+</p><h3 id="25a24c0c-396a-800f-a2c9-f4d4f824dc33" class="">索引失效场景</h3><ol type="1" id="25a24c0c-396a-808a-86bc-f3eb742e84fb" class="numbered-list" start="1"><li>在索引列上使用函数或计算：<code>WHERE YEAR(create_time) = 2025</code><ol type="a" id="25a24c0c-396a-80ae-8803-ff114441e44a" class="numbered-list" start="1"><li>这时候索引是不起作用的，函数优先，索引没那么智能</li></ol><ol type="a" id="25a24c0c-396a-80c0-96d7-cf053ed1f0ec" class="numbered-list" start="2"><li>正确做法是<code>WHERE create_time &gt;= &#x27;2025-01-01&#x27; AND create_time &lt; &#x27;2026-01-01&#x27;</code></li></ol></li></ol><ol type="1" id="25a24c0c-396a-8093-9275-e1a61be29364" class="numbered-list" start="2"><li></li></ol><h1 id="25924c0c-396a-8022-889c-d824a776809b" class="">范式</h1><p id="25a24c0c-396a-8002-8604-c4b5c4c4ec73" class="">通过消除冗余数据 来 优化数据库结构</p><p id="25a24c0c-396a-80c7-9063-f2c1d6bd339a" class="">范式是一种指导理论，遵循它可以 减少数据冗余、避免数据不一致、提高数据完整性</p><h2 id="25a24c0c-396a-80e5-b49b-edabfda60e84" class="">依赖</h2><p id="25a24c0c-396a-800d-bd68-dc44364d5421" class="">在JAVA里面，有依赖的说法。类A中如果有类B的实例，则称A依赖于B</p><p id="25a24c0c-396a-8029-896f-e1689fbdb1a2" class="">数据库里的依赖，描述的是数据之间的决定关系</p><figure class="block-color-gray_background callout" style="white-space:pre-wrap;display:flex" id="25a24c0c-396a-80ce-919e-edc7b469d5c5"><div style="font-size:1.5em"><span class="icon">💡</span></div><div style="width:100%"><p id="25a24c0c-396a-8003-9131-f46bf61c806e" class="">如果A依赖于B，那么一旦我们直到了B的值，就能唯一确定A的值，即B→A</p></div></figure><h2 id="25a24c0c-396a-8077-a93f-c6aeadfcae29" class="">三大范式</h2><ul id="25a24c0c-396a-80a5-b287-e30dc612382a" class="bulleted-list"><li style="list-style-type:disc">第一范式：消除组合列<ul id="25a24c0c-396a-80df-9514-ee2cac925554" class="bulleted-list"><li style="list-style-type:circle">要求：保证每一列都是不可再分的原子值</li></ul><ul id="25a24c0c-396a-8054-a510-e6ec725c293e" class="bulleted-list"><li style="list-style-type:circle">例子：“地址”列 不应该存储 “省+市+县+门牌号”，而应该拆成“省份”列，“地级市”列，“县级市”列，“详细住址”列，这四列</li></ul></li></ul><ul id="25a24c0c-396a-8099-b3ed-f9e6b88652bb" class="bulleted-list"><li style="list-style-type:disc">第二范式：消除部分依赖<ul id="25a24c0c-396a-80ab-9c41-dc2105018c41" class="bulleted-list"><li style="list-style-type:circle">要求：在满足第一范式的基础上，表中所有非主键列 必须完全依赖于主键 而非主键的一部分<ul id="25a24c0c-396a-8085-996e-e1d6ea6d858b" class="bulleted-list"><li style="list-style-type:square">第二范式主要针对的是：复合主键</li></ul></li></ul><ul id="25a24c0c-396a-80af-8115-fdcd5c83e031" class="bulleted-list"><li style="list-style-type:circle">例子：一个“订单详情”表 的 主键是<code>(订单ID，商品ID)</code>，如果表中有一个列是<code>订单创建时间</code><ul id="25a24c0c-396a-8052-81b5-ddf9182e21ad" class="bulleted-list"><li style="list-style-type:square">那么这个列 是 依赖于<code>订单ID</code>的，但是不依赖于<code>商品ID</code>，这就是部分依赖</li></ul></li></ul><ul id="25a24c0c-396a-80fd-8e99-f8c3aca1923c" class="bulleted-list"><li style="list-style-type:circle">部分依赖必然造成数据冗余<figure id="25a24c0c-396a-80c9-b7e4-c11c59f5fe0b" class="image"><a href="/vivo50/resources/database/database2/image.png"><img style="width:639px" src="/vivo50/resources/database/database2/image.png"/></a></figure><ul id="25a24c0c-396a-8014-800a-d4968f4eedc1" class="bulleted-list"><li style="list-style-type:square">这个表中，键盘价格只依赖于<code>商品ID</code>，订单日期只依赖于<code>订单ID</code>，它们在表中重复出现</li></ul><ul id="25a24c0c-396a-8052-b691-cb89a03bb8f1" class="bulleted-list"><li style="list-style-type:square">正确的做法是，另外创建订单表，将<code>订单日期</code>放在”订单“表中，而非”订单详情表“</li></ul></li></ul></li></ul><ul id="25a24c0c-396a-809f-b1c4-f7331509a217" class="bulleted-list"><li style="list-style-type:disc">第三范式：消除传递依赖<ul id="25a24c0c-396a-80d5-b9f0-c40fd4b88b1d" class="bulleted-list"><li style="list-style-type:circle">要求：在满足第二范式的基础上，表中的所有非主键列 都必须 直接依赖于主键，无传递依赖</li></ul><ul id="25a24c0c-396a-80ec-b17a-dbe4de368a33" class="bulleted-list"><li style="list-style-type:circle">例子：如果employees表中包含<code>部门ID</code>和<code>部门名称</code><ul id="25a24c0c-396a-8086-8c64-f080787b6d04" class="bulleted-list"><li style="list-style-type:square">这时候，<code>部门名称</code>依赖于<code>部门ID</code>，<code>部门ID</code>依赖于主键<code>员工ID</code>，形成传递依赖</li></ul></li></ul><ul id="25a24c0c-396a-8097-aac7-edaade576ecb" class="bulleted-list"><li style="list-style-type:circle">传递依赖造成了数据的不必要存储<figure id="25a24c0c-396a-80a1-bc5d-dc8f6bb3042a" class="image"><a href="/vivo50/resources/database/database2/image1.png"><img style="width:524px" src="/vivo50/resources/database/database2/image1.png"/></a></figure><ul id="25a24c0c-396a-8088-b6be-ef2e656e47aa" class="bulleted-list"><li style="list-style-type:square"><code>员工ID</code>能唯一确定<code>员工姓名</code>和<code>部门ID</code>，所以<code>员工姓名</code>与<code>部门ID</code>依赖于<code>员工ID</code></li></ul><ul id="25a24c0c-396a-805f-a4fd-c95b1ae047e2" class="bulleted-list"><li style="list-style-type:square"><code>部门ID</code>能唯一确定<code>部门名称</code>和<code>部门经理</code>，所以<code>部门名称</code>和<code>部门经理</code>依赖于<code>部门ID</code></li></ul><ul id="25a24c0c-396a-8043-950a-e0d5c373e424" class="bulleted-list"><li style="list-style-type:square"><code>员工ID</code>唯一确定<code>部门ID</code>，<code>部门ID</code>唯一确定<code>部门名称</code></li></ul><ul id="25a24c0c-396a-80ef-8e46-fd11bfde0a53" class="bulleted-list"><li style="list-style-type:square">这就导致了”市场部“和”王经理“出现了两次，数据冗余</li></ul><ul id="25a24c0c-396a-80e2-ae88-fa46dd25a9d1" class="bulleted-list"><li style="list-style-type:square">如果技术部的最后一个员工李四离职（这行数据被删），就永远丢失了”D02是技术部“这个信息了</li></ul><ul id="25a24c0c-396a-8023-a6d0-e74cbb4c167c" class="bulleted-list"><li style="list-style-type:square">正确做法是，创建一个独立的departments表，存放<code>部门ID</code>+<code>部门名称</code>+<code>部门经理</code>，员工表只存储外键<code>部门ID</code> </li></ul></li></ul></li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
