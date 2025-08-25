@@ -55,6 +55,24 @@ const routes = [
             meta: { title: '知识点详情' }
           }
         ]
+      },
+      {
+        path: 'database',
+        name: 'Database',
+        children: [
+          {
+            path: '',
+            name: 'DatabaseHome',
+            component: () => import('../components/vivo50/pages/Database/DatabaseHome.vue'),
+            meta: { title: '数据库技术' }
+          },
+          {
+            path: 'topic/:topicId',
+            name: 'DatabaseDetail',
+            component: () => import('../components/vivo50/pages/Database/DatabaseDetail.vue'),
+            meta: { title: '数据库知识点详情' }
+          }
+        ]
       }
       // 其他模块路由：
       // {

@@ -99,16 +99,16 @@
             </div>
           </div>
           
-          <div class="vivo50-module-card">
+          <div class="vivo50-module-card" @click="handleModuleClick('database')">
             <div class="vivo50-module-header">
               <div class="vivo50-module-icon">🗄️</div>
               <h4 class="vivo50-module-title">数据库</h4>
             </div>
-            <p class="vivo50-module-desc">索引、事务、锁机制、SQL/NoSQL</p>
+            <p class="vivo50-module-desc">主要是SQL语句、索引、事务、锁机制，触发器和游标的缺陷</p>
             <div class="vivo50-module-tags">
+              <span class="vivo50-tag">CRUD</span>
               <span class="vivo50-tag">ACID</span>
               <span class="vivo50-tag">索引</span>
-              <span class="vivo50-tag">分布式</span>
             </div>
           </div>
           
@@ -141,13 +141,13 @@
           <div class="vivo50-module-card">
             <div class="vivo50-module-header">
               <div class="vivo50-module-icon">💡</div>
-              <h4 class="vivo50-module-title">编程语言</h4>
+              <h4 class="vivo50-module-title">Java代码基础</h4>
             </div>
-            <p class="vivo50-module-desc">Java、JavaScript/TypeScript、Python</p>
+            <p class="vivo50-module-desc">大概就是Spring三层架构、JPA规范、Hibernate框架之类吧</p>
             <div class="vivo50-module-tags">
-              <span class="vivo50-tag">Java</span>
-              <span class="vivo50-tag">JS/TS</span>
-              <span class="vivo50-tag">Python</span>
+              <span class="vivo50-tag">Spring</span>
+              <span class="vivo50-tag">JPA</span>
+              <span class="vivo50-tag">Hibernate</span>
             </div>
           </div>
         </div>
@@ -256,6 +256,8 @@ export default {
     handleModuleClick(moduleType) {
       if (moduleType === 'algorithm') {
         this.$router.push('/vivo50/algorithm')
+      } else if (moduleType === 'database') {
+        this.$router.push('/vivo50/database')
       }
       // 其他模块可以在这里添加
     }

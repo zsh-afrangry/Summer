@@ -4,23 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="开始做界面，模块1-1-1">
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.local.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.local.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources/f7c1c47c-461c-44ec-b9a1-21e7aad06eb1.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources/f7c1c47c-461c-44ec-b9a1-21e7aad06eb1.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/backend/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.dev.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker-compose.dev.yml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/ElegantPortalPage.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/ElegantPortalPage.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/vivo50/data/algorithmTopics.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/vivo50/data/algorithmTopics.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/vivo50/pages/algorithm/AlgorithmHome.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/vivo50/pages/algorithm/AlgorithmHome.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/vivo50/pages/algorithm/TopicDetail.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/vivo50/pages/algorithm/TopicDetail.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/router/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/vue.config.js" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/vue.config.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/mysql/init/database_init.sql" beforeDir="false" afterPath="$PROJECT_DIR$/mysql/init/database_init.sql" afterDir="false" />
-    </list>
+    <list default="true" id="c9a8e1d2-f19f-465b-8417-6a3b14761149" name="更改" comment="IDEA连接不上Docker里的MySQL容器，怎么解决？" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -154,7 +138,7 @@
       <workItem from="1755944458987" duration="473000" />
       <workItem from="1755945119750" duration="10435000" />
       <workItem from="1755957699895" duration="1950000" />
-      <workItem from="1755960003101" duration="2238000" />
+      <workItem from="1755960003101" duration="2474000" />
     </task>
     <task id="LOCAL-00001" summary="部署前的一次推送，推完之后搞部署分支">
       <option name="closed" value="true" />
@@ -260,7 +244,15 @@
       <option name="project" value="LOCAL" />
       <updated>1755936240816</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="IDEA连接不上Docker里的MySQL容器，怎么解决？">
+      <option name="closed" value="true" />
+      <created>1755962447559</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1755962447559</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -292,6 +284,7 @@
     <MESSAGE value="开发+部署-双环境版本-v1.0.0" />
     <MESSAGE value="初步上线。开发改运维了属于是" />
     <MESSAGE value="开始做界面，模块1-1-1" />
-    <option name="LAST_COMMIT_MESSAGE" value="开始做界面，模块1-1-1" />
+    <MESSAGE value="IDEA连接不上Docker里的MySQL容器，怎么解决？" />
+    <option name="LAST_COMMIT_MESSAGE" value="IDEA连接不上Docker里的MySQL容器，怎么解决？" />
   </component>
 </project>

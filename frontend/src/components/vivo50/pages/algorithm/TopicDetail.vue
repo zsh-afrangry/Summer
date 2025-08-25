@@ -88,11 +88,11 @@ export default {
       this.loading = true
       this.error = null
       
-      const topicId = this.$route.params.topicId || 'test' // 默认使用 test 文件
+      const topicId = this.$route.params.topicId || 'array' // 默认使用 array 文件
       
       try {
         // 优先尝试加载 Markdown 文件
-        const mdResponse = await fetch(`/vivo50/resources/MD/${topicId}.md`)
+        const mdResponse = await fetch(`/vivo50/resources/algorithm/MD/${topicId}.md`)
         if (mdResponse.ok) {
           const mdContent = await mdResponse.text()
           this.contentHtml = DOMPurify.sanitize(this.md.render(mdContent))
@@ -100,7 +100,7 @@ export default {
         }
         
         // 如果 MD 文件不存在，尝试加载 HTML 文件
-        const htmlResponse = await fetch(`/vivo50/resources/HTML/${topicId}.html`)
+        const htmlResponse = await fetch(`/vivo50/resources/algorithm/HTML/${topicId}.html`)
         if (htmlResponse.ok) {
           const htmlContent = await htmlResponse.text()
           // 对于 HTML 文件，提取 body 内容并清理
